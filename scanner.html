@@ -3,10 +3,224 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Scan ID Card - Umoomi Security</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/scanner.css">
+    <title>ID Card Scanner - Umoomi Security System</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .scanner-container {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 25px;
+            margin-top: 10px;
+        }
+        
+        .scanner-box {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+            text-align: center;
+        }
+        
+        .scanner-box h2 {
+            font-size: 1.8rem;
+            color: var(--primary);
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+        
+        #reader {
+            width: 100%;
+            max-width: 450px;
+            margin: 0 auto 25px;
+            border: 3px solid var(--secondary);
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .scanner-status {
+            padding: 20px;
+            background: #f8f9ff;
+            border-radius: 12px;
+            margin-top: 15px;
+            font-weight: 500;
+            font-size: 1.1rem;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        
+        .member-info-box {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+            display: none;
+        }
+        
+        .member-info-box.active {
+            display: block;
+            animation: slideIn 0.5s;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        .member-card {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+        }
+        
+        .member-name {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin: 15px 0 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .member-position {
+            font-size: 1.4rem;
+            opacity: 0.95;
+            margin-bottom: 5px;
+        }
+        
+        .member-department {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+        
+        .member-meta {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid rgba(255,255,255,0.3);
+        }
+        
+        .meta-item {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 12px;
+            border-radius: 10px;
+            backdrop-filter: blur(5px);
+        }
+        
+        .meta-item strong {
+            display: block;
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+        
+        .meta-item span {
+            font-size: 1.15rem;
+            font-weight: 500;
+        }
+        
+        .location-update {
+            margin-top: 30px;
+            padding-top: 25px;
+            border-top: 2px solid #f1f1f1;
+        }
+        
+        .location-update h3 {
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .location-update input {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            transition: border-color 0.3s;
+        }
+        
+        .location-update input:focus {
+            outline: none;
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+        
+        .scan-history {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+            margin-top: 25px;
+        }
+        
+        .scan-history h2 {
+            font-size: 1.7rem;
+            color: var(--primary);
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .history-item {
+            padding: 18px;
+            background: #f9fbfd;
+            border-radius: 12px;
+            border-left: 4px solid var(--secondary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .history-time {
+            font-weight: 600;
+            color: var(--secondary);
+            min-width: 100px;
+            font-size: 1.05rem;
+        }
+        
+        .history-content strong {
+            color: var(--primary);
+            font-size: 1.15rem;
+        }
+        
+        .history-content span {
+            display: block;
+            color: var(--gray);
+            margin-top: 5px;
+        }
+        
+        @media (max-width: 1024px) {
+            .scanner-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .member-info-box {
+                display: block !important;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -14,44 +228,314 @@
             <div class="logo">
                 <i class="fas fa-qrcode"></i>
                 <h1>ID Card Scanner</h1>
-                <p>Umoomi Security System</p>
+                <p>Scan QR Codes to View Member Details</p>
             </div>
-            <a href="index.html" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+            <a href="index.html" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </a>
         </header>
+
+        <div class="status-bar" id="statusBar">
+            <i class="fas fa-spinner fa-spin"></i> Initializing camera scanner...
+        </div>
 
         <div class="scanner-container">
             <div class="scanner-box">
                 <h2><i class="fas fa-camera"></i> Scan Member ID Card</h2>
                 <div id="reader"></div>
-                <div class="scanner-status">
-                    <p id="statusMessage">Point camera at QR code...</p>
+                <div class="scanner-status" id="scannerStatus">
+                    <i class="fas fa-info-circle"></i> Point your camera at a QR code to scan
                 </div>
             </div>
 
             <div class="member-info-box" id="memberInfoBox">
                 <h2><i class="fas fa-user"></i> Member Details</h2>
-                <div id="memberInfo" class="member-info">
-                    <p>Scan an ID card to view details</p>
-                </div>
+                <div id="memberInfo"></div>
+                
                 <div class="location-update">
-                    <h3><i class="fas fa-map-marker-alt"></i> Update Location</h3>
-                    <input type="text" id="locationInput" placeholder="Enter current location...">
-                    <button class="btn btn-primary" id="updateLocationBtn">Update Location</button>
+                    <h3><i class="fas fa-map-marker-alt"></i> Update Current Location</h3>
+                    <input type="text" id="locationInput" placeholder="Enter current location (e.g., Head Office, Kampala)">
+                    <button class="btn btn-primary btn-block" id="updateLocationBtn">
+                        <i class="fas fa-location-arrow"></i> Update Location
+                    </button>
                 </div>
             </div>
         </div>
 
-        <!-- Scan History -->
         <div class="scan-history">
             <h2><i class="fas fa-history"></i> Recent Scans</h2>
-            <div id="scanHistoryList"></div>
+            <div class="history-list" id="scanHistory">
+                <div class="history-item">
+                    <div class="history-time">-</div>
+                    <div class="history-content">
+                        <strong>No scans yet</strong>
+                        <span>Scan a QR code to see history</span>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- Scripts -->
+    <!-- SUPABASE LIBRARY -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- HTML5 QR CODE SCANNER -->
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
-    <script src="js/config.js"></script>
-    <script src="js/scanner.js"></script>
+    
+    <!-- CONFIG WITH REAL CREDENTIALS -->
+    <script>
+        // SUPABASE CONFIGURATION
+        const SUPABASE_URL = "https://ccsicfimccsiizmpuvsm.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNjc2ljZmltY2NzaWl6bXB1dnNtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA1MzA5MjcsImV4cCI6MjA4NjEwNjkyN30.IRVBVGPFqqB4_n5BSt2hXbvi9UitltDK2cqm479CLho";
+        
+        const { createClient } = window.supabase;
+        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        let html5QrCode = null;
+        let currentMember = null;
+        const scanHistory = [];
+        
+        // Initialize QR Scanner
+        function initScanner() {
+            const statusEl = document.getElementById('statusBar');
+            const scannerStatus = document.getElementById('scannerStatus');
+            
+            try {
+                html5QrCode = new Html5Qrcode("reader");
+                
+                html5QrCode.start(
+                    { facingMode: "environment" },
+                    {
+                        fps: 10,
+                        qrbox: { width: 280, height: 280 }
+                    },
+                    onScanSuccess,
+                    onScanError
+                ).then(() => {
+                    statusEl.innerHTML = '<i class="fas fa-check-circle"></i> Camera scanner ready';
+                    statusEl.className = 'status-bar success';
+                    scannerStatus.innerHTML = '<i class="fas fa-camera"></i> Ready to scan QR codes';
+                    scannerStatus.style.color = '#27ae60';
+                }).catch(err => {
+                    throw err;
+                });
+            } catch (error) {
+                console.error("Scanner init error:", error);
+                statusEl.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Camera error: ${error.message}. Please allow camera permissions.`;
+                statusEl.className = 'status-bar error';
+                scannerStatus.innerHTML = `<i class="fas fa-exclamation-triangle"></i> ${error.message}`;
+                scannerStatus.style.color = '#e74c3c';
+            }
+        }
+        
+        function onScanSuccess(decodedText, decodedResult) {
+            // Stop scanner temporarily
+            if (html5QrCode && html5QrCode.getState() === Html5QrcodeScannerState.SCANNING) {
+                html5QrCode.stop();
+            }
+            
+            // Process the scanned code
+            processScannedCode(decodedText);
+            
+            // Restart scanner after delay
+            setTimeout(() => {
+                if (html5QrCode) {
+                    initScanner();
+                }
+            }, 3000);
+        }
+        
+        function onScanError(errorMessage) {
+            // Ignore errors
+        }
+        
+        async function processScannedCode(code) {
+            const scannerStatus = document.getElementById('scannerStatus');
+            const memberInfoBox = document.getElementById('memberInfoBox');
+            const memberInfo = document.getElementById('memberInfo');
+            
+            // Extract member ID (format: UMOOMI:UM-HO-001)
+            const memberId = code.replace('UMOOMI:', '').trim();
+            
+            scannerStatus.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Looking up ${memberId}...`;
+            scannerStatus.style.color = '#3498db';
+            
+            try {
+                const { data, error } = await supabase
+                    .from('umoomi_members')
+                    .select('*')
+                    .eq('member_id', memberId)
+                    .single();
+                
+                if (error) throw error;
+                
+                if (data) {
+                    currentMember = data;
+                    displayMemberInfo(data);
+                    addToScanHistory(data);
+                    
+                    // Update last scan timestamp
+                    await supabase
+                        .from('umoomi_members')
+                        .update({ 
+                            last_scan: new Date().toISOString(),
+                            current_location: data.current_location || 'Scanned via QR'
+                        })
+                        .eq('member_id', memberId);
+                    
+                    scannerStatus.innerHTML = `<i class="fas fa-check-circle"></i> ✓ ${data.full_name} found!`;
+                    scannerStatus.style.color = '#27ae60';
+                    memberInfoBox.classList.add('active');
+                } else {
+                    throw new Error('Member not found in database');
+                }
+            } catch (error) {
+                console.error('Scan error:', error);
+                scannerStatus.innerHTML = `<i class="fas fa-exclamation-triangle"></i> ${error.message}`;
+                scannerStatus.style.color = '#e74c3c';
+                memberInfoBox.classList.remove('active');
+            }
+        }
+        
+        function displayMemberInfo(member) {
+            const statusColor = member.status === 'Active' ? '#27ae60' : 
+                               member.status === 'Inactive' ? '#95a5a6' : '#e74c3c';
+            
+            const memberInfo = document.getElementById('memberInfo');
+            memberInfo.innerHTML = `
+                <div class="member-card">
+                    <div class="member-name">${member.full_name}</div>
+                    <div class="member-position">${member.position}</div>
+                    <div class="member-department">${member.department} • ${member.region || 'Uganda'}</div>
+                    
+                    <div class="member-meta">
+                        <div class="meta-item">
+                            <strong>🆔 Member ID</strong>
+                            <span>${member.member_id}</span>
+                        </div>
+                        <div class="meta-item">
+                            <strong>📱 Status</strong>
+                            <span style="color:${statusColor};font-weight:600;">${member.status}</span>
+                        </div>
+                        <div class="meta-item">
+                            <strong>📞 Phone</strong>
+                            <span>${member.phone || 'Not provided'}</span>
+                        </div>
+                        <div class="meta-item">
+                            <strong>📧 Email</strong>
+                            <span>${member.email || 'Not provided'}</span>
+                        </div>
+                        <div class="meta-item">
+                            <strong>📍 Current Location</strong>
+                            <span>${member.current_location || 'Not tracked'}</span>
+                        </div>
+                        <div class="meta-item">
+                            <strong>🕐 Last Scan</strong>
+                            <span>${member.last_scan ? new Date(member.last_scan).toLocaleString('en-US', { timeZone: 'Africa/Kampala' }) : 'Never'}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Set current location in input
+            document.getElementById('locationInput').value = member.current_location || '';
+        }
+        
+        function addToScanHistory(member) {
+            const historyItem = {
+                time: new Date().toLocaleTimeString('en-US', { 
+                    hour: '2-digit', 
+                    minute: '2-digit',
+                    timeZone: 'Africa/Kampala'
+                }),
+                name: member.full_name,
+                id: member.member_id
+            };
+            
+            scanHistory.unshift(historyItem);
+            
+            // Keep only last 10 items
+            if (scanHistory.length > 10) {
+                scanHistory.pop();
+            }
+            
+            updateScanHistoryDisplay();
+        }
+        
+        function updateScanHistoryDisplay() {
+            const historyList = document.getElementById('scanHistory');
+            historyList.innerHTML = '';
+            
+            scanHistory.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'history-item';
+                div.innerHTML = `
+                    <div class="history-time">${item.time}</div>
+                    <div class="history-content">
+                        <strong>${item.name}</strong>
+                        <span>${item.id}</span>
+                    </div>
+                `;
+                historyList.appendChild(div);
+            });
+            
+            if (scanHistory.length === 0) {
+                historyList.innerHTML = `
+                    <div class="history-item">
+                        <div class="history-time">-</div>
+                        <div class="history-content">
+                            <strong>No scans yet</strong>
+                            <span>Scan a QR code to see history</span>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+        
+        // Update location
+        document.getElementById('updateLocationBtn').addEventListener('click', async () => {
+            const location = document.getElementById('locationInput').value.trim();
+            if (!location) {
+                alert('Please enter a location');
+                return;
+            }
+            
+            if (!currentMember) {
+                alert('No member selected. Please scan a QR code first.');
+                return;
+            }
+            
+            try {
+                const { error } = await supabase
+                    .from('umoomi_members')
+                    .update({ 
+                        current_location: location,
+                        last_scan: new Date().toISOString()
+                    })
+                    .eq('member_id', currentMember.member_id);
+                
+                if (error) throw error;
+                
+                currentMember.current_location = location;
+                alert(`✅ Location updated successfully for ${currentMember.full_name}`);
+                
+                // Refresh display
+                displayMemberInfo(currentMember);
+                addToScanHistory(currentMember);
+                
+                // Update status
+                document.getElementById('scannerStatus').innerHTML = 
+                    `<i class="fas fa-check-circle"></i> Location updated for ${currentMember.full_name}`;
+                document.getElementById('scannerStatus').style.color = '#27ae60';
+                
+            } catch (error) {
+                alert(`❌ Error updating location: ${error.message}`);
+            }
+        });
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            initScanner();
+        });
+    </script>
 </body>
 </html>

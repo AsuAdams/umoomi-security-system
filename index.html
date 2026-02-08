@@ -5,391 +5,55 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Umoomi Security System - Ahmadiyya Muslim Community Uganda</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        .header {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .logo i {
-            font-size: 2.5rem;
-            color: #2c3e50;
-        }
-
-        .logo h1 {
-            font-size: 1.8rem;
-            color: #2c3e50;
-            margin: 0;
-        }
-
-        .logo p {
-            color: #95a5a6;
-            margin: 0;
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.3s;
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .btn-primary {
-            background: #3498db;
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: #2980b9;
-        }
-
-        .btn-danger {
-            background: #e74c3c;
-            color: white;
-        }
-
-        .btn-danger:hover {
-            background: #c0392b;
-        }
-
-        .main-content {
-            display: grid;
-            grid-template-columns: 250px 1fr;
-            gap: 30px;
-        }
-
-        .sidebar {
-            background: white;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .sidebar nav ul {
-            list-style: none;
-        }
-
-        .sidebar nav ul li {
-            margin-bottom: 5px;
-        }
-
-        .sidebar nav ul li a {
-            display: block;
-            padding: 12px 15px;
-            color: #2c3e50;
-            text-decoration: none;
-            border-radius: 5px;
-            transition: all 0.3s;
-        }
-
-        .sidebar nav ul li a:hover,
-        .sidebar nav ul li a.active {
-            background: #3498db;
-            color: white;
-        }
-
-        .sidebar nav ul li a i {
-            margin-right: 10px;
-            width: 20px;
-            text-align: center;
-        }
-
-        .dashboard {
-            background: white;
-            border-radius: 10px;
-            padding: 30px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .stat-card {
-            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
-            color: white;
-            padding: 25px;
-            border-radius: 10px;
-            text-align: center;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-        }
-
-        .stat-card i {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            display: block;
-        }
-
-        .stat-card h3 {
-            font-size: 1rem;
-            margin-bottom: 10px;
-            opacity: 0.9;
-        }
-
-        .stat-card .number {
-            font-size: 2rem;
-            font-weight: bold;
-        }
-
-        .search-bar {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            max-width: 400px;
-        }
-
-        .search-bar input {
-            flex: 1;
-            padding: 10px 15px;
-            border: 2px solid #ddd;
-            border-radius: 5px;
-            font-size: 1rem;
-        }
-
-        .search-bar input:focus {
-            outline: none;
-            border-color: #3498db;
-        }
-
-        .table-container {
-            overflow-x: auto;
-            margin-top: 20px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        table th {
-            background: #2c3e50;
-            color: white;
-            padding: 15px;
-            text-align: left;
-            font-weight: 600;
-        }
-
-        table td {
-            padding: 12px 15px;
-            border-bottom: 1px solid #eee;
-        }
-
-        table tr:hover {
-            background: #f5f5f5;
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 500;
-        }
-
-        .badge-success {
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .badge-secondary {
-            background: #e2e3e5;
-            color: #383d41;
-        }
-
-        .badge-danger {
-            background: #f8d7da;
-            color: #721c24;
-        }
-
-        .btn-sm {
-            padding: 6px 12px;
-            font-size: 0.85rem;
-            margin: 2px;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-        }
-
-        .modal-content {
-            background: white;
-            margin: 5% auto;
-            padding: 30px;
-            border-radius: 10px;
-            max-width: 800px;
-            max-height: 80vh;
-            overflow-y: auto;
-            position: relative;
-        }
-
-        .close {
-            position: absolute;
-            right: 20px;
-            top: 20px;
-            font-size: 2rem;
-            cursor: pointer;
-            color: #95a5a6;
-        }
-
-        .close:hover {
-            color: #e74c3c;
-        }
-
-        .status-badge {
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            padding: 10px 15px;
-            background: white;
-            border-radius: 5px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-            z-index: 1000;
-            font-size: 0.9rem;
-            font-weight: 500;
-        }
-
-        .status-success {
-            color: #27ae60;
-        }
-
-        .status-error {
-            color: #e74c3c;
-        }
-
-        .status-warning {
-            color: #f39c12;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 40px;
-        }
-
-        .loading i {
-            font-size: 2rem;
-            color: #3498db;
-            margin-right: 10px;
-        }
-
-        @media (max-width: 768px) {
-            .main-content {
-                grid-template-columns: 1fr;
-            }
-            
-            .sidebar {
-                display: none;
-            }
-            
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
     <div class="container">
-        <!-- Header -->
         <header class="header">
             <div class="logo">
                 <i class="fas fa-shield-alt"></i>
                 <h1>Umoomi Security System</h1>
                 <p>Ahmadiyya Muslim Community Uganda</p>
             </div>
-            <div class="user-info" id="userInfo">
-                <span id="userName">Guest</span>
-                <button id="loginBtn" class="btn btn-primary">Login</button>
-                <button id="logoutBtn" class="btn btn-danger" style="display:none;">Logout</button>
+            <div class="user-info">
+                <span id="userName">Loading...</span>
+                <button id="loginBtn" class="btn btn-primary">🔐 Login</button>
+                <button id="logoutBtn" class="btn btn-danger" style="display:none;">🚪 Logout</button>
             </div>
         </header>
 
-        <!-- Status Badge -->
-        <div class="status-badge" id="statusBadge">
-            <i class="fas fa-spinner fa-spin"></i> Loading members...
+        <div class="status-bar" id="statusBar">
+            <i class="fas fa-spinner fa-spin"></i> Initializing system...
         </div>
 
-        <!-- Main Content -->
         <div class="main-content">
-            <!-- Sidebar -->
             <aside class="sidebar">
                 <nav>
                     <ul>
                         <li><a href="index.html" class="active"><i class="fas fa-home"></i> Dashboard</a></li>
                         <li><a href="scanner.html"><i class="fas fa-qrcode"></i> Scan ID Card</a></li>
                         <li><a href="admin.html"><i class="fas fa-user-cog"></i> Admin Panel</a></li>
-                        <li><a href="#"><i class="fas fa-id-card"></i> Generate Cards</a></li>
                         <li><a href="#"><i class="fas fa-history"></i> Activity Logs</a></li>
-                        <li><a href="#"><i class="fas fa-cog"></i> Settings</a></li>
                     </ul>
                 </nav>
             </aside>
 
-            <!-- Dashboard Content -->
             <main class="dashboard">
                 <div class="stats-grid">
                     <div class="stat-card">
                         <i class="fas fa-users"></i>
                         <h3>Total Members</h3>
-                        <p class="number" id="totalMembers">0</p>
+                        <p class="number" id="totalMembers">-</p>
                     </div>
                     <div class="stat-card">
                         <i class="fas fa-user-check"></i>
                         <h3>Active Members</h3>
-                        <p class="number" id="activeMembers">0</p>
+                        <p class="number" id="activeMembers">-</p>
                     </div>
                     <div class="stat-card">
                         <i class="fas fa-map-marker-alt"></i>
                         <h3>Regions</h3>
-                        <p class="number" id="totalRegions">0</p>
+                        <p class="number" id="totalRegions">-</p>
                     </div>
                     <div class="stat-card">
                         <i class="fas fa-clock"></i>
@@ -399,17 +63,17 @@
                 </div>
 
                 <div class="content-section">
-                    <h2><i class="fas fa-users"></i> All Members</h2>
+                    <h2><i class="fas fa-users"></i> All Members (25)</h2>
                     <div class="search-bar">
-                        <input type="text" id="searchInput" placeholder="Search members...">
+                        <input type="text" id="searchInput" placeholder="Search members by name, ID, or region...">
                         <button class="btn btn-primary"><i class="fas fa-search"></i></button>
                     </div>
                     <div class="table-container">
-                        <table id="membersTable">
+                        <table>
                             <thead>
                                 <tr>
-                                    <th>ID</th>
-                                    <th>Name</th>
+                                    <th>Member ID</th>
+                                    <th>Full Name</th>
                                     <th>Position</th>
                                     <th>Department</th>
                                     <th>Region</th>
@@ -420,8 +84,7 @@
                             <tbody id="membersTableBody">
                                 <tr>
                                     <td colspan="7" class="loading">
-                                        <i class="fas fa-spinner fa-spin"></i>
-                                        <span>Loading members from database...</span>
+                                        <i class="fas fa-spinner fa-spin"></i> Loading members from database...
                                     </td>
                                 </tr>
                             </tbody>
@@ -431,7 +94,6 @@
             </main>
         </div>
 
-        <!-- Member Details Modal -->
         <div id="memberModal" class="modal">
             <div class="modal-content">
                 <span class="close">&times;</span>
@@ -443,31 +105,112 @@
     <!-- SUPABASE LIBRARY -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
-    <!-- APP SCRIPT -->
+    <!-- CONFIG WITH REAL CREDENTIALS -->
     <script>
-        // ========================================
-        // SUPABASE INITIALIZATION
-        // ========================================
+        // SUPABASE CONFIGURATION - REAL CREDENTIALS
         const SUPABASE_URL = "https://ccsicfimccsiizmpuvsm.supabase.co";
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNjc2ljZmltY2NzaWl6bXB1dnNtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA1MzA5MjcsImV4cCI6MjA4NjEwNjkyN30.IRVBVGPFqqB4_n5BSt2hXbvi9UitltDK2cqm479CLho";
         
+        // Initialize Supabase
         const { createClient } = window.supabase;
         const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         
-        console.log('✅ Supabase initialized');
+        console.log("✅ Supabase initialized with real credentials");
+        console.log("Project URL:", SUPABASE_URL);
+    </script>
+    
+    <!-- AUTH SCRIPT -->
+    <script>
+        let currentUser = null;
         
-        // ========================================
-        // GLOBAL VARIABLES
-        // ========================================
+        // Check auth state
+        async function checkAuth() {
+            try {
+                const {  { user } } = await supabase.auth.getUser();
+                const statusEl = document.getElementById('statusBar');
+                
+                if (user) {
+                    currentUser = user;
+                    document.getElementById('userName').textContent = user.email;
+                    document.getElementById('loginBtn').style.display = 'none';
+                    document.getElementById('logoutBtn').style.display = 'block';
+                    
+                    statusEl.innerHTML = `<i class="fas fa-check-circle"></i> Logged in as ${user.email}`;
+                    statusEl.className = 'status-bar success';
+                } else {
+                    document.getElementById('userName').textContent = 'Guest';
+                    document.getElementById('loginBtn').style.display = 'block';
+                    document.getElementById('logoutBtn').style.display = 'none';
+                    
+                    statusEl.innerHTML = `<i class="fas fa-info-circle"></i> Public access mode (login for full features)`;
+                    statusEl.className = 'status-bar info';
+                }
+            } catch (error) {
+                console.error("Auth check error:", error);
+                document.getElementById('statusBar').innerHTML = 
+                    `<i class="fas fa-exclamation-triangle"></i> Auth error: ${error.message}`;
+                document.getElementById('statusBar').className = 'status-bar error';
+            }
+        }
+        
+        // Login function
+        async function login() {
+            const email = prompt("Enter your email:", "admin@umoomi.ug");
+            const password = prompt("Enter your password:", "Umoomi2024");
+            
+            if (!email || !password) return;
+            
+            try {
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email,
+                    password
+                });
+                
+                if (error) throw error;
+                
+                alert("✅ Login successful!");
+                location.reload();
+            } catch (error) {
+                alert(`❌ Login failed: ${error.message}\n\nDefault test credentials:\nEmail: admin@umoomi.ug\nPassword: Umoomi2024`);
+                console.error("Login error:", error);
+            }
+        }
+        
+        // Logout function
+        async function logout() {
+            try {
+                await supabase.auth.signOut();
+                alert("✅ Logged out successfully");
+                location.reload();
+            } catch (error) {
+                alert(`Logout error: ${error.message}`);
+            }
+        }
+        
+        // Setup event listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('loginBtn').addEventListener('click', login);
+            document.getElementById('logoutBtn').addEventListener('click', logout);
+            
+            // Initialize
+            checkAuth();
+            loadMembers();
+        });
+    </script>
+    
+    <!-- MEMBERS SCRIPT -->
+    <script>
         let allMembers = [];
         
-        // ========================================
-        // LOAD MEMBERS FROM SUPABASE
-        // ========================================
         async function loadMembers() {
+            const tbody = document.getElementById('membersTableBody');
+            const statusEl = document.getElementById('statusBar');
+            
             try {
-                console.log('📥 Loading members from Supabase...');
+                statusEl.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Loading members...`;
+                statusEl.className = 'status-bar';
                 
+                console.log("📥 Fetching members from Supabase...");
                 const { data, error } = await supabase
                     .from('umoomi_members')
                     .select('*')
@@ -475,38 +218,32 @@
                 
                 if (error) throw error;
                 
-                console.log('✅ Loaded', data.length, 'members');
+                console.log(`✅ Loaded ${data.length} members`);
                 allMembers = data;
                 displayMembers(data);
                 updateStats(data);
                 
-                // Update status badge
-                document.getElementById('statusBadge').innerHTML = 
-                    `<i class="fas fa-check-circle status-success"></i> ${data.length} members loaded`;
+                statusEl.innerHTML = `<i class="fas fa-check-circle"></i> ${data.length} members loaded successfully`;
+                statusEl.className = 'status-bar success';
                 
             } catch (error) {
-                console.error('❌ Error loading members:', error);
-                
-                // Update status badge with error
-                document.getElementById('statusBadge').innerHTML = 
-                    `<i class="fas fa-exclamation-circle status-error"></i> Error: ${error.message}`;
-                
-                // Show error in table
-                document.getElementById('membersTableBody').innerHTML = `
+                console.error("❌ Error loading members:", error);
+                tbody.innerHTML = `
                     <tr>
-                        <td colspan="7" style="text-align:center;padding:30px;color:#e74c3c;">
-                            <i class="fas fa-exclamation-triangle" style="font-size:2rem;margin-right:10px;"></i>
-                            <strong>Error loading members:</strong><br>
-                            ${error.message}
+                        <td colspan="7" class="error">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <strong>Error loading members:</strong> ${error.message}<br><br>
+                            <button class="btn btn-primary" onclick="location.reload()">
+                                <i class="fas fa-redo"></i> Retry
+                            </button>
                         </td>
                     </tr>
                 `;
+                statusEl.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Error: ${error.message}`;
+                statusEl.className = 'status-bar error';
             }
         }
         
-        // ========================================
-        // DISPLAY MEMBERS IN TABLE
-        // ========================================
         function displayMembers(members) {
             const tbody = document.getElementById('membersTableBody');
             tbody.innerHTML = '';
@@ -514,9 +251,12 @@
             if (members.length === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="7" style="text-align:center;padding:30px;">
-                            <i class="fas fa-inbox" style="font-size:2rem;color:#95a5a6;margin-right:10px;"></i>
-                            No members found
+                        <td colspan="7" class="empty">
+                            <i class="fas fa-inbox"></i>
+                            <p>No members found in database</p>
+                            <button class="btn btn-primary" onclick="window.location.href='admin.html'">
+                                <i class="fas fa-plus"></i> Add First Member
+                            </button>
                         </td>
                     </tr>
                 `;
@@ -525,14 +265,9 @@
             
             members.forEach(member => {
                 // Status badge
-                let statusBadge = '';
-                if (member.status === 'Active') {
-                    statusBadge = '<span class="badge badge-success">✓ Active</span>';
-                } else if (member.status === 'Inactive') {
-                    statusBadge = '<span class="badge badge-secondary">○ Inactive</span>';
-                } else {
-                    statusBadge = '<span class="badge badge-danger">✗ Suspended</span>';
-                }
+                let statusClass = 'badge-success';
+                if (member.status === 'Inactive') statusClass = 'badge-secondary';
+                if (member.status === 'Suspended') statusClass = 'badge-danger';
                 
                 const row = document.createElement('tr');
                 row.innerHTML = `
@@ -540,235 +275,143 @@
                     <td>${member.full_name}</td>
                     <td>${member.position}</td>
                     <td>${member.department}</td>
-                    <td>${member.region || '-'}</td>
-                    <td>${statusBadge}</td>
+                    <td>${member.region || 'Uganda'}</td>
+                    <td><span class="badge ${statusClass}">${member.status}</span></td>
                     <td>
-                        <button class="btn btn-sm btn-primary view-btn" data-id="${member.member_id}">
+                        <button class="btn btn-sm btn-info view-btn" data-id="${member.member_id}">
                             <i class="fas fa-eye"></i> View
                         </button>
                     </td>
                 `;
-                
                 tbody.appendChild(row);
             });
             
-            // Add event listeners to view buttons
+            // Add event listeners
             document.querySelectorAll('.view-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     const memberId = e.currentTarget.dataset.id;
-                    viewMemberDetails(memberId);
+                    showMemberDetails(memberId);
                 });
             });
         }
         
-        // ========================================
-        // VIEW MEMBER DETAILS
-        // ========================================
-        async function viewMemberDetails(memberId) {
-            try {
-                const member = allMembers.find(m => m.member_id === memberId);
-                
-                if (!member) {
-                    alert('Member not found');
-                    return;
-                }
-                
-                const modal = document.getElementById('memberModal');
-                const details = document.getElementById('memberDetails');
-                
-                // Status color
-                let statusColor = '#27ae60';
-                if (member.status === 'Inactive') statusColor = '#95a5a6';
-                if (member.status === 'Suspended') statusColor = '#e74c3c';
-                
-                details.innerHTML = `
-                    <div style="text-align:center;margin-bottom:20px;">
-                        <h2 style="margin-top:15px;color:${statusColor};">${member.full_name}</h2>
-                        <p style="color:#666;margin:5px 0;font-size:1.1rem;">
-                            <strong>${member.position}</strong> - ${member.department}
-                        </p>
-                        <p style="background:${statusColor};color:white;display:inline-block;padding:8px 20px;border-radius:20px;font-weight:500;margin-top:10px;">
-                            ${member.status}
-                        </p>
+        function showMemberDetails(memberId) {
+            const member = allMembers.find(m => m.member_id === memberId);
+            if (!member) return;
+            
+            const modal = document.getElementById('memberModal');
+            const details = document.getElementById('memberDetails');
+            
+            // Status color
+            let statusColor = '#27ae60';
+            if (member.status === 'Inactive') statusColor = '#95a5a6';
+            if (member.status === 'Suspended') statusColor = '#e74c3c';
+            
+            details.innerHTML = `
+                <div class="member-detail-header">
+                    <h2>${member.full_name}</h2>
+                    <p>${member.position} - ${member.department}</p>
+                    <span class="status-badge" style="background:${statusColor}">${member.status}</span>
+                </div>
+                <div class="member-detail-grid">
+                    <div class="detail-item">
+                        <strong>🆔 Member ID:</strong>
+                        <span>${member.member_id}</span>
                     </div>
-                    
-                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;">
-                        <div style="padding:10px;background:#f8f9fa;border-radius:5px;">
-                            <strong>🆔 Member ID:</strong><br>
-                            <span>${member.member_id}</span>
-                        </div>
-                        <div style="padding:10px;background:#f8f9fa;border-radius:5px;">
-                            <strong>🏢 Department:</strong><br>
-                            <span>${member.department}</span>
-                        </div>
-                        <div style="padding:10px;background:#f8f9fa;border-radius:5px;">
-                            <strong>📍 Region:</strong><br>
-                            <span>${member.region || 'Uganda (Head Office)'}</span>
-                        </div>
-                        <div style="padding:10px;background:#f8f9fa;border-radius:5px;">
-                            <strong>📅 Date Joined:</strong><br>
-                            <span>${member.date_joined || 'Not specified'}</span>
-                        </div>
-                        <div style="padding:10px;background:#f8f9fa;border-radius:5px;">
-                            <strong>📞 Phone:</strong><br>
-                            <span>${member.phone || 'Not provided'}</span>
-                        </div>
-                        <div style="padding:10px;background:#f8f9fa;border-radius:5px;">
-                            <strong>📧 Email:</strong><br>
-                            <span>${member.email || 'Not provided'}</span>
-                        </div>
-                        <div style="padding:10px;background:#f8f9fa;border-radius:5px;">
-                            <strong>🏠 Address:</strong><br>
-                            <span>${member.address || 'Not provided'}</span>
-                        </div>
-                        <div style="padding:10px;background:#f8f9fa;border-radius:5px;">
-                            <strong>🗺️ Current Location:</strong><br>
-                            <span>${member.current_location || 'Not tracked'}</span>
-                        </div>
-                        <div style="padding:10px;background:#f8f9fa;border-radius:5px;grid-column:span 2;">
-                            <strong>🕐 Last Scan:</strong><br>
-                            <span>${member.last_scan ? new Date(member.last_scan).toLocaleString('en-US', { timeZone: 'Africa/Kampala' }) : 'Never'}</span>
-                        </div>
+                    <div class="detail-item">
+                        <strong>📍 Region:</strong>
+                        <span>${member.region || 'Uganda (Head Office)'}</span>
                     </div>
-                `;
-                
-                modal.style.display = 'block';
-                
-                // Close modal
-                document.querySelector('.close').onclick = () => {
-                    modal.style.display = 'none';
-                };
-                
-                window.onclick = (e) => {
-                    if (e.target === modal) {
-                        modal.style.display = 'none';
-                    }
-                };
-                
-            } catch (error) {
-                console.error('Error loading member details:', error);
-                alert('Error loading member details: ' + error.message);
-            }
+                    <div class="detail-item">
+                        <strong>📞 Phone:</strong>
+                        <span>${member.phone || 'Not provided'}</span>
+                    </div>
+                    <div class="detail-item">
+                        <strong>📧 Email:</strong>
+                        <span>${member.email || 'Not provided'}</span>
+                    </div>
+                    <div class="detail-item">
+                        <strong>🏠 Address:</strong>
+                        <span>${member.address || 'Not provided'}</span>
+                    </div>
+                    <div class="detail-item">
+                        <strong>📅 Date Joined:</strong>
+                        <span>${member.date_joined || 'Not specified'}</span>
+                    </div>
+                    <div class="detail-item">
+                        <strong>🗺️ Current Location:</strong>
+                        <span>${member.current_location || 'Not tracked'}</span>
+                    </div>
+                    <div class="detail-item">
+                        <strong>🕐 Last Scan:</strong>
+                        <span>${member.last_scan ? new Date(member.last_scan).toLocaleString('en-US', { timeZone: 'Africa/Kampala' }) : 'Never'}</span>
+                    </div>
+                    ${member.qr_code_url ? `
+                    <div class="detail-item qr-section" style="grid-column: span 2; text-align: center;">
+                        <strong>📱 Scan QR Code:</strong><br>
+                        <img src="${member.qr_code_url}" alt="QR Code" style="width:150px;height:150px;margin-top:10px;">
+                        <p style="margin-top:5px;font-size:0.9em;color:#666;">ID: ${member.member_id}</p>
+                    </div>
+                    ` : ''}
+                </div>
+                <div class="modal-actions">
+                    <button class="btn btn-primary" onclick="window.location.href='scanner.html?id=${member.member_id}'">
+                        <i class="fas fa-qrcode"></i> Scan This Member
+                    </button>
+                    <button class="btn btn-secondary close-modal">Close</button>
+                </div>
+            `;
+            
+            modal.style.display = 'block';
+            
+            // Close modal
+            document.querySelector('.close').onclick = () => { modal.style.display = 'none'; };
+            document.querySelector('.close-modal').onclick = () => { modal.style.display = 'none'; };
+            window.onclick = (e) => { if (e.target === modal) modal.style.display = 'none'; };
         }
         
-        // ========================================
-        // UPDATE STATS
-        // ========================================
         function updateStats(members) {
-            const totalEl = document.getElementById('totalMembers');
-            const activeEl = document.getElementById('activeMembers');
-            const regionsEl = document.getElementById('totalRegions');
-            const lastScanEl = document.getElementById('lastScan');
+            document.getElementById('totalMembers').textContent = members.length;
             
-            if (totalEl) totalEl.textContent = members.length;
+            const activeCount = members.filter(m => m.status === 'Active').length;
+            document.getElementById('activeMembers').textContent = activeCount;
             
-            if (activeEl) {
-                const activeCount = members.filter(m => m.status === 'Active').length;
-                activeEl.textContent = activeCount;
-            }
+            const regions = new Set(members.filter(m => m.region).map(m => m.region));
+            document.getElementById('totalRegions').textContent = regions.size || '0';
             
-            if (regionsEl) {
-                const regions = new Set(members.filter(m => m.region).map(m => m.region));
-                regionsEl.textContent = regions.size > 0 ? regions.size : '0';
-            }
+            const latestScan = members
+                .filter(m => m.last_scan)
+                .sort((a, b) => new Date(b.last_scan) - new Date(a.last_scan))[0];
             
-            if (lastScanEl) {
-                const latestScan = members
-                    .filter(m => m.last_scan)
-                    .sort((a, b) => new Date(b.last_scan) - new Date(a.last_scan))[0];
-                
-                if (latestScan && latestScan.last_scan) {
-                    lastScanEl.textContent = new Date(latestScan.last_scan).toLocaleTimeString('en-US', { 
+            if (latestScan && latestScan.last_scan) {
+                document.getElementById('lastScan').textContent = 
+                    new Date(latestScan.last_scan).toLocaleTimeString('en-US', { 
                         hour: '2-digit', 
-                        minute: '2-digit',
-                        timeZone: 'Africa/Kampala'
+                        minute: '2-digit'
                     });
-                } else {
-                    lastScanEl.textContent = 'Never';
-                }
+            } else {
+                document.getElementById('lastScan').textContent = 'Never';
             }
         }
         
-        // ========================================
-        // SEARCH FUNCTIONALITY
-        // ========================================
+        // Search functionality
         document.getElementById('searchInput').addEventListener('input', (e) => {
             const searchTerm = e.target.value.toLowerCase().trim();
             
-            if (searchTerm.length === 0) {
+            if (searchTerm.length < 2) {
                 displayMembers(allMembers);
                 return;
             }
-            
-            if (searchTerm.length < 2) return;
             
             const filtered = allMembers.filter(member => 
                 member.full_name.toLowerCase().includes(searchTerm) ||
                 member.member_id.toLowerCase().includes(searchTerm) ||
                 member.position.toLowerCase().includes(searchTerm) ||
-                (member.region && member.region.toLowerCase().includes(searchTerm))
+                (member.region && member.region.toLowerCase().includes(searchTerm)) ||
+                member.department.toLowerCase().includes(searchTerm)
             );
             
             displayMembers(filtered);
-        });
-        
-        // ========================================
-        // LOGIN FUNCTIONALITY
-        // ========================================
-        document.getElementById('loginBtn').addEventListener('click', () => {
-            const email = prompt('Enter your email:');
-            const password = prompt('Enter your password:');
-            
-            if (email && password) {
-                supabase.auth.signInWithPassword({
-                    email: email,
-                    password: password
-                })
-                .then(({ data, error }) => {
-                    if (error) {
-                        alert('Login failed: ' + error.message);
-                    } else {
-                        alert('Login successful!');
-                        location.reload();
-                    }
-                });
-            }
-        });
-        
-        // ========================================
-        // LOGOUT FUNCTIONALITY
-        // ========================================
-        document.getElementById('logoutBtn').addEventListener('click', () => {
-            supabase.auth.signOut().then(() => {
-                alert('Logged out successfully');
-                location.reload();
-            });
-        });
-        
-        // ========================================
-        // CHECK AUTH ON PAGE LOAD
-        // ========================================
-        async function checkAuth() {
-            const { data: { user } } = await supabase.auth.getUser();
-            
-            if (user) {
-                document.getElementById('loginBtn').style.display = 'none';
-                document.getElementById('logoutBtn').style.display = 'block';
-                document.getElementById('userName').textContent = user.email;
-            } else {
-                document.getElementById('loginBtn').style.display = 'block';
-                document.getElementById('logoutBtn').style.display = 'none';
-                document.getElementById('userName').textContent = 'Guest';
-            }
-        }
-        
-        // ========================================
-        // INITIALIZE APP
-        // ========================================
-        document.addEventListener('DOMContentLoaded', async () => {
-            console.log('🚀 Umoomi Security System starting...');
-            await checkAuth();
-            await loadMembers();
         });
     </script>
 </body>
