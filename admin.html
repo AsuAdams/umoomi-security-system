@@ -4,9 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel - Umoomi Security</title>
+
+    <!-- Styles -->
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/admin.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    >
 </head>
 <body>
     <div class="container">
@@ -16,37 +21,70 @@
                 <h1>Admin Panel</h1>
                 <p>Umoomi Security System Management</p>
             </div>
-            <a href="index.html" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+            <a href="index.html" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </a>
         </header>
 
         <div class="admin-container">
+            <!-- Sidebar -->
             <div class="admin-sidebar">
                 <nav>
                     <ul>
-                        <li><a href="#add-member" class="active"><i class="fas fa-user-plus"></i> Add Member</a></li>
-                        <li><a href="#edit-member"><i class="fas fa-edit"></i> Edit Member</a></li>
-                        <li><a href="#manage-users"><i class="fas fa-users-cog"></i> Manage Users</a></li>
-                        <li><a href="#generate-cards"><i class="fas fa-id-card"></i> Generate Cards</a></li>
-                        <li><a href="#activity-logs"><i class="fas fa-history"></i> Activity Logs</a></li>
-                        <li><a href="#settings"><i class="fas fa-cog"></i> Settings</a></li>
+                        <li>
+                            <a href="#add-member" class="active">
+                                <i class="fas fa-user-plus"></i> Add Member
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#edit-member">
+                                <i class="fas fa-edit"></i> Edit Member
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#manage-users">
+                                <i class="fas fa-users-cog"></i> Manage Users
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#generate-cards">
+                                <i class="fas fa-id-card"></i> Generate Cards
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#activity-logs">
+                                <i class="fas fa-history"></i> Activity Logs
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#settings">
+                                <i class="fas fa-cog"></i> Settings
+                            </a>
+                        </li>
                     </ul>
                 </nav>
             </div>
 
+            <!-- Main Content -->
             <div class="admin-content">
-                <!-- Add Member Form -->
+                <!-- Add Member -->
                 <div id="add-member" class="admin-section active">
-                    <h2><i class="fas fa-user-plus"></i> Add New Member</h2>
+                    <h2>
+                        <i class="fas fa-user-plus"></i> Add New Member
+                    </h2>
+
                     <form id="addMemberForm">
                         <div class="form-grid">
                             <div class="form-group">
                                 <label>Member ID *</label>
                                 <input type="text" id="memberId" required>
                             </div>
+
                             <div class="form-group">
                                 <label>Full Name *</label>
                                 <input type="text" id="fullName" required>
                             </div>
+
                             <div class="form-group">
                                 <label>Position *</label>
                                 <select id="position" required>
@@ -58,6 +96,7 @@
                                     <option value="Regional Qaid">Regional Qaid</option>
                                 </select>
                             </div>
+
                             <div class="form-group">
                                 <label>Department *</label>
                                 <select id="department" required>
@@ -67,22 +106,27 @@
                                     <option value="Regional">Regional</option>
                                 </select>
                             </div>
+
                             <div class="form-group">
                                 <label>Region</label>
                                 <input type="text" id="region">
                             </div>
+
                             <div class="form-group">
                                 <label>Phone</label>
                                 <input type="tel" id="phone">
                             </div>
+
                             <div class="form-group">
                                 <label>Email</label>
                                 <input type="email" id="email">
                             </div>
+
                             <div class="form-group">
                                 <label>Address</label>
                                 <textarea id="address" rows="2"></textarea>
                             </div>
+
                             <div class="form-group">
                                 <label>Status</label>
                                 <select id="status">
@@ -92,20 +136,27 @@
                                 </select>
                             </div>
                         </div>
+
                         <button type="submit" class="btn btn-primary btn-large">
                             <i class="fas fa-save"></i> Add Member
                         </button>
                     </form>
                 </div>
-
-                <!-- Other admin sections will be added here -->
             </div>
         </div>
     </div>
 
-    <!-- Scripts -->
+    <!-- ========================= -->
+    <!-- Scripts (ORDER MATTERS) -->
+    <!-- ========================= -->
+
+    <!-- Supabase core (v2) -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/config.js"></script>
+
+    <!-- Supabase client -->
+    <script src="js/supabase.js"></script>
+
+    <!-- Admin logic -->
     <script src="js/admin.js"></script>
 </body>
 </html>
