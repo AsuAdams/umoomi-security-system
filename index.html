@@ -112,76 +112,73 @@
     </div>
 
     <!-- ========================================
-         SUPABASE INITIALIZATION - BROWSER VERSION
+         SUPABASE INITIALIZATION - CORRECT SEQUENCE
          ======================================== -->
     
     <!-- 1. LOAD SUPABASE LIBRARY -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
-    <!-- 2. INITIALIZE SUPABASE CLIENT (CRITICAL FIX) -->
+    <!-- 2. WAIT FOR LIBRARY TO LOAD COMPLETELY -->
     <script>
-        // Supabase credentials
-        const SUPABASE_URL = "https://ccsicfimccsiizmpuvsm.supabase.co";
-        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNjc2ljZmltY2NzaWl6bXB1dnNtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA1MzA5MjcsImV4cCI6MjA4NjEwNjkyN30.IRVBVGPFqqB4_n5BSt2hXbvi9UitltDK2cqm479CLho";
+        // Wait for the Supabase library to fully load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if Supabase is loaded
+            if (typeof window.supabase !== 'undefined') {
+                console.log('✅ Supabase library loaded');
+                
+                // Initialize our client
+                const SUPABASE_URL = "https://ccsicfimccsiizmpuvsm.supabase.co";
+                const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNjc2ljZmltY2NzaWl6bXB1dnNtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA1MzA5MjcsImV4cCI6MjA4NjEwNjkyN30.IRVBVGPFqqB4_n5BSt2hXbvi9UitltDK2cqm479CLho";
+                
+                // ✅ CORRECT INITIALIZATION
+                const { createClient } = window.supabase;
+                const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                
+                console.log('✅ Supabase client initialized');
+                
+                // Make supabase available globally for other scripts
+                window.supabase = supabase;
+                
+                // Start the connection test
+                startConnectionTest();
+            } else {
+                console.error('❌ Supabase library not loaded');
+                document.getElementById('statusBadge').innerHTML = 
+                    '<span style="color:red;">❌ Supabase library failed to load</span>';
+            }
+        });
         
-        // ✅ CORRECT INITIALIZATION FOR BROWSER
-        const { createClient } = window.supabase;
-        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        
-        console.log('✅ Supabase client initialized successfully');
-        console.log('Project URL:', SUPABASE_URL);
+        // Connection test function
+        function startConnectionTest() {
+            const statusBadge = document.getElementById('statusBadge');
+            statusBadge.innerHTML = '<span style="color:orange;">⏳ Testing connection...</span>';
+            
+            // Test the connection
+            window.supabase.from('umoomi_members')
+                .select('member_id, full_name')
+                .limit(1)
+                .then(({ data, error }) => {
+                    if (error) {
+                        if (error.message.includes('relation') || error.message.includes('does not exist')) {
+                            console.log('ℹ️ Table not found (will be created when adding first member)');
+                            statusBadge.innerHTML = '<span style="color:blue;">ℹ️ Ready (create members table)</span>';
+                        } else if (error.message.includes('JWT')) {
+                            console.log('✅ Supabase connected (authentication required)');
+                            statusBadge.innerHTML = '<span style="color:green;">✅ Connected (login to view data)</span>';
+                        } else {
+                            console.error('❌ Connection error:', error);
+                            statusBadge.innerHTML = `<span style="color:red;">❌ Error: ${error.message}</span>`;
+                        }
+                    } else {
+                        console.log('✅ Supabase connected and data fetched:', data);
+                        statusBadge.innerHTML = `<span style="color:green;">✅ Operational (${data.length} members loaded)</span>`;
+                    }
+                });
+        }
     </script>
     
     <!-- 3. LOAD APP SCRIPTS -->
     <script src="js/auth.js"></script>
     <script src="js/members.js"></script>
-
-    <!-- 4. CONNECTION TEST (Temporary - Remove after success) -->
-    <script>
-    // 🔍 CONNECTION TEST
-    document.addEventListener('DOMContentLoaded', async () => {
-      const statusBadge = document.getElementById('statusBadge');
-      
-      try {
-        // Test 1: Check if Supabase object exists
-        if (typeof supabase === 'undefined') {
-          throw new Error('Supabase client not initialized');
-        }
-        
-        console.log('✅ Supabase client loaded');
-        statusBadge.innerHTML = '<span style="color:orange;">⏳ Testing connection...</span>';
-        
-        // Test 2: Try to fetch public data
-        const { data, error } = await supabase
-          .from('umoomi_members')
-          .select('member_id, full_name, status')
-          .limit(3);
-        
-        if (error) {
-          if (error.message.includes('relation') || error.message.includes('does not exist')) {
-            // Table doesn't exist yet - that's OK for first setup
-            console.log('ℹ️ Table not found (will be created when adding first member)');
-            statusBadge.innerHTML = '<span style="color:blue;">ℹ️ Ready (create members table)</span>';
-          } else if (error.message.includes('JWT') || error.message.includes('authentication')) {
-            // Auth required - that's expected
-            console.log('✅ Supabase connected (authentication required)');
-            statusBadge.innerHTML = '<span style="color:green;">✅ Connected (login to view data)</span>';
-          } else {
-            // Other error
-            throw error;
-          }
-        } else {
-          // Success - data fetched
-          console.log('✅ Supabase connected and data fetched:', data);
-          statusBadge.innerHTML = `<span style="color:green;">✅ Operational (${data.length} members loaded)</span>`;
-        }
-        
-      } catch (e) {
-        console.error('❌ Supabase connection failed:', e);
-        statusBadge.innerHTML = `<span style="color:red;">❌ Error: ${e.message}</span>`;
-        alert('Supabase connection error:\n' + e.message + '\n\nCheck browser console (F12) for details.');
-      }
-    });
-    </script>
 </body>
 </html>
