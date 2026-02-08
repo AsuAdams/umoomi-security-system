@@ -2,122 +2,99 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Umoomi Security System</title>
+  <title>Umoomi Members</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
   <style>
-    body { font-family: Arial, sans-serif; background:#f4f6f9; padding:20px }
-    .status-bar { padding:12px; border-radius:8px; margin-bottom:15px }
-    .success { background:#d4edda; color:#155724 }
-    .error { background:#f8d7da; color:#721c24 }
-    .info { background:#d1ecf1; color:#0c5460 }
-    table { width:100%; border-collapse:collapse }
-    th, td { padding:10px; border-bottom:1px solid #ddd }
-    th { background:#2c3e50; color:#fff }
-    .btn { padding:8px 14px; border:none; cursor:pointer }
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f9;
+      padding: 20px;
+    }
+    h1 {
+      margin-bottom: 10px;
+    }
+    .status {
+      padding: 10px;
+      border-radius: 6px;
+      margin-bottom: 15px;
+      font-weight: bold;
+    }
+    .loading {
+      background: #d1ecf1;
+      color: #0c5460;
+    }
+    .success {
+      background: #d4edda;
+      color: #155724;
+    }
+    .error {
+      background: #f8d7da;
+      color: #721c24;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+    }
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+      text-align: left;
+    }
+    th {
+      background: #2c3e50;
+      color: #fff;
+    }
   </style>
 </head>
 
 <body>
 
-<h2>🛡️ Umoomi Security Dashboard</h2>
+<h1>🛡️ Umoomi Members</h1>
 
-<div id="statusBar" class="status-bar info">Initializing...</div>
-
-<button id="loginBtn" class="btn">Login</button>
-<button id="logoutBtn" class="btn" style="display:none">Logout</button>
+<div id="status" class="status loading">Loading members...</div>
 
 <table>
   <thead>
     <tr>
       <th>Member ID</th>
-      <th>Name</th>
+      <th>Full Name</th>
       <th>Position</th>
       <th>Status</th>
     </tr>
   </thead>
-  <tbody id="membersTable">
-    <tr><td colspan="4">Loading...</td></tr>
+  <tbody id="tableBody">
+    <tr>
+      <td colspan="4">Loading...</td>
+    </tr>
   </tbody>
 </table>
 
-<!-- SUPABASE -->
+<!-- SUPABASE CDN -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
-/* =========================
+/* ===========================
    SUPABASE CONFIG
-   (ADD YOUR OWN KEYS)
-========================= */
+=========================== */
 const SUPABASE_URL = "https://pqrsljahrnjgkadflbmr.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBxcnNsamFocm5qZ2thZGZsYm1yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA1NTg0NTYsImV4cCI6MjA4NjEzNDQ1Nn0.egED0C2iRp6j3Xp4ldgrdI0GBep2J7VUR52rBbzsVdo";
 
-const { createClient } = window.supabase;
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const supabase = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
+);
 
-/* =========================
-   GLOBAL STATE
-========================= */
-let currentUser = null;
-let allMembers = [];
+console.log("Supabase client initialized");
 
-/* =========================
-   AUTH CHECK
-========================= */
-async function checkAuth() {
-  try {
-    const { data: { user }, error } = await supabase.auth.getUser();
-    if (error) throw error;
-
-    const status = document.getElementById('statusBar');
-
-    if (user) {
-      currentUser = user;
-      loginBtn.style.display = 'none';
-      logoutBtn.style.display = 'inline-block';
-      status.textContent = `Logged in as ${user.email}`;
-      status.className = 'status-bar success';
-    } else {
-      currentUser = null;
-      loginBtn.style.display = 'inline-block';
-      logoutBtn.style.display = 'none';
-      status.textContent = 'Public access';
-      status.className = 'status-bar info';
-    }
-  } catch (err) {
-    showError(err.message);
-  }
-}
-
-/* =========================
-   LOGIN / LOGOUT
-========================= */
-async function login() {
-  const email = prompt("Email:");
-  const password = prompt("Password:");
-
-  if (!email || !password) return;
-
-  try {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) throw error;
-    location.reload();
-  } catch (err) {
-    alert(err.message);
-  }
-}
-
-async function logout() {
-  await supabase.auth.signOut();
-  location.reload();
-}
-
-/* =========================
+/* ===========================
    LOAD MEMBERS
-========================= */
+=========================== */
 async function loadMembers() {
+  const statusEl = document.getElementById('status');
+  const tableBody = document.getElementById('tableBody');
+
   try {
     const { data, error } = await supabase
       .from('umoomi_members')
@@ -125,54 +102,48 @@ async function loadMembers() {
 
     if (error) throw error;
 
-    allMembers = data;
-    renderMembers();
+    if (!data || data.length === 0) {
+      statusEl.className = "status success";
+      statusEl.textContent = "No members found";
+      tableBody.innerHTML = `
+        <tr>
+          <td colspan="4">No data</td>
+        </tr>`;
+      return;
+    }
+
+    tableBody.innerHTML = "";
+
+    data.forEach(member => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${member.member_id || ''}</td>
+        <td>${member.full_name || ''}</td>
+        <td>${member.position || ''}</td>
+        <td>${member.status || ''}</td>
+      `;
+      tableBody.appendChild(row);
+    });
+
+    statusEl.className = "status success";
+    statusEl.textContent = `Loaded ${data.length} members`;
+
   } catch (err) {
-    showError(err.message);
+    console.error(err);
+    statusEl.className = "status error";
+    statusEl.textContent = err.message;
+
+    tableBody.innerHTML = `
+      <tr>
+        <td colspan="4">Failed to load data</td>
+      </tr>`;
   }
 }
 
-/* =========================
-   RENDER TABLE
-========================= */
-function renderMembers() {
-  const tbody = document.getElementById('membersTable');
-  tbody.innerHTML = '';
-
-  if (allMembers.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="4">No members found</td></tr>`;
-    return;
-  }
-
-  allMembers.forEach(m => {
-    const row = document.createElement('tr');
-    row.innerHTML = `
-      <td>${m.member_id}</td>
-      <td>${m.full_name}</td>
-      <td>${m.position}</td>
-      <td>${m.status}</td>
-    `;
-    tbody.appendChild(row);
-  });
-}
-
-/* =========================
-   HELPERS
-========================= */
-function showError(msg) {
-  const status = document.getElementById('statusBar');
-  status.textContent = msg;
-  status.className = 'status-bar error';
-  console.error(msg);
-}
-
-/* =========================
+/* ===========================
    INIT
-========================= */
+=========================== */
 document.addEventListener('DOMContentLoaded', () => {
-  loginBtn.onclick = login;
-  logoutBtn.onclick = logout;
-  checkAuth();
   loadMembers();
 });
 </script>
