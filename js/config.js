@@ -1,19 +1,28 @@
-// ===============================
-// Supabase Configuration
-// ===============================
+// ========================================
+// SUPABASE CONFIGURATION - UMOMI SECURITY SYSTEM
+// ========================================
+// ⚠️ SECURITY WARNING: These are your real credentials
+// ⚠️ After testing, REGENERATE your keys in Supabase dashboard
 
-// ❗ Use PROJECT URL, NOT dashboard URL
-const supabaseUrl = "https://PROJECT_ID.supabase.co";
+const SUPABASE_URL = "https://ccsicfimccsiizmpuvsm.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNjc2ljZmltY2NzaWl6bXB1dnNtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA1MzA5MjcsImV4cCI6MjA4NjEwNjkyN30.IRVBVGPFqqB4_n5BSt2hXbvi9UitltDK2cqm479CLho";
 
-// ❗ anon public key (this is OK to expose)
-const supabaseKey =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNjc2ljZmltY2NzaWl6bXB1dnNtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA1MzA5MjcsImV4cCI6MjA4NjEwNjkyN30.IRVBVGPFqqB4_n5BSt2hXbvi9UitltDK2cqm479CLho";
+// ✅ CORRECT INITIALIZATION (Supabase v2)
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// ✅ CORRECT client creation
-const supabase = window.supabase.createClient(
-  supabaseUrl,
-  supabaseKey
-);
+// App Configuration
+const config = {
+    appName: 'Umoomi Security System',
+    organization: 'Ahmadiyya Muslim Community Uganda',
+    version: '1.0.0',
+    roles: {
+        super_admin: 'Super Admin',
+        admin: 'Admin',
+        manager: 'Manager',
+        operator: 'Operator',
+        field_agent: 'Field Agent'
+    }
+};
 
-// Debug check (VERY IMPORTANT)
-console.log("Supabase initialized:", supabase);
+console.log('✅ Supabase initialized successfully');
+console.log('Project:', SUPABASE_URL);

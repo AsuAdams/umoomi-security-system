@@ -23,6 +23,9 @@
             </div>
         </header>
 
+        <!-- Status Badge (Temporary for testing) -->
+        <div id="statusBadge" style="position:fixed;top:10px;right:10px;padding:8px;background:#f8f9fa;border-radius:5px;z-index:1000;font-size:0.9rem;"></div>
+
         <!-- Main Content -->
         <div class="main-content">
             <!-- Sidebar -->
@@ -84,7 +87,14 @@
                                 </tr>
                             </thead>
                             <tbody id="membersTableBody">
-                                <!-- Data will be loaded here -->
+                                <tr>
+                                    <td colspan="7" style="text-align:center;padding:30px;">
+                                        <div id="loadingIndicator">
+                                            <i class="fas fa-spinner fa-spin" style="font-size:2rem;margin-right:10px;"></i>
+                                            Loading members...
+                                        </div>
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -101,10 +111,66 @@
         </div>
     </div>
 
-    <!-- Scripts -->
+    <!-- ========================================
+         CRITICAL: SCRIPT ORDER MATTERS!
+         ======================================== -->
+    
+    <!-- 1. SUPABASE LIBRARY (Load FIRST) -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- 2. YOUR CONFIG (Load SECOND - AFTER Supabase library) -->
     <script src="js/config.js"></script>
+    
+    <!-- 3. YOUR APP SCRIPTS (Load LAST) -->
     <script src="js/auth.js"></script>
     <script src="js/members.js"></script>
+
+    <!-- 4. CONNECTION TEST (Temporary - Remove after success) -->
+    <script>
+    // 🔍 SAFE CONNECTION TEST
+    document.addEventListener('DOMContentLoaded', async () => {
+      const statusBadge = document.getElementById('statusBadge');
+      
+      try {
+        // Test 1: Check if Supabase object exists
+        if (typeof supabase === 'undefined') {
+          throw new Error('Supabase library not loaded');
+        }
+        
+        console.log('✅ Supabase library loaded');
+        statusBadge.innerHTML = '<span style="color:orange;">⏳ Testing connection...</span>';
+        
+        // Test 2: Try to fetch public data
+        const { data, error } = await supabase
+          .from('umoomi_members')
+          .select('member_id, full_name, status')
+          .limit(3);
+        
+        if (error) {
+          if (error.message.includes('relation') || error.message.includes('does not exist')) {
+            // Table doesn't exist yet - that's OK for first setup
+            console.log('ℹ️ Table not found (will be created when adding first member)');
+            statusBadge.innerHTML = '<span style="color:blue;">ℹ️ Ready (create members table)</span>';
+          } else if (error.message.includes('JWT') || error.message.includes('authentication')) {
+            // Auth required - that's expected
+            console.log('✅ Supabase connected (authentication required)');
+            statusBadge.innerHTML = '<span style="color:green;">✅ Connected (login to view data)</span>';
+          } else {
+            // Other error
+            throw error;
+          }
+        } else {
+          // Success - data fetched
+          console.log('✅ Supabase connected and data fetched:', data);
+          statusBadge.innerHTML = `<span style="color:green;">✅ Operational (${data.length} members loaded)</span>`;
+        }
+        
+      } catch (e) {
+        console.error('❌ Supabase connection failed:', e);
+        statusBadge.innerHTML = `<span style="color:red;">❌ Error: ${e.message}</span>`;
+        alert('Supabase connection error:\n' + e.message + '\n\nCheck browser console (F12) for details.');
+      }
+    });
+    </script>
 </body>
 </html>
