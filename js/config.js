@@ -4,11 +4,9 @@
 // ⚠️ SECURITY WARNING: These are your real credentials
 // ⚠️ After testing, REGENERATE your keys in Supabase dashboard
 
+// Supabase credentials (same as in index.html)
 const SUPABASE_URL = "https://ccsicfimccsiizmpuvsm.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNjc2ljZmltY2NzaWl6bXB1dnNtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA1MzA5MjcsImV4cCI6MjA4NjEwNjkyN30.IRVBVGPFqqB4_n5BSt2hXbvi9UitltDK2cqm479CLho";
-
-// ✅ CORRECT INITIALIZATION (Supabase v2)
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // App Configuration
 const config = {
@@ -24,5 +22,4 @@ const config = {
     }
 };
 
-console.log('✅ Supabase initialized successfully');
-console.log('Project:', SUPABASE_URL);
+console.log('✅ Config loaded successfully');

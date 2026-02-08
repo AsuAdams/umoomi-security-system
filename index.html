@@ -112,32 +112,43 @@
     </div>
 
     <!-- ========================================
-         CRITICAL: SCRIPT ORDER MATTERS!
+         SUPABASE INITIALIZATION - BROWSER VERSION
          ======================================== -->
     
-    <!-- 1. SUPABASE LIBRARY (Load FIRST) -->
+    <!-- 1. LOAD SUPABASE LIBRARY -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
-    <!-- 2. YOUR CONFIG (Load SECOND - AFTER Supabase library) -->
-    <script src="js/config.js"></script>
+    <!-- 2. INITIALIZE SUPABASE CLIENT (CRITICAL FIX) -->
+    <script>
+        // Supabase credentials
+        const SUPABASE_URL = "https://ccsicfimccsiizmpuvsm.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNjc2ljZmltY2NzaWl6bXB1dnNtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA1MzA5MjcsImV4cCI6MjA4NjEwNjkyN30.IRVBVGPFqqB4_n5BSt2hXbvi9UitltDK2cqm479CLho";
+        
+        // ✅ CORRECT INITIALIZATION FOR BROWSER
+        const { createClient } = window.supabase;
+        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        console.log('✅ Supabase client initialized successfully');
+        console.log('Project URL:', SUPABASE_URL);
+    </script>
     
-    <!-- 3. YOUR APP SCRIPTS (Load LAST) -->
+    <!-- 3. LOAD APP SCRIPTS -->
     <script src="js/auth.js"></script>
     <script src="js/members.js"></script>
 
     <!-- 4. CONNECTION TEST (Temporary - Remove after success) -->
     <script>
-    // 🔍 SAFE CONNECTION TEST
+    // 🔍 CONNECTION TEST
     document.addEventListener('DOMContentLoaded', async () => {
       const statusBadge = document.getElementById('statusBadge');
       
       try {
         // Test 1: Check if Supabase object exists
         if (typeof supabase === 'undefined') {
-          throw new Error('Supabase library not loaded');
+          throw new Error('Supabase client not initialized');
         }
         
-        console.log('✅ Supabase library loaded');
+        console.log('✅ Supabase client loaded');
         statusBadge.innerHTML = '<span style="color:orange;">⏳ Testing connection...</span>';
         
         // Test 2: Try to fetch public data
