@@ -1,396 +1,132 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel - Umoomi Security System</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="css/style.css">
-    <style>
-        .admin-container {
-            display: grid;
-            grid-template-columns: 300px 1fr;
-            gap: 25px;
-            margin-top: 10px;
-        }
-        
-        .admin-sidebar {
-            background: white;
-            border-radius: 15px;
-            padding: 25px 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
-            height: fit-content;
-        }
-        
-        .admin-sidebar nav ul {
-            list-style: none;
-        }
-        
-        .admin-sidebar nav ul li {
-            margin-bottom: 8px;
-        }
-        
-        .admin-sidebar nav ul li a {
-            display: block;
-            padding: 14px 20px;
-            color: var(--dark);
-            text-decoration: none;
-            border-radius: 10px;
-            transition: all 0.3s ease;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            border-left: 4px solid transparent;
-        }
-        
-        .admin-sidebar nav ul li a:hover,
-        .admin-sidebar nav ul li a.active {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            border-left: 4px solid white;
-        }
-        
-        .admin-content {
-            background: white;
-            border-radius: 15px;
-            padding: 35px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
-        }
-        
-        .admin-section {
-            display: none;
-        }
-        
-        .admin-section.active {
-            display: block;
-            animation: fadeIn 0.5s;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 25px;
-            margin-bottom: 30px;
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: var(--primary);
-            font-size: 0.95rem;
-        }
-        
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            width: 100%;
-            padding: 14px;
-            border: 2px solid #e1e5e9;
-            border-radius: 10px;
-            font-size: 1rem;
-            transition: border-color 0.3s;
-        }
-        
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: var(--secondary);
-            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
-        }
-        
-        .form-group textarea {
-            min-height: 100px;
-            resize: vertical;
-        }
-        
-        .btn-submit {
-            background: linear-gradient(135deg, #27ae60, #2ecc71);
-            color: white;
-            padding: 16px 45px;
-            font-size: 1.15rem;
-            margin-top: 10px;
-            width: 100%;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-        }
-        
-        .btn-submit:hover {
-            background: linear-gradient(135deg, #219653, #27ae60);
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(39, 174, 96, 0.4);
-        }
-        
-        .section-title {
-            font-size: 1.8rem;
-            color: var(--primary);
-            margin-bottom: 30px;
-            padding-bottom: 15px;
-            border-bottom: 3px solid #f1f1f1;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        
-        .instructions {
-            background: #e3f2fd;
-            border-left: 4px solid var(--secondary);
-            padding: 20px;
-            border-radius: 0 10px 10px 0;
-            margin-bottom: 30px;
-        }
-        
-        .instructions h3 {
-            color: var(--secondary);
-            margin-bottom: 10px;
-        }
-        
-        .instructions ul {
-            padding-left: 20px;
-            margin-top: 10px;
-        }
-        
-        .instructions li {
-            margin-bottom: 8px;
-            line-height: 1.6;
-        }
-        
-        .member-id-example {
-            background: white;
-            border: 2px dashed var(--secondary);
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 10px;
-            font-family: monospace;
-            font-weight: 600;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <title>Admin Panel - Umoomi Security System</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
-    <div class="container">
-        <header class="header">
-            <div class="logo">
-                <i class="fas fa-user-cog"></i>
-                <h1>Admin Panel</h1>
-                <p>Umoomi Security System Management</p>
-            </div>
-            <a href="index.html" class="btn btn-secondary">
-                <i class="fas fa-arrow-left"></i> Back to Dashboard
-            </a>
-        </header>
+<div class="container">
 
-        <div class="status-bar" id="statusBar">
-            <i class="fas fa-spinner fa-spin"></i> Loading admin panel...
-        </div>
+  <header class="header">
+    <h1><i class="fas fa-user-cog"></i> Admin Panel</h1>
+  </header>
 
-        <div class="admin-container">
-            <div class="admin-sidebar">
-                <nav>
-                    <ul>
-                        <li><a href="#add-member" class="active"><i class="fas fa-user-plus"></i> Add Member</a></li>
-                        <li><a href="#view-members"><i class="fas fa-users"></i> View All Members</a></li>
-                        <li><a href="#generate-cards"><i class="fas fa-id-card"></i> Generate ID Cards</a></li>
-                        <li><a href="#system-settings"><i class="fas fa-cog"></i> System Settings</a></li>
-                    </ul>
-                </nav>
-            </div>
+  <div class="status-bar" id="statusBar">
+    <i class="fas fa-check-circle"></i> Ready
+  </div>
 
-            <div class="admin-content">
-                <!-- Add Member Section -->
-                <div id="add-member" class="admin-section active">
-                    <h2 class="section-title"><i class="fas fa-user-plus"></i> Add New Member</h2>
-                    
-                    <div class="instructions">
-                        <h3><i class="fas fa-info-circle"></i> Member ID Format</h3>
-                        <p>Use the correct format for Member IDs:</p>
-                        <ul>
-                            <li><strong>Head Office:</strong> <span class="member-id-example">UM-HO-001</span></li>
-                            <li><strong>General Office:</strong> <span class="member-id-example">UM-GO-001</span></li>
-                            <li><strong>Regional Qaid:</strong> <span class="member-id-example">UM-RQ-001</span></li>
-                        </ul>
-                    </div>
-                    
-                    <form id="addMemberForm">
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label for="memberId">Member ID *</label>
-                                <input type="text" id="memberId" required placeholder="e.g., UM-HO-001">
-                            </div>
-                            <div class="form-group">
-                                <label for="fullName">Full Name *</label>
-                                <input type="text" id="fullName" required placeholder="Enter full name">
-                            </div>
-                            <div class="form-group">
-                                <label for="position">Position *</label>
-                                <select id="position" required>
-                                    <option value="">Select Position</option>
-                                    <option value="Sadr Mulk">Sadr Mulk</option>
-                                    <option value="Secretary">Secretary</option>
-                                    <option value="Lead">Lead</option>
-                                    <option value="Assistant">Assistant</option>
-                                    <option value="Regional Qaid">Regional Qaid</option>
-                                    <option value="Super Admin">Super Admin</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="department">Department *</label>
-                                <select id="department" required>
-                                    <option value="">Select Department</option>
-                                    <option value="Head Office">Head Office</option>
-                                    <option value="General Office">General Office</option>
-                                    <option value="Regional">Regional</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="region">Region</label>
-                                <input type="text" id="region" placeholder="e.g., Kampala Region">
-                            </div>
-                            <div class="form-group">
-                                <label for="phone">Phone Number</label>
-                                <input type="tel" id="phone" placeholder="+256...">
-                            </div>
-                            <div class="form-group">
-                                <label for="email">Email Address</label>
-                                <input type="email" id="email" placeholder="member@umoomi.ug">
-                            </div>
-                            <div class="form-group">
-                                <label for="address">Physical Address</label>
-                                <textarea id="address" placeholder="Enter full address"></textarea>
-                            </div>
-                            <div class="form-group">
-                                <label for="status">Status</label>
-                                <select id="status">
-                                    <option value="Active">Active</option>
-                                    <option value="Inactive">Inactive</option>
-                                    <option value="Suspended">Suspended</option>
-                                </select>
-                            </div>
-                        </div>
-                        <button type="submit" class="btn btn-submit">
-                            <i class="fas fa-save"></i> Add Member to Database
-                        </button>
-                    </form>
-                </div>
+  <form id="addMemberForm">
 
-                <!-- Other sections will be added here -->
-            </div>
-        </div>
-    </div>
+    <input id="memberId" placeholder="UM-HO-001" required />
+    <input id="fullName" placeholder="Full Name" required />
 
-    <!-- SUPABASE LIBRARY -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
-    <!-- CONFIG WITH REAL CREDENTIALS -->
-    <script>
-        // SUPABASE CONFIGURATION
-        const SUPABASE_URL = "https://ccsicfimccsiizmpuvsm.supabase.co";
-        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNjc2ljZmltY2NzaWl6bXB1dnNtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA1MzA5MjcsImV4cCI6MjA4NjEwNjkyN30.IRVBVGPFqqB4_n5BSt2hXbvi9UitltDK2cqm479CLho";
-        
-        const { createClient } = window.supabase;
-        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        
-        // Navigation
-        document.querySelectorAll('.admin-sidebar a').forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                
-                // Remove active class
-                document.querySelectorAll('.admin-sidebar a').forEach(l => l.classList.remove('active'));
-                document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
-                
-                // Add active class
-                link.classList.add('active');
-                document.querySelector(link.getAttribute('href')).classList.add('active');
-            });
-        });
-        
-        // Add Member Form
-        document.getElementById('addMemberForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const statusEl = document.getElementById('statusBar');
-            statusEl.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Adding member...';
-            statusEl.className = 'status-bar';
-            
-            const memberData = {
-                member_id: document.getElementById('memberId').value.trim(),
-                full_name: document.getElementById('fullName').value.trim(),
-                position: document.getElementById('position').value,
-                department: document.getElementById('department').value,
-                region: document.getElementById('region').value.trim() || null,
-                phone: document.getElementById('phone').value.trim() || null,
-                email: document.getElementById('email').value.trim() || null,
-                address: document.getElementById('address').value.trim() || null,
-                status: document.getElementById('status').value,
-                current_location: null,
-                last_scan: null,
-                qr_code_url: `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=UMOOMI:${document.getElementById('memberId').value.trim()}`
-            };
-            
-            try {
-                // Check if member ID exists
-                const {  existing } = await supabase
-                    .from('umoomi_members')
-                    .select('member_id')
-                    .eq('member_id', memberData.member_id)
-                    .single();
-                
-                if (existing) {
-                    throw new Error('Member ID already exists. Please use a different ID.');
-                }
-                
-                // Insert new member
-                const { data, error } = await supabase
-                    .from('umoomi_members')
-                    .insert([memberData])
-                    .select();
-                
-                if (error) throw error;
-                
-                statusEl.innerHTML = `<i class="fas fa-check-circle"></i> Member "${memberData.full_name}" added successfully!`;
-                statusEl.className = 'status-bar success';
-                
-                // Reset form
-                document.getElementById('addMemberForm').reset();
-                document.getElementById('memberId').value = `UM-${document.getElementById('department').value.toUpperCase().replace(' ', '-')}-001`;
-                
-                // Show success message
-                alert(`✅ Member added successfully!\n\nMember ID: ${memberData.member_id}\nName: ${memberData.full_name}\n\nQR Code has been automatically generated.`);
-                
-            } catch (error) {
-                console.error('Error adding member:', error);
-                statusEl.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Error: ${error.message}`;
-                statusEl.className = 'status-bar error';
-                alert(`❌ Error adding member:\n${error.message}`);
-            }
-        });
-        
-        // Auto-generate Member ID suggestion
-        document.getElementById('department').addEventListener('change', (e) => {
-            const deptCode = e.target.value === 'Head Office' ? 'HO' : 
-                            e.target.value === 'General Office' ? 'GO' : 'RQ';
-            document.getElementById('memberId').value = `UM-${deptCode}-001`;
-        });
-        
-        // Initialize
-        document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('statusBar').innerHTML = '<i class="fas fa-check-circle"></i> Admin panel ready';
-            document.getElementById('statusBar').className = 'status-bar success';
-            
-            // Set default Member ID
-            document.getElementById('memberId').value = 'UM-HO-001';
-        });
-    </script>
+    <select id="position" required>
+      <option value="">Select Position</option>
+      <option>Sadr Mulk</option>
+      <option>Secretary</option>
+      <option>Lead</option>
+      <option>Assistant</option>
+      <option>Regional Qaid</option>
+      <option>Super Admin</option>
+    </select>
+
+    <select id="department" required>
+      <option value="">Select Department</option>
+      <option value="HO">Head Office</option>
+      <option value="GO">General Office</option>
+      <option value="RQ">Regional</option>
+    </select>
+
+    <input id="region" placeholder="Region" />
+    <input id="phone" placeholder="+256..." />
+    <input id="email" type="email" placeholder="Email" />
+    <textarea id="address" placeholder="Address"></textarea>
+
+    <select id="status">
+      <option value="Active">Active</option>
+      <option value="Inactive">Inactive</option>
+      <option value="Suspended">Suspended</option>
+    </select>
+
+    <button type="submit">Add Member</button>
+  </form>
+
+</div>
+
+<!-- SUPABASE -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+/* ===============================
+   SUPABASE CONFIG (SAFE)
+================================ */
+const SUPABASE_URL = "https://pqrsljahrnjgkadflbmr.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBxcnNsamFocm5qZ2thZGZsYm1yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA1NTg0NTYsImV4cCI6MjA4NjEzNDQ1Nn0.egED0C2iRp6j3Xp4ldgrdI0GBep2J7VUR52rBbzsVdo";
+
+const { createClient } = window.supabase;
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+/* ===============================
+   AUTO MEMBER ID
+================================ */
+document.getElementById('department').addEventListener('change', e => {
+  document.getElementById('memberId').value = `UM-${e.target.value}-001`;
+});
+
+/* ===============================
+   ADD MEMBER
+================================ */
+document.getElementById('addMemberForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const statusBar = document.getElementById('statusBar');
+  statusBar.innerHTML = 'Saving...';
+
+  const memberData = {
+    member_id: memberId.value.trim(),
+    full_name: fullName.value.trim(),
+    position: position.value,
+    department: department.value,
+    region: region.value || null,
+    phone: phone.value || null,
+    email: email.value || null,
+    address: address.value || null,
+    status: status.value,
+    current_location: null,
+    last_scan: null,
+    qr_code_url: `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=UMOOMI:${memberId.value}`
+  };
+
+  try {
+    // CHECK DUPLICATE
+    const { data: existing, error: checkError } = await supabase
+      .from('umoomi_members')
+      .select('member_id')
+      .eq('member_id', memberData.member_id)
+      .maybeSingle();
+
+    if (checkError) throw checkError;
+    if (existing) throw new Error('Member ID already exists');
+
+    // INSERT
+    const { error } = await supabase
+      .from('umoomi_members')
+      .insert(memberData);
+
+    if (error) throw error;
+
+    statusBar.innerHTML = '✅ Member added successfully';
+    e.target.reset();
+
+  } catch (err) {
+    console.error(err);
+    statusBar.innerHTML = `❌ ${err.message}`;
+  }
+});
+</script>
 </body>
 </html>

@@ -1,418 +1,181 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Umoomi Security System - Ahmadiyya Muslim Community Uganda</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8" />
+  <title>Umoomi Security System</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    body { font-family: Arial, sans-serif; background:#f4f6f9; padding:20px }
+    .status-bar { padding:12px; border-radius:8px; margin-bottom:15px }
+    .success { background:#d4edda; color:#155724 }
+    .error { background:#f8d7da; color:#721c24 }
+    .info { background:#d1ecf1; color:#0c5460 }
+    table { width:100%; border-collapse:collapse }
+    th, td { padding:10px; border-bottom:1px solid #ddd }
+    th { background:#2c3e50; color:#fff }
+    .btn { padding:8px 14px; border:none; cursor:pointer }
+  </style>
 </head>
+
 <body>
-    <div class="container">
-        <header class="header">
-            <div class="logo">
-                <i class="fas fa-shield-alt"></i>
-                <h1>Umoomi Security System</h1>
-                <p>Ahmadiyya Muslim Community Uganda</p>
-            </div>
-            <div class="user-info">
-                <span id="userName">Loading...</span>
-                <button id="loginBtn" class="btn btn-primary">🔐 Login</button>
-                <button id="logoutBtn" class="btn btn-danger" style="display:none;">🚪 Logout</button>
-            </div>
-        </header>
 
-        <div class="status-bar" id="statusBar">
-            <i class="fas fa-spinner fa-spin"></i> Initializing system...
-        </div>
+<h2>🛡️ Umoomi Security Dashboard</h2>
 
-        <div class="main-content">
-            <aside class="sidebar">
-                <nav>
-                    <ul>
-                        <li><a href="index.html" class="active"><i class="fas fa-home"></i> Dashboard</a></li>
-                        <li><a href="scanner.html"><i class="fas fa-qrcode"></i> Scan ID Card</a></li>
-                        <li><a href="admin.html"><i class="fas fa-user-cog"></i> Admin Panel</a></li>
-                        <li><a href="#"><i class="fas fa-history"></i> Activity Logs</a></li>
-                    </ul>
-                </nav>
-            </aside>
+<div id="statusBar" class="status-bar info">Initializing...</div>
 
-            <main class="dashboard">
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <i class="fas fa-users"></i>
-                        <h3>Total Members</h3>
-                        <p class="number" id="totalMembers">-</p>
-                    </div>
-                    <div class="stat-card">
-                        <i class="fas fa-user-check"></i>
-                        <h3>Active Members</h3>
-                        <p class="number" id="activeMembers">-</p>
-                    </div>
-                    <div class="stat-card">
-                        <i class="fas fa-map-marker-alt"></i>
-                        <h3>Regions</h3>
-                        <p class="number" id="totalRegions">-</p>
-                    </div>
-                    <div class="stat-card">
-                        <i class="fas fa-clock"></i>
-                        <h3>Last Scan</h3>
-                        <p class="number" id="lastScan">-</p>
-                    </div>
-                </div>
+<button id="loginBtn" class="btn">Login</button>
+<button id="logoutBtn" class="btn" style="display:none">Logout</button>
 
-                <div class="content-section">
-                    <h2><i class="fas fa-users"></i> All Members (25)</h2>
-                    <div class="search-bar">
-                        <input type="text" id="searchInput" placeholder="Search members by name, ID, or region...">
-                        <button class="btn btn-primary"><i class="fas fa-search"></i></button>
-                    </div>
-                    <div class="table-container">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Member ID</th>
-                                    <th>Full Name</th>
-                                    <th>Position</th>
-                                    <th>Department</th>
-                                    <th>Region</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="membersTableBody">
-                                <tr>
-                                    <td colspan="7" class="loading">
-                                        <i class="fas fa-spinner fa-spin"></i> Loading members from database...
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </main>
-        </div>
+<table>
+  <thead>
+    <tr>
+      <th>Member ID</th>
+      <th>Name</th>
+      <th>Position</th>
+      <th>Status</th>
+    </tr>
+  </thead>
+  <tbody id="membersTable">
+    <tr><td colspan="4">Loading...</td></tr>
+  </tbody>
+</table>
 
-        <div id="memberModal" class="modal">
-            <div class="modal-content">
-                <span class="close">&times;</span>
-                <div id="memberDetails"></div>
-            </div>
-        </div>
-    </div>
+<!-- SUPABASE -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <!-- SUPABASE LIBRARY -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
-    <!-- CONFIG WITH REAL CREDENTIALS -->
-    <script>
-        // SUPABASE CONFIGURATION - REAL CREDENTIALS
-        const SUPABASE_URL = "https://ccsicfimccsiizmpuvsm.supabase.co";
-        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNjc2ljZmltY2NzaWl6bXB1dnNtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA1MzA5MjcsImV4cCI6MjA4NjEwNjkyN30.IRVBVGPFqqB4_n5BSt2hXbvi9UitltDK2cqm479CLho";
-        
-        // Initialize Supabase
-        const { createClient } = window.supabase;
-        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        
-        console.log("✅ Supabase initialized with real credentials");
-        console.log("Project URL:", SUPABASE_URL);
-    </script>
-    
-    <!-- AUTH SCRIPT -->
-    <script>
-        let currentUser = null;
-        
-        // Check auth state
-        async function checkAuth() {
-            try {
-                const {  { user } } = await supabase.auth.getUser();
-                const statusEl = document.getElementById('statusBar');
-                
-                if (user) {
-                    currentUser = user;
-                    document.getElementById('userName').textContent = user.email;
-                    document.getElementById('loginBtn').style.display = 'none';
-                    document.getElementById('logoutBtn').style.display = 'block';
-                    
-                    statusEl.innerHTML = `<i class="fas fa-check-circle"></i> Logged in as ${user.email}`;
-                    statusEl.className = 'status-bar success';
-                } else {
-                    document.getElementById('userName').textContent = 'Guest';
-                    document.getElementById('loginBtn').style.display = 'block';
-                    document.getElementById('logoutBtn').style.display = 'none';
-                    
-                    statusEl.innerHTML = `<i class="fas fa-info-circle"></i> Public access mode (login for full features)`;
-                    statusEl.className = 'status-bar info';
-                }
-            } catch (error) {
-                console.error("Auth check error:", error);
-                document.getElementById('statusBar').innerHTML = 
-                    `<i class="fas fa-exclamation-triangle"></i> Auth error: ${error.message}`;
-                document.getElementById('statusBar').className = 'status-bar error';
-            }
-        }
-        
-        // Login function
-        async function login() {
-            const email = prompt("Enter your email:", "admin@umoomi.ug");
-            const password = prompt("Enter your password:", "Umoomi2024");
-            
-            if (!email || !password) return;
-            
-            try {
-                const { data, error } = await supabase.auth.signInWithPassword({
-                    email,
-                    password
-                });
-                
-                if (error) throw error;
-                
-                alert("✅ Login successful!");
-                location.reload();
-            } catch (error) {
-                alert(`❌ Login failed: ${error.message}\n\nDefault test credentials:\nEmail: admin@umoomi.ug\nPassword: Umoomi2024`);
-                console.error("Login error:", error);
-            }
-        }
-        
-        // Logout function
-        async function logout() {
-            try {
-                await supabase.auth.signOut();
-                alert("✅ Logged out successfully");
-                location.reload();
-            } catch (error) {
-                alert(`Logout error: ${error.message}`);
-            }
-        }
-        
-        // Setup event listeners
-        document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('loginBtn').addEventListener('click', login);
-            document.getElementById('logoutBtn').addEventListener('click', logout);
-            
-            // Initialize
-            checkAuth();
-            loadMembers();
-        });
-    </script>
-    
-    <!-- MEMBERS SCRIPT -->
-    <script>
-        let allMembers = [];
-        
-        async function loadMembers() {
-            const tbody = document.getElementById('membersTableBody');
-            const statusEl = document.getElementById('statusBar');
-            
-            try {
-                statusEl.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Loading members...`;
-                statusEl.className = 'status-bar';
-                
-                console.log("📥 Fetching members from Supabase...");
-                const { data, error } = await supabase
-                    .from('umoomi_members')
-                    .select('*')
-                    .order('created_at', { ascending: false });
-                
-                if (error) throw error;
-                
-                console.log(`✅ Loaded ${data.length} members`);
-                allMembers = data;
-                displayMembers(data);
-                updateStats(data);
-                
-                statusEl.innerHTML = `<i class="fas fa-check-circle"></i> ${data.length} members loaded successfully`;
-                statusEl.className = 'status-bar success';
-                
-            } catch (error) {
-                console.error("❌ Error loading members:", error);
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="7" class="error">
-                            <i class="fas fa-exclamation-triangle"></i>
-                            <strong>Error loading members:</strong> ${error.message}<br><br>
-                            <button class="btn btn-primary" onclick="location.reload()">
-                                <i class="fas fa-redo"></i> Retry
-                            </button>
-                        </td>
-                    </tr>
-                `;
-                statusEl.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Error: ${error.message}`;
-                statusEl.className = 'status-bar error';
-            }
-        }
-        
-        function displayMembers(members) {
-            const tbody = document.getElementById('membersTableBody');
-            tbody.innerHTML = '';
-            
-            if (members.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="7" class="empty">
-                            <i class="fas fa-inbox"></i>
-                            <p>No members found in database</p>
-                            <button class="btn btn-primary" onclick="window.location.href='admin.html'">
-                                <i class="fas fa-plus"></i> Add First Member
-                            </button>
-                        </td>
-                    </tr>
-                `;
-                return;
-            }
-            
-            members.forEach(member => {
-                // Status badge
-                let statusClass = 'badge-success';
-                if (member.status === 'Inactive') statusClass = 'badge-secondary';
-                if (member.status === 'Suspended') statusClass = 'badge-danger';
-                
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td><strong>${member.member_id}</strong></td>
-                    <td>${member.full_name}</td>
-                    <td>${member.position}</td>
-                    <td>${member.department}</td>
-                    <td>${member.region || 'Uganda'}</td>
-                    <td><span class="badge ${statusClass}">${member.status}</span></td>
-                    <td>
-                        <button class="btn btn-sm btn-info view-btn" data-id="${member.member_id}">
-                            <i class="fas fa-eye"></i> View
-                        </button>
-                    </td>
-                `;
-                tbody.appendChild(row);
-            });
-            
-            // Add event listeners
-            document.querySelectorAll('.view-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const memberId = e.currentTarget.dataset.id;
-                    showMemberDetails(memberId);
-                });
-            });
-        }
-        
-        function showMemberDetails(memberId) {
-            const member = allMembers.find(m => m.member_id === memberId);
-            if (!member) return;
-            
-            const modal = document.getElementById('memberModal');
-            const details = document.getElementById('memberDetails');
-            
-            // Status color
-            let statusColor = '#27ae60';
-            if (member.status === 'Inactive') statusColor = '#95a5a6';
-            if (member.status === 'Suspended') statusColor = '#e74c3c';
-            
-            details.innerHTML = `
-                <div class="member-detail-header">
-                    <h2>${member.full_name}</h2>
-                    <p>${member.position} - ${member.department}</p>
-                    <span class="status-badge" style="background:${statusColor}">${member.status}</span>
-                </div>
-                <div class="member-detail-grid">
-                    <div class="detail-item">
-                        <strong>🆔 Member ID:</strong>
-                        <span>${member.member_id}</span>
-                    </div>
-                    <div class="detail-item">
-                        <strong>📍 Region:</strong>
-                        <span>${member.region || 'Uganda (Head Office)'}</span>
-                    </div>
-                    <div class="detail-item">
-                        <strong>📞 Phone:</strong>
-                        <span>${member.phone || 'Not provided'}</span>
-                    </div>
-                    <div class="detail-item">
-                        <strong>📧 Email:</strong>
-                        <span>${member.email || 'Not provided'}</span>
-                    </div>
-                    <div class="detail-item">
-                        <strong>🏠 Address:</strong>
-                        <span>${member.address || 'Not provided'}</span>
-                    </div>
-                    <div class="detail-item">
-                        <strong>📅 Date Joined:</strong>
-                        <span>${member.date_joined || 'Not specified'}</span>
-                    </div>
-                    <div class="detail-item">
-                        <strong>🗺️ Current Location:</strong>
-                        <span>${member.current_location || 'Not tracked'}</span>
-                    </div>
-                    <div class="detail-item">
-                        <strong>🕐 Last Scan:</strong>
-                        <span>${member.last_scan ? new Date(member.last_scan).toLocaleString('en-US', { timeZone: 'Africa/Kampala' }) : 'Never'}</span>
-                    </div>
-                    ${member.qr_code_url ? `
-                    <div class="detail-item qr-section" style="grid-column: span 2; text-align: center;">
-                        <strong>📱 Scan QR Code:</strong><br>
-                        <img src="${member.qr_code_url}" alt="QR Code" style="width:150px;height:150px;margin-top:10px;">
-                        <p style="margin-top:5px;font-size:0.9em;color:#666;">ID: ${member.member_id}</p>
-                    </div>
-                    ` : ''}
-                </div>
-                <div class="modal-actions">
-                    <button class="btn btn-primary" onclick="window.location.href='scanner.html?id=${member.member_id}'">
-                        <i class="fas fa-qrcode"></i> Scan This Member
-                    </button>
-                    <button class="btn btn-secondary close-modal">Close</button>
-                </div>
-            `;
-            
-            modal.style.display = 'block';
-            
-            // Close modal
-            document.querySelector('.close').onclick = () => { modal.style.display = 'none'; };
-            document.querySelector('.close-modal').onclick = () => { modal.style.display = 'none'; };
-            window.onclick = (e) => { if (e.target === modal) modal.style.display = 'none'; };
-        }
-        
-        function updateStats(members) {
-            document.getElementById('totalMembers').textContent = members.length;
-            
-            const activeCount = members.filter(m => m.status === 'Active').length;
-            document.getElementById('activeMembers').textContent = activeCount;
-            
-            const regions = new Set(members.filter(m => m.region).map(m => m.region));
-            document.getElementById('totalRegions').textContent = regions.size || '0';
-            
-            const latestScan = members
-                .filter(m => m.last_scan)
-                .sort((a, b) => new Date(b.last_scan) - new Date(a.last_scan))[0];
-            
-            if (latestScan && latestScan.last_scan) {
-                document.getElementById('lastScan').textContent = 
-                    new Date(latestScan.last_scan).toLocaleTimeString('en-US', { 
-                        hour: '2-digit', 
-                        minute: '2-digit'
-                    });
-            } else {
-                document.getElementById('lastScan').textContent = 'Never';
-            }
-        }
-        
-        // Search functionality
-        document.getElementById('searchInput').addEventListener('input', (e) => {
-            const searchTerm = e.target.value.toLowerCase().trim();
-            
-            if (searchTerm.length < 2) {
-                displayMembers(allMembers);
-                return;
-            }
-            
-            const filtered = allMembers.filter(member => 
-                member.full_name.toLowerCase().includes(searchTerm) ||
-                member.member_id.toLowerCase().includes(searchTerm) ||
-                member.position.toLowerCase().includes(searchTerm) ||
-                (member.region && member.region.toLowerCase().includes(searchTerm)) ||
-                member.department.toLowerCase().includes(searchTerm)
-            );
-            
-            displayMembers(filtered);
-        });
-    </script>
+<script>
+/* =========================
+   SUPABASE CONFIG
+   (ADD YOUR OWN KEYS)
+========================= */
+const SUPABASE_URL = "https://pqrsljahrnjgkadflbmr.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBxcnNsamFocm5qZ2thZGZsYm1yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA1NTg0NTYsImV4cCI6MjA4NjEzNDQ1Nn0.egED0C2iRp6j3Xp4ldgrdI0GBep2J7VUR52rBbzsVdo";
+
+const { createClient } = window.supabase;
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+/* =========================
+   GLOBAL STATE
+========================= */
+let currentUser = null;
+let allMembers = [];
+
+/* =========================
+   AUTH CHECK
+========================= */
+async function checkAuth() {
+  try {
+    const { data: { user }, error } = await supabase.auth.getUser();
+    if (error) throw error;
+
+    const status = document.getElementById('statusBar');
+
+    if (user) {
+      currentUser = user;
+      loginBtn.style.display = 'none';
+      logoutBtn.style.display = 'inline-block';
+      status.textContent = `Logged in as ${user.email}`;
+      status.className = 'status-bar success';
+    } else {
+      currentUser = null;
+      loginBtn.style.display = 'inline-block';
+      logoutBtn.style.display = 'none';
+      status.textContent = 'Public access';
+      status.className = 'status-bar info';
+    }
+  } catch (err) {
+    showError(err.message);
+  }
+}
+
+/* =========================
+   LOGIN / LOGOUT
+========================= */
+async function login() {
+  const email = prompt("Email:");
+  const password = prompt("Password:");
+
+  if (!email || !password) return;
+
+  try {
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) throw error;
+    location.reload();
+  } catch (err) {
+    alert(err.message);
+  }
+}
+
+async function logout() {
+  await supabase.auth.signOut();
+  location.reload();
+}
+
+/* =========================
+   LOAD MEMBERS
+========================= */
+async function loadMembers() {
+  try {
+    const { data, error } = await supabase
+      .from('umoomi_members')
+      .select('*');
+
+    if (error) throw error;
+
+    allMembers = data;
+    renderMembers();
+  } catch (err) {
+    showError(err.message);
+  }
+}
+
+/* =========================
+   RENDER TABLE
+========================= */
+function renderMembers() {
+  const tbody = document.getElementById('membersTable');
+  tbody.innerHTML = '';
+
+  if (allMembers.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="4">No members found</td></tr>`;
+    return;
+  }
+
+  allMembers.forEach(m => {
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td>${m.member_id}</td>
+      <td>${m.full_name}</td>
+      <td>${m.position}</td>
+      <td>${m.status}</td>
+    `;
+    tbody.appendChild(row);
+  });
+}
+
+/* =========================
+   HELPERS
+========================= */
+function showError(msg) {
+  const status = document.getElementById('statusBar');
+  status.textContent = msg;
+  status.className = 'status-bar error';
+  console.error(msg);
+}
+
+/* =========================
+   INIT
+========================= */
+document.addEventListener('DOMContentLoaded', () => {
+  loginBtn.onclick = login;
+  logoutBtn.onclick = logout;
+  checkAuth();
+  loadMembers();
+});
+</script>
+
 </body>
 </html>
