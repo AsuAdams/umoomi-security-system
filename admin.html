@@ -1,132 +1,155 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Admin Panel - Umoomi Security System</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Admin Panel - Umoomi Security</title>
 
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+body {
+  font-family: Segoe UI, sans-serif;
+  background: #f4f6f9;
+  padding: 20px;
+}
+.container { max-width: 1200px; margin: auto; }
+.header {
+  background:#fff; padding:20px; border-radius:10px;
+  display:flex; justify-content:space-between; align-items:center;
+}
+.admin-container { display:grid; grid-template-columns:250px 1fr; gap:20px; margin-top:20px; }
+.admin-sidebar, .admin-content {
+  background:#fff; padding:20px; border-radius:10px;
+}
+.form-grid {
+  display:grid; grid-template-columns:repeat(2,1fr); gap:15px;
+}
+.form-group label { font-weight:600; display:block; margin-bottom:5px; }
+.form-group input, select, textarea {
+  width:100%; padding:10px; border:1px solid #ccc; border-radius:5px;
+}
+.btn {
+  padding:12px 20px; border:none; border-radius:5px;
+  background:#3498db; color:#fff; cursor:pointer;
+}
+.btn:hover { background:#2980b9; }
+</style>
 </head>
 
 <body>
 <div class="container">
 
-  <header class="header">
-    <h1><i class="fas fa-user-cog"></i> Admin Panel</h1>
-  </header>
-
-  <div class="status-bar" id="statusBar">
-    <i class="fas fa-check-circle"></i> Ready
+<header class="header">
+  <div>
+    <h2><i class="fas fa-user-cog"></i> Admin Panel</h2>
+    <p>Umoomi Security System</p>
   </div>
+  <a href="index.html" class="btn">⬅ Back</a>
+</header>
 
-  <form id="addMemberForm">
+<div class="admin-container">
+  <aside class="admin-sidebar">
+    <strong>Add Member</strong>
+  </aside>
 
-    <input id="memberId" placeholder="UM-HO-001" required />
-    <input id="fullName" placeholder="Full Name" required />
+  <main class="admin-content">
+    <h3>Add New Member</h3>
 
-    <select id="position" required>
-      <option value="">Select Position</option>
-      <option>Sadr Mulk</option>
-      <option>Secretary</option>
-      <option>Lead</option>
-      <option>Assistant</option>
-      <option>Regional Qaid</option>
-      <option>Super Admin</option>
-    </select>
+    <form id="addMemberForm">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Member ID *</label>
+          <input id="memberId" required>
+        </div>
+        <div class="form-group">
+          <label>Full Name *</label>
+          <input id="fullName" required>
+        </div>
+        <div class="form-group">
+          <label>Position *</label>
+          <input id="position" required>
+        </div>
+        <div class="form-group">
+          <label>Department *</label>
+          <input id="department" required>
+        </div>
+        <div class="form-group">
+          <label>Region</label>
+          <input id="region">
+        </div>
+        <div class="form-group">
+          <label>Status</label>
+          <select id="status">
+            <option>Active</option>
+            <option>Inactive</option>
+            <option>Suspended</option>
+          </select>
+        </div>
+      </div>
 
-    <select id="department" required>
-      <option value="">Select Department</option>
-      <option value="HO">Head Office</option>
-      <option value="GO">General Office</option>
-      <option value="RQ">Regional</option>
-    </select>
-
-    <input id="region" placeholder="Region" />
-    <input id="phone" placeholder="+256..." />
-    <input id="email" type="email" placeholder="Email" />
-    <textarea id="address" placeholder="Address"></textarea>
-
-    <select id="status">
-      <option value="Active">Active</option>
-      <option value="Inactive">Inactive</option>
-      <option value="Suspended">Suspended</option>
-    </select>
-
-    <button type="submit">Add Member</button>
-  </form>
-
+      <br>
+      <button class="btn" type="submit">
+        <i class="fas fa-save"></i> Save Member
+      </button>
+    </form>
+  </main>
+</div>
 </div>
 
 <!-- SUPABASE -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
-/* ===============================
-   SUPABASE CONFIG (SAFE)
-================================ */
+/* =========================
+   SUPABASE INIT
+========================= */
 const SUPABASE_URL = "https://pqrsljahrnjgkadflbmr.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBxcnNsamFocm5qZ2thZGZsYm1yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA1NTg0NTYsImV4cCI6MjA4NjEzNDQ1Nn0.egED0C2iRp6j3Xp4ldgrdI0GBep2J7VUR52rBbzsVdo";
 
-const { createClient } = window.supabase;
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const supabase = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
+);
 
-/* ===============================
-   AUTO MEMBER ID
-================================ */
-document.getElementById('department').addEventListener('change', e => {
-  document.getElementById('memberId').value = `UM-${e.target.value}-001`;
-});
+/* =========================
+   AUTH CHECK
+========================= */
+(async () => {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    alert("You must be logged in to add members");
+    location.href = "index.html";
+  }
+})();
 
-/* ===============================
+/* =========================
    ADD MEMBER
-================================ */
-document.getElementById('addMemberForm').addEventListener('submit', async (e) => {
+========================= */
+document.getElementById("addMemberForm").addEventListener("submit", async (e) => {
   e.preventDefault();
-  const statusBar = document.getElementById('statusBar');
-  statusBar.innerHTML = 'Saving...';
 
-  const memberData = {
+  const payload = {
     member_id: memberId.value.trim(),
     full_name: fullName.value.trim(),
-    position: position.value,
-    department: department.value,
-    region: region.value || null,
-    phone: phone.value || null,
-    email: email.value || null,
-    address: address.value || null,
-    status: status.value,
-    current_location: null,
-    last_scan: null,
-    qr_code_url: `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=UMOOMI:${memberId.value}`
+    position: position.value.trim(),
+    department: department.value.trim(),
+    region: region.value.trim(),
+    status: status.value
   };
 
-  try {
-    // CHECK DUPLICATE
-    const { data: existing, error: checkError } = await supabase
-      .from('umoomi_members')
-      .select('member_id')
-      .eq('member_id', memberData.member_id)
-      .maybeSingle();
+  const { error } = await supabase
+    .from("umoomi_members")
+    .insert([payload]);
 
-    if (checkError) throw checkError;
-    if (existing) throw new Error('Member ID already exists');
-
-    // INSERT
-    const { error } = await supabase
-      .from('umoomi_members')
-      .insert(memberData);
-
-    if (error) throw error;
-
-    statusBar.innerHTML = '✅ Member added successfully';
+  if (error) {
+    alert("❌ Error: " + error.message);
+  } else {
+    alert("✅ Member added successfully");
     e.target.reset();
-
-  } catch (err) {
-    console.error(err);
-    statusBar.innerHTML = `❌ ${err.message}`;
   }
 });
 </script>
+
 </body>
 </html>
