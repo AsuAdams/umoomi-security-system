@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Umoomi Security System - Ahmadiyya Muslim Community Uganda</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <i class="fas fa-shield-alt"></i>
+                <h1>Umoomi Security System</h1>
+                <p>Ahmadiyya Muslim Community Uganda</p>
+            </div>
+            <div class="user-info" id="userInfo">
+                <span id="userName">Guest</span>
+                <button id="loginBtn" class="btn btn-primary">Login</button>
+                <button id="logoutBtn" class="btn btn-danger" style="display:none;">Logout</button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <nav>
+                    <ul>
+                        <li><a href="index.html" class="active"><i class="fas fa-home"></i> Dashboard</a></li>
+                        <li><a href="scanner.html"><i class="fas fa-qrcode"></i> Scan ID Card</a></li>
+                        <li><a href="admin.html"><i class="fas fa-user-cog"></i> Admin Panel</a></li>
+                        <li><a href="#"><i class="fas fa-id-card"></i> Generate Cards</a></li>
+                        <li><a href="#"><i class="fas fa-history"></i> Activity Logs</a></li>
+                        <li><a href="#"><i class="fas fa-cog"></i> Settings</a></li>
+                    </ul>
+                </nav>
+            </aside>
+
+            <!-- Dashboard Content -->
+            <main class="dashboard">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <i class="fas fa-users"></i>
+                        <h3>Total Members</h3>
+                        <p class="number" id="totalMembers">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-user-check"></i>
+                        <h3>Active Members</h3>
+                        <p class="number" id="activeMembers">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <h3>Regions</h3>
+                        <p class="number" id="totalRegions">20</p>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-clock"></i>
+                        <h3>Last Scan</h3>
+                        <p class="number" id="lastScan">-</p>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h2><i class="fas fa-users"></i> All Members</h2>
+                    <div class="search-bar">
+                        <input type="text" id="searchInput" placeholder="Search members...">
+                        <button class="btn btn-primary"><i class="fas fa-search"></i></button>
+                    </div>
+                    <div class="table-container">
+                        <table id="membersTable">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Position</th>
+                                    <th>Department</th>
+                                    <th>Region</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="membersTableBody">
+                                <!-- Data will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <!-- Member Details Modal -->
+        <div id="memberModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <div id="memberDetails"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/config.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/members.js"></script>
+</body>
+</html>

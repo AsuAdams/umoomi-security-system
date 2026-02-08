@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scan ID Card - Umoomi Security</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/scanner.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="logo">
+                <i class="fas fa-qrcode"></i>
+                <h1>ID Card Scanner</h1>
+                <p>Umoomi Security System</p>
+            </div>
+            <a href="index.html" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+        </header>
+
+        <div class="scanner-container">
+            <div class="scanner-box">
+                <h2><i class="fas fa-camera"></i> Scan Member ID Card</h2>
+                <div id="reader"></div>
+                <div class="scanner-status">
+                    <p id="statusMessage">Point camera at QR code...</p>
+                </div>
+            </div>
+
+            <div class="member-info-box" id="memberInfoBox">
+                <h2><i class="fas fa-user"></i> Member Details</h2>
+                <div id="memberInfo" class="member-info">
+                    <p>Scan an ID card to view details</p>
+                </div>
+                <div class="location-update">
+                    <h3><i class="fas fa-map-marker-alt"></i> Update Location</h3>
+                    <input type="text" id="locationInput" placeholder="Enter current location...">
+                    <button class="btn btn-primary" id="updateLocationBtn">Update Location</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scan History -->
+        <div class="scan-history">
+            <h2><i class="fas fa-history"></i> Recent Scans</h2>
+            <div id="scanHistoryList"></div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/scanner.js"></script>
+</body>
+</html>
