@@ -1,56 +1,111 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin Panel - Umoomi Security</title>
-
-  <link rel="stylesheet" href="css/style.css" />
-  <link rel="stylesheet" href="css/admin.css" />
-  <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Umoomi Security</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
+    <div class="container">
+        <header class="header">
+            <div class="logo">
+                <i class="fas fa-user-cog"></i>
+                <h1>Admin Panel</h1>
+                <p>Umoomi Security System Management</p>
+            </div>
+            <a href="index.html" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+        </header>
 
-<div class="container">
-  <h2>Add New Member</h2>
+        <div class="admin-container">
+            <div class="admin-sidebar">
+                <nav>
+                    <ul>
+                        <li><a href="#add-member" class="active"><i class="fas fa-user-plus"></i> Add Member</a></li>
+                        <li><a href="#edit-member"><i class="fas fa-edit"></i> Edit Member</a></li>
+                        <li><a href="#manage-users"><i class="fas fa-users-cog"></i> Manage Users</a></li>
+                        <li><a href="#generate-cards"><i class="fas fa-id-card"></i> Generate Cards</a></li>
+                        <li><a href="#activity-logs"><i class="fas fa-history"></i> Activity Logs</a></li>
+                        <li><a href="#settings"><i class="fas fa-cog"></i> Settings</a></li>
+                    </ul>
+                </nav>
+            </div>
 
-  <form id="addMemberForm">
-    <input id="memberId" placeholder="Member ID" required />
-    <input id="fullName" placeholder="Full Name" required />
+            <div class="admin-content">
+                <!-- Add Member Form -->
+                <div id="add-member" class="admin-section active">
+                    <h2><i class="fas fa-user-plus"></i> Add New Member</h2>
+                    <form id="addMemberForm">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Member ID *</label>
+                                <input type="text" id="memberId" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Full Name *</label>
+                                <input type="text" id="fullName" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Position *</label>
+                                <select id="position" required>
+                                    <option value="">Select Position</option>
+                                    <option value="Sadr Mulk">Sadr Mulk</option>
+                                    <option value="Secretary">Secretary</option>
+                                    <option value="Lead">Lead</option>
+                                    <option value="Assistant">Assistant</option>
+                                    <option value="Regional Qaid">Regional Qaid</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Department *</label>
+                                <select id="department" required>
+                                    <option value="">Select Department</option>
+                                    <option value="Head Office">Head Office</option>
+                                    <option value="General Office">General Office</option>
+                                    <option value="Regional">Regional</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Region</label>
+                                <input type="text" id="region">
+                            </div>
+                            <div class="form-group">
+                                <label>Phone</label>
+                                <input type="tel" id="phone">
+                            </div>
+                            <div class="form-group">
+                                <label>Email</label>
+                                <input type="email" id="email">
+                            </div>
+                            <div class="form-group">
+                                <label>Address</label>
+                                <textarea id="address" rows="2"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Status</label>
+                                <select id="status">
+                                    <option value="Active">Active</option>
+                                    <option value="Inactive">Inactive</option>
+                                    <option value="Suspended">Suspended</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-large">
+                            <i class="fas fa-save"></i> Add Member
+                        </button>
+                    </form>
+                </div>
 
-    <select id="position" required>
-      <option value="">Position</option>
-      <option>Sadr Mulk</option>
-      <option>Secretary</option>
-      <option>Lead</option>
-    </select>
+                <!-- Other admin sections will be added here -->
+            </div>
+        </div>
+    </div>
 
-    <select id="department" required>
-      <option value="">Department</option>
-      <option>Head Office</option>
-      <option>Regional</option>
-    </select>
-
-    <input id="region" placeholder="Region" />
-    <input id="phone" placeholder="Phone" />
-    <input id="email" placeholder="Email" />
-    <textarea id="address" placeholder="Address"></textarea>
-
-    <select id="status">
-      <option>Active</option>
-      <option>Inactive</option>
-      <option>Suspended</option>
-    </select>
-
-    <button type="submit">Add Member</button>
-  </form>
-</div>
-
-<!-- ORDER MATTERS -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/supabase.js"></script>
-<script src="js/admin.js"></script>
-
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/config.js"></script>
+    <script src="js/admin.js"></script>
 </body>
 </html>
