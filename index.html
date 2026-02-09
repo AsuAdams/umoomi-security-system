@@ -1,165 +1,206 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
+<meta charset="UTF-8" />
 <title>Umoomi Security System</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
 body {
   margin: 0;
-  font-family: "Segoe UI", sans-serif;
-  background: linear-gradient(135deg, #6a6fdc, #7b5fc9);
+  font-family: Arial, sans-serif;
+  background: linear-gradient(180deg,#6f7ae6,#7b64c7);
 }
-
-.header {
-  background: #fff;
-  padding: 15px 30px;
+header {
+  background: white;
+  margin: 20px;
+  padding: 16px 24px;
+  border-radius: 12px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 4px 10px rgba(0,0,0,.1);
 }
-
-.logo {
+header h1 {
+  margin: 0;
+  font-size: 22px;
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 1.3rem;
-  font-weight: 600;
+}
+header span {
+  color: #7a7a7a;
+  font-size: 14px;
+}
+.login-btn {
+  background:#2d9cdb;
+  color:white;
+  padding:8px 14px;
+  border-radius:6px;
+  text-decoration:none;
+  font-size:14px;
 }
 
-.container {
+.layout {
   display: flex;
-  padding: 20px;
   gap: 20px;
+  padding: 0 20px 20px;
 }
 
-.sidebar {
-  width: 220px;
-  background: #fff;
-  border-radius: 10px;
-  padding: 15px;
+aside {
+  width: 240px;
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
 }
-
-.sidebar a {
-  display: block;
-  padding: 10px;
-  color: #333;
-  text-decoration: none;
-  border-radius: 6px;
-  margin-bottom: 5px;
+aside button {
+  width: 100%;
+  border: none;
+  background: none;
+  padding: 12px;
+  margin-bottom: 6px;
+  border-radius: 8px;
+  text-align: left;
+  font-size: 15px;
   cursor: pointer;
 }
-
-.sidebar a.active,
-.sidebar a:hover {
-  background: #3498db;
-  color: #fff;
+aside button.active,
+aside button:hover {
+  background:#2d9cdb;
+  color:white;
 }
 
-.main {
+main {
   flex: 1;
-  background: #fff;
-  border-radius: 10px;
+  background: white;
+  border-radius: 12px;
   padding: 20px;
 }
 
-.cards {
+.stats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
-  gap: 15px;
+  grid-template-columns: repeat(4,1fr);
+  gap: 16px;
   margin-bottom: 20px;
 }
-
 .card {
-  background: linear-gradient(135deg,#2c3e50,#3498db);
-  color: white;
+  background: linear-gradient(180deg,#264b63,#2d9cdb);
+  color:white;
   padding: 20px;
-  border-radius: 10px;
+  border-radius: 12px;
   text-align: center;
 }
-
+.card i {
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+.card h3 {
+  margin: 10px 0 6px;
+  font-size: 16px;
+}
 .card p {
-  font-size: 2rem;
-  margin: 5px 0 0;
+  font-size: 28px;
+  margin: 0;
+  font-weight: bold;
 }
 
-.hidden { display: none; }
+h2 {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-top:0;
+}
 
-input {
-  padding: 8px;
-  width: 300px;
-  margin-bottom: 10px;
+.search {
+  display:flex;
+  gap:10px;
+  margin-bottom:10px;
+}
+.search input {
+  flex:1;
+  padding:10px;
+  border-radius:6px;
+  border:1px solid #ccc;
+}
+.search button {
+  padding:10px 14px;
+  border:none;
+  border-radius:6px;
+  background:#2d9cdb;
+  color:white;
 }
 
 table {
-  width: 100%;
-  border-collapse: collapse;
+  width:100%;
+  border-collapse:collapse;
+}
+thead {
+  background:#2c3e50;
+  color:white;
+}
+th,td {
+  padding:12px;
+  text-align:left;
+}
+tbody tr:hover {
+  background:#f2f2f2;
 }
 
-th {
-  background: #2c3e50;
-  color: white;
-  padding: 12px;
+.center {
+  text-align:center;
+  padding:40px;
+  color:#666;
 }
 
-td {
-  padding: 10px;
-  border-bottom: 1px solid #eee;
-}
-
-.badge {
-  padding: 4px 10px;
-  border-radius: 20px;
-  font-size: .8rem;
-}
-
-.active { background:#d4edda;color:#155724; }
-.inactive { background:#e2e3e5;color:#383d41; }
-.suspended { background:#f8d7da;color:#721c24; }
-
-.card-preview {
-  width: 300px;
-  border: 2px solid #333;
-  padding: 15px;
-  border-radius: 10px;
-  margin-top: 10px;
-}
+section { display:none; }
+section.active { display:block; }
 </style>
 </head>
 
 <body>
 
-<div class="header">
-  <div class="logo">
-    <i class="fas fa-shield-alt"></i>
-    Umoomi Security System
+<header>
+  <div>
+    <h1><i class="fas fa-shield-alt"></i> Umoomi Security System</h1>
+    <span>Ahmadiyya Muslim Community Uganda</span>
   </div>
-  <div>Guest</div>
-</div>
-
-<div class="container">
-
-  <div class="sidebar">
-    <a class="active" onclick="showPage('dashboard')">Dashboard</a>
-    <a onclick="showPage('scanner')">Scan ID Card</a>
-    <a onclick="showPage('cards')">Generate Cards</a>
+  <div>
+    <span>Guest</span>
+    <a class="login-btn">Login</a>
   </div>
+</header>
 
-  <div class="main">
+<div class="layout">
+
+  <aside>
+    <button class="active" onclick="showView(event,'dashboard')"><i class="fas fa-home"></i> Dashboard</button>
+    <button onclick="showView(event,'scan')"><i class="fas fa-qrcode"></i> Scan ID Card</button>
+    <button onclick="showView(event,'admin')"><i class="fas fa-user-cog"></i> Admin Panel</button>
+    <button onclick="showView(event,'cards')"><i class="fas fa-id-card"></i> Generate Cards</button>
+    <button onclick="showView(event,'logs')"><i class="fas fa-history"></i> Activity Logs</button>
+    <button onclick="showView(event,'settings')"><i class="fas fa-cog"></i> Settings</button>
+  </aside>
+
+  <main>
 
     <!-- DASHBOARD -->
-    <div id="dashboard">
-      <div class="cards">
-        <div class="card">Total Members<p id="totalMembers">0</p></div>
-        <div class="card">Active Members<p id="activeMembers">0</p></div>
-        <div class="card">Regions<p id="regions">0</p></div>
+    <section id="dashboard" class="active">
+
+      <div class="stats">
+        <div class="card"><i class="fas fa-users"></i><h3>Total Members</h3><p id="totalMembers">0</p></div>
+        <div class="card"><i class="fas fa-user-check"></i><h3>Active Members</h3><p id="activeMembers">0</p></div>
+        <div class="card"><i class="fas fa-map-marker-alt"></i><h3>Regions</h3><p id="regions">0</p></div>
+        <div class="card"><i class="fas fa-clock"></i><h3>Last Scan</h3><p id="lastScan">–</p></div>
       </div>
 
-      <input id="searchInput" placeholder="Search members...">
+      <h2><i class="fas fa-users"></i> All Members</h2>
+
+      <div class="search">
+        <input id="searchInput" placeholder="Search members..." />
+        <button><i class="fas fa-search"></i></button>
+      </div>
 
       <table>
         <thead>
@@ -168,107 +209,97 @@ td {
             <th>Department</th><th>Region</th><th>Status</th>
           </tr>
         </thead>
-        <tbody id="membersBody"></tbody>
+        <tbody id="membersBody">
+          <tr>
+            <td colspan="6" class="center">
+              <i class="fas fa-spinner fa-spin"></i><br/>
+              Loading members from database...
+            </td>
+          </tr>
+        </tbody>
       </table>
-    </div>
+    </section>
 
-    <!-- SCANNER -->
-    <div id="scanner" class="hidden">
-      <h2>Scan ID Card</h2>
-      <p>Camera scanning (QR / Barcode) will work on HTTPS.</p>
-      <video id="video" width="400" autoplay></video>
-    </div>
+    <section id="scan"><div class="center">📷 Scanner coming next</div></section>
+    <section id="admin"><div class="center">🔒 Admin panel</div></section>
+    <section id="cards"><div class="center">🪪 Card generator</div></section>
+    <section id="logs"><div class="center">📜 Activity logs</div></section>
+    <section id="settings"><div class="center">⚙ Settings</div></section>
 
-    <!-- GENERATE CARD -->
-    <div id="cards" class="hidden">
-      <h2>Generate ID Card</h2>
-      <select id="cardMember"></select>
-      <button onclick="generateCard()">Generate</button>
-
-      <div id="cardPreview"></div>
-    </div>
-
-  </div>
+  </main>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+/* ========= SUPABASE (WORKING PATTERN) ========= */
+
 const SUPABASE_URL = "https://pqrsljahrnjgkadflbmr.supabase.co";
 const SUPABASE_ANON_KEY =
 "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBxcnNsamFocm5qZ2thZGZsYm1yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA1NTg0NTYsImV4cCI6MjA4NjEzNDQ1Nn0.egED0C2iRp6j3Xp4ldgrdI0GBep2J7VUR52rBbzsVdo";
-
 
 const client = window.supabase.createClient(
   SUPABASE_URL,
   SUPABASE_ANON_KEY
 );
 
-let members = [];
+let allMembers = [];
 
-function showPage(id) {
-  document.querySelectorAll(".main > div").forEach(d => d.classList.add("hidden"));
-  document.getElementById(id).classList.remove("hidden");
-}
-
+/* ========= LOAD MEMBERS ========= */
 async function loadMembers() {
-  const { data } = await client.from("umoomi_members").select("*");
-  members = data || [];
-  renderTable(members);
-  populateStats();
-  populateCardSelect();
-}
+  const tbody = document.getElementById("membersBody");
 
-function renderTable(list) {
-  const body = document.getElementById("membersBody");
-  body.innerHTML = "";
-  list.forEach(m => {
-    body.innerHTML += `
+  try {
+    const { data, error } = await client
+      .from("umoomi_members")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (error) throw error;
+
+    allMembers = data;
+    tbody.innerHTML = "";
+
+    data.forEach(m => {
+      tbody.innerHTML += `
+        <tr>
+          <td>${m.member_id ?? "-"}</td>
+          <td>${m.full_name ?? "-"}</td>
+          <td>${m.position ?? "-"}</td>
+          <td>${m.department ?? "-"}</td>
+          <td>${m.region ?? "-"}</td>
+          <td>${m.status ?? "-"}</td>
+        </tr>`;
+    });
+
+    // Stats
+    document.getElementById("totalMembers").textContent = data.length;
+    document.getElementById("activeMembers").textContent =
+      data.filter(m => m.status === "Active").length;
+    document.getElementById("regions").textContent =
+      new Set(data.map(m => m.region).filter(Boolean)).size;
+
+    const last = data.filter(m => m.last_scan)
+      .sort((a,b)=>new Date(b.last_scan)-new Date(a.last_scan))[0];
+    document.getElementById("lastScan").textContent =
+      last ? new Date(last.last_scan).toLocaleString() : "–";
+
+  } catch (err) {
+    console.error(err);
+    tbody.innerHTML = `
       <tr>
-        <td>${m.member_id}</td>
-        <td>${m.full_name}</td>
-        <td>${m.position}</td>
-        <td>${m.department}</td>
-        <td>${m.region || "-"}</td>
-        <td><span class="badge ${m.status.toLowerCase()}">${m.status}</span></td>
+        <td colspan="6" class="center">❌ ${err.message}</td>
       </tr>`;
-  });
+  }
 }
 
-function populateStats() {
-  document.getElementById("totalMembers").textContent = members.length;
-  document.getElementById("activeMembers").textContent =
-    members.filter(m => m.status === "Active").length;
-  document.getElementById("regions").textContent =
-    new Set(members.map(m => m.region).filter(Boolean)).size;
+/* ========= VIEW SWITCH ========= */
+function showView(e,id) {
+  document.querySelectorAll("section").forEach(s=>s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  document.querySelectorAll("aside button").forEach(b=>b.classList.remove("active"));
+  e.currentTarget.classList.add("active");
 }
 
-document.getElementById("searchInput").addEventListener("input", e => {
-  const v = e.target.value.toLowerCase();
-  renderTable(members.filter(m =>
-    m.full_name.toLowerCase().includes(v) ||
-    m.member_id.toLowerCase().includes(v)
-  ));
-});
-
-function populateCardSelect() {
-  const sel = document.getElementById("cardMember");
-  sel.innerHTML = members.map(m =>
-    `<option value="${m.member_id}">${m.full_name}</option>`
-  ).join("");
-}
-
-function generateCard() {
-  const id = document.getElementById("cardMember").value;
-  const m = members.find(x => x.member_id === id);
-  document.getElementById("cardPreview").innerHTML = `
-    <div class="card-preview">
-      <h3>${m.full_name}</h3>
-      <p>${m.position}</p>
-      <p>ID: ${m.member_id}</p>
-      <p>${m.department}</p>
-    </div>`;
-}
-
+/* ========= INIT ========= */
 loadMembers();
 </script>
 
