@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Scan Logs | Umoomi Security</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- FONT AWESOME -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"/>
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background: #f2f2f2;
+      padding: 20px;
+    }
+
+    .container { max-width: 1200px; margin: auto; }
+
+    header {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      box-shadow: 0 4px 6px rgba(0,0,0,.1);
+      margin-bottom: 20px;
+    }
+
+    header i {
+      font-size: 2.2rem;
+      color: #2c3e50;
+    }
+
+    main {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0,0,0,.1);
+    }
+
+    h2 { margin-bottom: 15px; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th {
+      background: #2c3e50;
+      color: white;
+      padding: 14px;
+      text-align: left;
+      position: sticky;
+      top: 0;
+    }
+
+    td {
+      padding: 12px;
+      border-bottom: 1px solid #eee;
+    }
+
+    tr:hover { background: #f8f9fa; }
+
+    .badge {
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: .85rem;
+      font-weight: 600;
+      display: inline-block;
+    }
+
+    .valid { background: #d4edda; color: #155724; }
+    .invalid { background: #f8d7da; color: #721c24; }
+    .expired { background: #fff3cd; color: #856404; }
+
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #555;
+    }
+  </style>
+</head>
+
+<body>
+<div class="container">
+
+<header>
+  <i class="fas fa-clipboard-list"></i>
+  <div>
+    <h2>Scan Activity Logs</h2>
+    <small>Admin Security Audit</small>
+  </div>
+</header>
+
+<main>
+  <table>
+    <thead>
+      <tr>
+        <th>Date & Time</th>
+        <th>Member ID</th>
+        <th>Name</th>
+        <th>Status</th>
+        <th>Result</th>
+      </tr>
+    </thead>
+    <tbody id="logsBody">
+      <tr>
+        <td colspan="5" class="loading">
+          <i class="fas fa-spinner fa-spin"></i> Loading scan logs...
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</main>
+
+</div>
+
+<!-- SUPABASE -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+/* 🔐 SIMPLE ADMIN PASSWORD */
+const ADMIN_PASSWORD = "admin123"; // change later
+
+if (!sessionStorage.getItem("admin")) {
+  const pass = prompt("Enter Admin Password:");
+  if (pass !== ADMIN_PASSWORD) {
+    alert("Access denied");
+    location.href = "index.html";
+  } else {
+    sessionStorage.setItem("admin", "true");
+  }
+}
+
+/* SUPABASE CLIENT */
+const client = window.supabase.createClient(
+  "https://pqrsljahrnjgkadflbmr.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBxcnNsamFocm5qZ2thZGZsYm1yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA1NTg0NTYsImV4cCI6MjA4NjEzNDQ1Nn0.egED0C2iRp6j3Xp4ldgrdI0GBep2J7VUR52rBbzsVdo"
+);
+
+/* LOAD LOGS */
+async function loadLogs() {
+  const { data, error } = await client
+    .from("scan_logs")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    logsBody.innerHTML = `<tr><td colspan="5">${error.message}</td></tr>`;
+    return;
+  }
+
+  logsBody.innerHTML = data.map(log => {
+    let badgeClass = "invalid";
+    if (log.result === "VALID") badgeClass = "valid";
+    if (log.result === "EXPIRED") badgeClass = "expired";
+
+    return `
+      <tr>
+        <td>${new Date(log.created_at).toLocaleString()}</td>
+        <td>${log.member_id}</td>
+        <td>${log.full_name || "-"}</td>
+        <td>${log.status || "-"}</td>
+        <td><span class="badge ${badgeClass}">${log.result}</span></td>
+      </tr>
+    `;
+  }).join("");
+}
+
+loadLogs();
+</script>
+</body>
+</html>

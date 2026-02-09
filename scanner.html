@@ -1,196 +1,176 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Umoomi Scanner</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8">
+<title>Umoomi ID Scanner</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <!-- Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://unpkg.com/html5-qrcode"></script>
 
-  <!-- QR Scanner -->
-  <script src="https://unpkg.com/html5-qrcode"></script>
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #111;
+  color: white;
+  text-align: center;
+  padding: 20px;
+}
 
-  <!-- Supabase -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+#scanner {
+  max-width: 350px;
+  margin: auto;
+}
 
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f4f6f8;
-      margin: 0;
-      padding: 20px;
-    }
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  align-items: center;
+  justify-content: center;
+}
 
-    h1 {
-      text-align: center;
-      margin-bottom: 10px;
-    }
+.card {
+  background: white;
+  color: black;
+  border-radius: 12px;
+  width: 320px;
+  padding: 20px;
+  animation: pop .3s ease;
+}
 
-    #scanner {
-      max-width: 400px;
-      margin: 20px auto;
-      border-radius: 10px;
-      overflow: hidden;
-    }
+.valid { border-top: 8px solid #27ae60; }
+.invalid { border-top: 8px solid #e74c3c; }
 
-    /* Modal */
-    .modal {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.7);
-      z-index: 999;
-      align-items: center;
-      justify-content: center;
-    }
+img {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+}
 
-    .card {
-      background: white;
-      border-radius: 12px;
-      width: 340px;
-      padding: 20px;
-      text-align: center;
-      animation: pop 0.3s ease;
-    }
+.status {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-top: 10px;
+}
 
-    @keyframes pop {
-      from { transform: scale(0.8); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
-    }
-
-    .card.valid {
-      border-top: 8px solid #27ae60;
-    }
-
-    .card.invalid {
-      border-top: 8px solid #e74c3c;
-    }
-
-    .photo {
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
-      object-fit: cover;
-      margin-bottom: 10px;
-      border: 4px solid #ddd;
-    }
-
-    .status {
-      margin-top: 10px;
-      font-weight: bold;
-      font-size: 1.1rem;
-    }
-
-    .valid .status {
-      color: #27ae60;
-    }
-
-    .invalid .status {
-      color: #e74c3c;
-    }
-
-    .close {
-      margin-top: 15px;
-      padding: 10px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      background: #333;
-      color: white;
-      width: 100%;
-    }
-  </style>
+button {
+  margin-top: 15px;
+  padding: 10px;
+  width: 100%;
+  border: none;
+  border-radius: 6px;
+  background: #333;
+  color: white;
+}
+</style>
 </head>
+
 <body>
 
-<h1><i class="fas fa-qrcode"></i> ID Card Scanner</h1>
-<p style="text-align:center;color:#555;">Scan Member ID QR Code</p>
+<h2>🛂 Security Scanner</h2>
+<p>Scan Member QR Card</p>
 
 <div id="scanner"></div>
 
-<!-- POPUP -->
+<audio id="okSound" src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg"></audio>
+<audio id="badSound" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"></audio>
+
 <div class="modal" id="modal">
   <div class="card" id="card"></div>
 </div>
 
 <script>
-  /* ===============================
-     SUPABASE (WORKING PATTERN)
-  ================================ */
-  const SUPABASE_URL = "https://pqrsljahrnjgkadflbmr.supabase.co";
+/* ================= SUPABASE ================= */
+const SUPABASE_URL = "https://pqrsljahrnjgkadflbmr.supabase.co";
 const SUPABASE_ANON_KEY =
 "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBxcnNsamFocm5qZ2thZGZsYm1yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA1NTg0NTYsImV4cCI6MjA4NjEzNDQ1Nn0.egED0C2iRp6j3Xp4ldgrdI0GBep2J7VUR52rBbzsVdo";
 
-  const supabase = window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_ANON_KEY
-  );
+const supabase = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
+);
 
-  /* ===============================
-     QR SCANNER
-  ================================ */
-  const scanner = new Html5Qrcode("scanner");
+/* ================= SCANNER ================= */
+const scanner = new Html5Qrcode("scanner");
 
-  scanner.start(
-    { facingMode: "environment" },
-    { fps: 10, qrbox: 250 },
-    async (decodedText) => {
-      scanner.stop();
-      await handleScan(decodedText);
-    }
-  );
+scanner.start(
+  { facingMode: "environment" },
+  { fps: 10, qrbox: 250 },
+  async (memberId) => {
+    scanner.stop();
+    await handleScan(memberId);
+  }
+);
 
-  /* ===============================
-     HANDLE SCAN
-  ================================ */
-  async function handleScan(memberId) {
-    const modal = document.getElementById("modal");
-    const card = document.getElementById("card");
+async function handleScan(memberId) {
+  const modal = document.getElementById("modal");
+  const card = document.getElementById("card");
 
-    try {
-      const { data, error } = await supabase
-        .from("umoomi_members")
-        .select("*")
-        .eq("member_id", memberId)
-        .single();
+  try {
+    const { data: member, error } = await supabase
+      .from("umoomi_members")
+      .select("*")
+      .eq("member_id", memberId)
+      .single();
 
-      if (error || !data) throw new Error("Invalid ID");
+    if (error || !member) throw "NOT_FOUND";
 
-      // Update last scan
-      await supabase
-        .from("umoomi_members")
-        .update({ last_scan: new Date() })
-        .eq("member_id", memberId);
+    // ❌ BLOCK INACTIVE
+    if (member.status !== "Active") throw "INACTIVE";
 
-      card.className = "card valid";
-      card.innerHTML = `
-        <img class="photo" src="${data.photo_url || 'https://via.placeholder.com/120'}">
-        <h2>${data.full_name}</h2>
-        <p><strong>ID:</strong> ${data.member_id}</p>
-        <p>${data.position} - ${data.department}</p>
-        <p>${data.region || ''}</p>
-        <div class="status">✅ VALID MEMBER</div>
-        <button class="close" onclick="closeModal()">Close</button>
-      `;
+    // ✅ SAVE SCAN LOG
+    await supabase.from("scan_logs").insert({
+      member_id: member.member_id,
+      full_name: member.full_name,
+      status: "VALID"
+    });
 
-    } catch (err) {
-      card.className = "card invalid";
-      card.innerHTML = `
-        <h2>❌ INVALID CARD</h2>
-        <p>Member not found</p>
-        <div class="status">ACCESS DENIED</div>
-        <button class="close" onclick="closeModal()">Close</button>
-      `;
-    }
+    // UPDATE LAST SCAN
+    await supabase
+      .from("umoomi_members")
+      .update({ last_scan: new Date() })
+      .eq("member_id", memberId);
 
-    modal.style.display = "flex";
+    document.getElementById("okSound").play();
+
+    card.className = "card valid";
+    card.innerHTML = `
+      <img src="${member.photo_url || 'https://via.placeholder.com/120'}">
+      <h3>${member.full_name}</h3>
+      <p>${member.position}</p>
+      <p>${member.department}</p>
+      <div class="status">✅ ACCESS GRANTED</div>
+      <button onclick="closeModal()">Close</button>
+    `;
+
+  } catch (err) {
+    document.getElementById("badSound").play();
+
+    await supabase.from("scan_logs").insert({
+      member_id: memberId,
+      full_name: "UNKNOWN",
+      status: "DENIED"
+    });
+
+    card.className = "card invalid";
+    card.innerHTML = `
+      <h3>❌ ACCESS DENIED</h3>
+      <p>Invalid or Inactive ID</p>
+      <div class="status">SECURITY ALERT</div>
+      <button onclick="closeModal()">Close</button>
+    `;
   }
 
-  function closeModal() {
-    document.getElementById("modal").style.display = "none";
-    location.reload();
-  }
+  modal.style.display = "flex";
+}
+
+function closeModal() {
+  document.getElementById("modal").style.display = "none";
+  location.reload();
+}
 </script>
 
 </body>
