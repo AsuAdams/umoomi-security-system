@@ -2,175 +2,192 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Umoomi ID Scanner</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Scan ID – Umoomi Security System</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- ICONS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"/>
+
+<!-- QR SCANNER -->
 <script src="https://unpkg.com/html5-qrcode"></script>
 
 <style>
-body {
-  font-family: Arial, sans-serif;
-  background: #111;
-  color: white;
-  text-align: center;
-  padding: 20px;
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Segoe UI",sans-serif;background:#f2f2f2;padding:20px}
+.container{max-width:1200px;margin:auto}
+
+/* HEADER */
+header{
+  background:#fff;padding:20px;border-radius:10px;
+  display:flex;align-items:center;gap:15px;
+  box-shadow:0 4px 6px rgba(0,0,0,.1);
+  margin-bottom:20px
+}
+header i{font-size:2.5rem;color:#2c3e50}
+
+/* SCAN AREA */
+.scan-box{
+  background:#fff;
+  border-radius:10px;
+  padding:20px;
+  box-shadow:0 4px 6px rgba(0,0,0,.1);
+  max-width:420px;
+  margin:auto;
+  text-align:center
 }
 
-#scanner {
-  max-width: 350px;
-  margin: auto;
+/* RESULT MODAL */
+.modal{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.8);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:999
 }
-
-.modal {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.85);
-  align-items: center;
-  justify-content: center;
+.result-card{
+  width:380px;
+  height:240px;
+  border-radius:14px;
+  padding:15px;
+  color:#fff;
+  position:relative;
+  display:grid;
+  grid-template-columns:100px 1fr;
+  gap:12px
 }
-
-.card {
-  background: white;
-  color: black;
-  border-radius: 12px;
-  width: 320px;
-  padding: 20px;
-  animation: pop .3s ease;
+.result-card.valid{
+  background:linear-gradient(135deg,#1e7e34,#28a745)
 }
-
-.valid { border-top: 8px solid #27ae60; }
-.invalid { border-top: 8px solid #e74c3c; }
-
-img {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  object-fit: cover;
+.result-card.invalid{
+  background:linear-gradient(135deg,#6c1b1b,#c0392b)
 }
-
-.status {
-  font-size: 1.2rem;
-  font-weight: bold;
-  margin-top: 10px;
+.result-card.invalid img{
+  filter:blur(4px)
 }
-
-button {
-  margin-top: 15px;
-  padding: 10px;
-  width: 100%;
-  border: none;
-  border-radius: 6px;
-  background: #333;
-  color: white;
+.result-card img{
+  width:100px;
+  height:120px;
+  border-radius:8px;
+  object-fit:cover;
+  border:2px solid #fff
+}
+.result-icon{
+  position:absolute;
+  top:15px;
+  right:15px;
+  font-size:3.2rem
+}
+.result-icon.valid{color:#2ecc71}
+.result-icon.invalid{color:#ff6b6b}
+.result-status{
+  position:absolute;
+  bottom:15px;
+  left:15px;
+  font-size:1.3rem;
+  font-weight:bold
 }
 </style>
 </head>
 
 <body>
+<div class="container">
 
-<h2>🛂 Security Scanner</h2>
-<p>Scan Member QR Card</p>
+<header>
+  <i class="fas fa-qrcode"></i>
+  <div>
+    <h2>Scan ID Card</h2>
+    <small>Umoomi Security System</small>
+  </div>
+</header>
 
-<div id="scanner"></div>
-
-<audio id="okSound" src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg"></audio>
-<audio id="badSound" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"></audio>
-
-<div class="modal" id="modal">
-  <div class="card" id="card"></div>
+<div class="scan-box">
+  <div id="reader" style="width:320px;margin:auto"></div>
+  <p style="margin-top:10px;color:#666">Align QR code inside the box</p>
 </div>
 
+</div>
+
+<!-- RESULT MODAL -->
+<div class="modal" id="modal"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-/* ================= SUPABASE ================= */
-const SUPABASE_URL = "https://pqrsljahrnjgkadflbmr.supabase.co";
-const SUPABASE_ANON_KEY =
-"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBxcnNsamFocm5qZ2thZGZsYm1yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA1NTg0NTYsImV4cCI6MjA4NjEzNDQ1Nn0.egED0C2iRp6j3Xp4ldgrdI0GBep2J7VUR52rBbzsVdo";
-
-const supabase = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_ANON_KEY
+/* SUPABASE */
+const client = window.supabase.createClient(
+  "https://pqrsljahrnjgkadflbmr.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBxcnNsamFocm5qZ2thZGZsYm1yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA1NTg0NTYsImV4cCI6MjA4NjEzNDQ1Nn0.egED0C2iRp6j3Xp4ldgrdI0GBep2J7VUR52rBbzsVdo"
 );
 
-/* ================= SCANNER ================= */
-const scanner = new Html5Qrcode("scanner");
+let scanner;
+startScanner();
 
-scanner.start(
-  { facingMode: "environment" },
-  { fps: 10, qrbox: 250 },
-  async (memberId) => {
-    scanner.stop();
-    await handleScan(memberId);
-  }
-);
-
-async function handleScan(memberId) {
-  const modal = document.getElementById("modal");
-  const card = document.getElementById("card");
-
-  try {
-    const { data: member, error } = await supabase
-      .from("umoomi_members")
-      .select("*")
-      .eq("member_id", memberId)
-      .single();
-
-    if (error || !member) throw "NOT_FOUND";
-
-    // ❌ BLOCK INACTIVE
-    if (member.status !== "Active") throw "INACTIVE";
-
-    // ✅ SAVE SCAN LOG
-    await supabase.from("scan_logs").insert({
-      member_id: member.member_id,
-      full_name: member.full_name,
-      status: "VALID"
-    });
-
-    // UPDATE LAST SCAN
-    await supabase
-      .from("umoomi_members")
-      .update({ last_scan: new Date() })
-      .eq("member_id", memberId);
-
-    document.getElementById("okSound").play();
-
-    card.className = "card valid";
-    card.innerHTML = `
-      <img src="${member.photo_url || 'https://via.placeholder.com/120'}">
-      <h3>${member.full_name}</h3>
-      <p>${member.position}</p>
-      <p>${member.department}</p>
-      <div class="status">✅ ACCESS GRANTED</div>
-      <button onclick="closeModal()">Close</button>
-    `;
-
-  } catch (err) {
-    document.getElementById("badSound").play();
-
-    await supabase.from("scan_logs").insert({
-      member_id: memberId,
-      full_name: "UNKNOWN",
-      status: "DENIED"
-    });
-
-    card.className = "card invalid";
-    card.innerHTML = `
-      <h3>❌ ACCESS DENIED</h3>
-      <p>Invalid or Inactive ID</p>
-      <div class="status">SECURITY ALERT</div>
-      <button onclick="closeModal()">Close</button>
-    `;
-  }
-
-  modal.style.display = "flex";
+/* START SCANNER */
+function startScanner(){
+  scanner = new Html5Qrcode("reader");
+  scanner.start(
+    { facingMode:"environment" },
+    { fps:10, qrbox:250 },
+    onScan
+  );
 }
 
-function closeModal() {
-  document.getElementById("modal").style.display = "none";
-  location.reload();
+/* ON SCAN */
+async function onScan(text){
+  await scanner.stop();
+  scanner=null;
+
+  let valid=false;
+  let member=null;
+
+  /* CHECK MEMBER */
+  const { data } = await client
+    .from("umoomi_members")
+    .select("*")
+    .eq("member_id", text)
+    .single();
+
+  if(data && data.status==="Active"){
+    valid=true;
+    member=data;
+  }
+
+  /* SAVE LOG */
+  await client.from("scan_logs").insert({
+    member_id: text,
+    member_name: member ? member.full_name : null,
+    valid: valid
+  });
+
+  /* SHOW RESULT */
+  showResult(valid, member, text);
 }
+
+/* SHOW RESULT */
+function showResult(valid, member, scannedId){
+  modal.innerHTML=`
+    <div class="result-card ${valid?"valid":"invalid"}">
+      <img src="${member?.photo_url || 'https://via.placeholder.com/120'}">
+      <div>
+        <h3>${member?.full_name || "Unknown Member"}</h3>
+        <p>ID: ${scannedId}</p>
+      </div>
+      <div class="result-icon ${valid?"valid":"invalid"}">
+        <i class="fas ${valid?"fa-check-circle":"fa-times-circle"}"></i>
+      </div>
+      <div class="result-status">
+        ${valid?"VALID MEMBER":"INVALID ID"}
+      </div>
+    </div>
+  `;
+  modal.style.display="flex";
+}
+
+/* CLOSE + RESTART */
+modal.onclick=()=>{
+  modal.style.display="none";
+  startScanner();
+};
 </script>
 
 </body>

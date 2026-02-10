@@ -8,10 +8,6 @@
 <!-- ICONS -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"/>
 
-<!-- QR SCANNER -->
-<script src="https://unpkg.com/html5-qrcode"></script>
-<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
-
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:"Segoe UI",sans-serif;background:#f2f2f2;padding:20px}
@@ -19,51 +15,72 @@ body{font-family:"Segoe UI",sans-serif;background:#f2f2f2;padding:20px}
 
 /* HEADER */
 header{
-  background:#fff;padding:20px;border-radius:10px;
-  display:flex;align-items:center;gap:15px;
+  background:#fff;
+  padding:20px;
+  border-radius:10px;
+  display:flex;
+  align-items:center;
+  gap:15px;
   box-shadow:0 4px 6px rgba(0,0,0,.1);
   margin-bottom:20px
 }
 header i{font-size:2.5rem;color:#2c3e50}
 
 /* LAYOUT */
-.layout{display:grid;grid-template-columns:240px 1fr;gap:20px}
+.layout{
+  display:grid;
+  grid-template-columns:240px 1fr;
+  gap:20px
+}
 
 /* SIDEBAR */
 aside{
-  background:#fff;border-radius:10px;padding:15px;
+  background:#fff;
+  border-radius:10px;
+  padding:15px;
   box-shadow:0 4px 6px rgba(0,0,0,.1);
   height:calc(100vh - 160px)
 }
-aside button{
-  width:100%;border:none;background:none;
-  padding:12px 15px;border-radius:6px;
-  text-align:left;color:#2c3e50;
-  cursor:pointer;margin-bottom:6px;font-size:1rem
+aside a{
+  display:block;
+  text-decoration:none;
+  width:100%;
+  padding:12px 15px;
+  border-radius:6px;
+  color:#2c3e50;
+  margin-bottom:6px;
+  font-size:1rem
 }
-aside button i{width:22px;margin-right:10px}
-aside button.active,aside button:hover{
-  background:#3498db;color:#fff
+aside a i{width:22px;margin-right:10px}
+aside a:hover,
+aside a.active{
+  background:#3498db;
+  color:#fff
 }
 
 /* MAIN */
 main{
-  background:#fff;border-radius:10px;padding:20px;
+  background:#fff;
+  border-radius:10px;
+  padding:20px;
   box-shadow:0 4px 6px rgba(0,0,0,.1);
   height:calc(100vh - 160px);
   overflow:hidden
 }
-.view{display:none}
 
-/* DASHBOARD STATS */
+/* DASHBOARD */
 .stats{
   display:grid;
   grid-template-columns:repeat(4,1fr);
-  gap:15px;margin-bottom:15px
+  gap:15px;
+  margin-bottom:15px
 }
 .stat{
   background:linear-gradient(135deg,#2c3e50,#3498db);
-  color:#fff;padding:18px;border-radius:10px;text-align:center
+  color:#fff;
+  padding:18px;
+  border-radius:10px;
+  text-align:center
 }
 .stat i{font-size:2rem;margin-bottom:6px}
 .stat .number{font-size:1.6rem;font-weight:bold}
@@ -71,51 +88,40 @@ main{
 /* SEARCH */
 .search-wrap{position:relative;margin-bottom:10px}
 .search-wrap i{
-  position:absolute;left:16px;top:50%;
-  transform:translateY(-50%);color:#888
+  position:absolute;
+  left:16px;
+  top:50%;
+  transform:translateY(-50%);
+  color:#888
 }
 .search-wrap input{
-  width:100%;padding:14px 18px 14px 48px;
-  font-size:1.05rem;border-radius:8px;border:2px solid #ddd
+  width:100%;
+  padding:14px 18px 14px 48px;
+  font-size:1.05rem;
+  border-radius:8px;
+  border:2px solid #ddd
 }
 
 /* TABLE */
 .table-scroll{max-height:calc(100vh - 420px);overflow-y:auto}
 table{width:100%;border-collapse:collapse}
 th{
-  background:#2c3e50;color:#fff;
-  padding:12px;position:sticky;top:0
+  background:#2c3e50;
+  color:#fff;
+  padding:12px;
+  position:sticky;
+  top:0
 }
 td{padding:10px;border-bottom:1px solid #eee}
-tr:hover{background:#f8f9fa;cursor:pointer}
+tr:hover{background:#f8f9fa}
 
-.badge{padding:4px 10px;border-radius:20px;font-size:.85rem}
-.active{background:#d4edda;color:#155724}
-.invalid{background:#f8d7da;color:#721c24}
-
-/* MODAL */
-.modal{
-  position:fixed;inset:0;background:rgba(0,0,0,.75);
-  display:none;align-items:center;justify-content:center;z-index:999
-}
-.id-card{
-  width:360px;height:220px;
-  background:linear-gradient(135deg,#1e2a38,#34495e);
-  color:#fff;border-radius:14px;padding:15px;
-  display:grid;grid-template-columns:90px 1fr;gap:12px;
-  position:relative
-}
-.id-card img{
-  width:90px;height:110px;border-radius:8px;
-  object-fit:cover;border:2px solid #fff
-}
-.id-card .qr{
-  position:absolute;bottom:12px;right:12px;
-  background:#fff;padding:4px;border-radius:6px
-}
-.id-card .status{
-  position:absolute;bottom:12px;left:15px;
-  font-size:.85rem;color:#2ecc71
+/* STATUS BADGE */
+.badge.active{
+  background:#d4edda;
+  color:#155724;
+  padding:4px 10px;
+  border-radius:20px;
+  font-size:.85rem
 }
 </style>
 </head>
@@ -135,24 +141,50 @@ tr:hover{background:#f8f9fa;cursor:pointer}
 
 <!-- SIDEBAR -->
 <aside>
-  <button class="active" data-view="dashboard"><i class="fas fa-users"></i> View Members</button>
-  <button data-view="scanner"><i class="fas fa-qrcode"></i> Scan ID</button>
-  <button data-view="regions"><i class="fas fa-map-marker-alt"></i> Regions</button>
-  <button data-view="logs"><i class="fas fa-history"></i> Activity Logs</button>
-  <button data-view="admin"><i class="fas fa-user-shield"></i> Admin Panel</button>
-  <button data-view="settings"><i class="fas fa-cog"></i> Settings</button>
+  <a href="index.html" class="nav-link">
+    <i class="fas fa-users"></i> Dashboard
+  </a>
+  <a href="scanner.html" class="nav-link">
+    <i class="fas fa-qrcode"></i> Scan ID
+  </a>
+  <a href="id-cards.html" class="nav-link">
+    <i class="fas fa-id-card"></i> ID Cards
+  </a>
+  <a href="scan-logs.html" class="nav-link">
+    <i class="fas fa-history"></i> Activity Logs
+  </a>
+  <a href="admin.html" class="nav-link">
+    <i class="fas fa-user-shield"></i> Admin Panel
+  </a>
+  <a href="settings.html" class="nav-link">
+    <i class="fas fa-cog"></i> Settings
+  </a>
 </aside>
 
-<!-- MAIN -->
+<!-- MAIN CONTENT -->
 <main>
 
-<!-- DASHBOARD -->
-<div id="dashboard" class="view">
   <div class="stats">
-    <div class="stat"><i class="fas fa-users"></i><div>Total</div><div id="totalMembers" class="number">0</div></div>
-    <div class="stat"><i class="fas fa-user-check"></i><div>Active</div><div id="activeMembers" class="number">0</div></div>
-    <div class="stat"><i class="fas fa-map-marker-alt"></i><div>Regions</div><div id="regionsCount" class="number">0</div></div>
-    <div class="stat"><i class="fas fa-clock"></i><div>Last Scan</div><div id="lastScan" class="number">-</div></div>
+    <div class="stat">
+      <i class="fas fa-users"></i>
+      <div>Total</div>
+      <div id="totalMembers" class="number">0</div>
+    </div>
+    <div class="stat">
+      <i class="fas fa-user-check"></i>
+      <div>Active</div>
+      <div id="activeMembers" class="number">0</div>
+    </div>
+    <div class="stat">
+      <i class="fas fa-map-marker-alt"></i>
+      <div>Regions</div>
+      <div id="regionsCount" class="number">0</div>
+    </div>
+    <div class="stat">
+      <i class="fas fa-clock"></i>
+      <div>Last Scan</div>
+      <div id="lastScan" class="number">-</div>
+    </div>
   </div>
 
   <div class="search-wrap">
@@ -162,107 +194,77 @@ tr:hover{background:#f8f9fa;cursor:pointer}
 
   <div class="table-scroll">
     <table>
-      <thead><tr><th>ID</th><th>Name</th><th>Status</th></tr></thead>
+      <thead>
+        <tr><th>ID</th><th>Name</th><th>Status</th></tr>
+      </thead>
       <tbody id="membersBody"></tbody>
     </table>
   </div>
-</div>
-
-<!-- SCANNER -->
-<div id="scanner" class="view">
-  <h2><i class="fas fa-qrcode"></i> Scan ID Card</h2>
-  <div id="reader" style="width:320px;margin-top:15px"></div>
-</div>
-
-<!-- PLACEHOLDERS -->
-<div id="regions" class="view"><h2>Regions</h2></div>
-<div id="logs" class="view"><h2>Activity Logs</h2></div>
-<div id="admin" class="view"><h2>Admin Panel</h2></div>
-<div id="settings" class="view"><h2>Settings</h2></div>
 
 </main>
 </div>
 </div>
 
-<div class="modal" id="modal"></div>
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+/* SUPABASE */
 const client = window.supabase.createClient(
   "https://pqrsljahrnjgkadflbmr.supabase.co",
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBxcnNsamFocm5qZ2thZGZsYm1yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA1NTg0NTYsImV4cCI6MjA4NjEzNDQ1Nn0.egED0C2iRp6j3Xp4ldgrdI0GBep2J7VUR52rBbzsVdo"
 );
 
-let members=[];
-let scanner;
+/* ELEMENTS */
+const totalMembers  = document.getElementById("totalMembers");
+const activeMembers = document.getElementById("activeMembers");
+const regionsCount  = document.getElementById("regionsCount");
+const lastScan      = document.getElementById("lastScan");
+const membersBody   = document.getElementById("membersBody");
+const searchInput   = document.getElementById("searchInput");
 
-/* NAVIGATION */
-document.querySelectorAll("aside button").forEach(btn=>{
-  btn.onclick=()=>{
-    document.querySelectorAll("aside button").forEach(b=>b.classList.remove("active"));
-    btn.classList.add("active");
-    document.querySelectorAll(".view").forEach(v=>v.style.display="none");
-    document.getElementById(btn.dataset.view).style.display="block";
-    if(btn.dataset.view==="scanner") startScanner();
-  };
-});
+let members = [];
 
 /* LOAD MEMBERS */
 async function loadMembers(){
-  const {data}=await client.from("umoomi_members").select("*");
-  members=data||[];
-  totalMembers.textContent=members.length;
-  activeMembers.textContent=members.filter(m=>m.status==="Active").length;
-  regionsCount.textContent=new Set(members.map(m=>m.region)).size;
+  const { data } = await client.from("umoomi_members").select("*");
+  members = data || [];
+
+  totalMembers.textContent  = members.length;
+  activeMembers.textContent = members.filter(m=>m.status==="Active").length;
+  regionsCount.textContent  = new Set(members.map(m=>m.region)).size;
+
   render(members);
 }
+
 function render(list){
-  membersBody.innerHTML=list.map(m=>`
-    <tr onclick="showCard('${m.member_id}')">
+  membersBody.innerHTML = list.map(m=>`
+    <tr>
       <td>${m.member_id}</td>
       <td>${m.full_name}</td>
       <td><span class="badge active">${m.status}</span></td>
-    </tr>`).join("");
+    </tr>
+  `).join("");
 }
 
 /* SEARCH */
-searchInput.oninput=e=>{
-  const q=e.target.value.toLowerCase();
-  render(members.filter(m=>m.full_name.toLowerCase().includes(q)||m.member_id.toLowerCase().includes(q)));
-};
+searchInput.addEventListener("input",e=>{
+  const q = e.target.value.toLowerCase();
+  render(members.filter(m =>
+    m.full_name.toLowerCase().includes(q) ||
+    m.member_id.toLowerCase().includes(q)
+  ));
+});
 
-/* SCANNER */
-function startScanner(){
-  if(scanner) return;
-  scanner=new Html5Qrcode("reader");
-  scanner.start({facingMode:"environment"},{fps:10,qrbox:250},async text=>{
-    scanner.stop();scanner=null;
-    lastScan.textContent=new Date().toLocaleTimeString();
-    alert("Scanned ID: "+text);
-  });
-}
-
-/* ID CARD */
-function showCard(id){
-  const m=members.find(x=>x.member_id===id);
-  modal.innerHTML=`
-    <div class="id-card">
-      <img src="${m.photo_url||'https://via.placeholder.com/120'}">
-      <div>
-        <h3>${m.full_name}</h3>
-        <p>ID: ${m.member_id}</p>
-      </div>
-      <div class="status">VALID</div>
-      <div class="qr" id="qr"></div>
-    </div>`;
-  modal.style.display="flex";
-  new QRCode(document.getElementById("qr"),{text:m.member_id,width:70,height:70});
-}
-modal.onclick=()=>modal.style.display="none";
+/* ACTIVE SIDEBAR LINK */
+const currentPage = location.pathname.split("/").pop() || "index.html";
+document.querySelectorAll(".nav-link").forEach(link=>{
+  if(link.getAttribute("href") === currentPage){
+    link.classList.add("active");
+  }
+});
 
 /* INIT */
-document.getElementById("dashboard").style.display="block";
 loadMembers();
 </script>
+
 </body>
 </html>

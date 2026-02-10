@@ -1,174 +1,163 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Admin Panel | Umoomi Security</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<title>Admin Panel – Umoomi Security System</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- FONT AWESOME -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"/>
+<!-- ICONS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"/>
 
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: "Segoe UI", sans-serif;
-      background: #f2f2f2;
-      padding: 20px;
-    }
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Segoe UI",sans-serif;background:#f2f2f2;padding:20px}
+.container{max-width:1400px;margin:auto}
 
-    .container { max-width: 1300px; margin: auto; }
+/* HEADER */
+header{
+  background:#fff;padding:20px;border-radius:10px;
+  display:flex;align-items:center;gap:15px;
+  box-shadow:0 4px 6px rgba(0,0,0,.1);
+  margin-bottom:20px
+}
+header i{font-size:2.5rem;color:#2c3e50}
 
-    header {
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      box-shadow: 0 4px 6px rgba(0,0,0,.1);
-      margin-bottom: 20px;
-    }
+/* LAYOUT */
+.layout{display:grid;grid-template-columns:240px 1fr;gap:20px}
 
-    header i { font-size: 2.3rem; color: #2c3e50; }
+/* SIDEBAR */
+aside{
+  background:#fff;border-radius:10px;padding:15px;
+  box-shadow:0 4px 6px rgba(0,0,0,.1);
+  height:calc(100vh - 160px)
+}
+aside a{
+  display:block;text-decoration:none;
+  padding:12px 15px;border-radius:6px;
+  color:#2c3e50;margin-bottom:6px;font-size:1rem
+}
+aside a i{width:22px;margin-right:10px}
+aside a.active,aside a:hover{
+  background:#3498db;color:#fff
+}
 
-    main {
-      background: white;
-      padding: 25px;
-      border-radius: 10px;
-      box-shadow: 0 4px 6px rgba(0,0,0,.1);
-    }
+/* MAIN */
+main{
+  background:#fff;border-radius:10px;padding:20px;
+  box-shadow:0 4px 6px rgba(0,0,0,.1);
+  height:calc(100vh - 160px);
+  overflow:auto
+}
 
-    h2 { margin-bottom: 15px; }
+/* FORM */
+form{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px;
+  margin-bottom:20px
+}
+form input,form select{
+  padding:10px;border-radius:6px;
+  border:2px solid #ddd;font-size:.95rem
+}
+form button{
+  border:none;
+  background:#2ecc71;
+  color:#fff;
+  border-radius:6px;
+  cursor:pointer;
+  font-size:.95rem
+}
 
-    .grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
-    }
+/* TABLE */
+table{width:100%;border-collapse:collapse}
+th{
+  background:#2c3e50;color:#fff;
+  padding:12px;position:sticky;top:0
+}
+td{padding:10px;border-bottom:1px solid #eee}
+tr:hover{background:#f8f9fa}
 
-    label { font-weight: 600; display: block; margin-bottom: 6px; }
-    input, select {
-      width: 100%;
-      padding: 10px;
-      border-radius: 6px;
-      border: 2px solid #ddd;
-      margin-bottom: 12px;
-    }
+.badge.active{
+  background:#d4edda;color:#155724;
+  padding:4px 10px;border-radius:20px;font-size:.85rem
+}
+.badge.inactive{
+  background:#f8d7da;color:#721c24;
+  padding:4px 10px;border-radius:20px;font-size:.85rem
+}
 
-    button {
-      padding: 12px 18px;
-      background: #3498db;
-      border: none;
-      border-radius: 6px;
-      color: white;
-      font-weight: 600;
-      cursor: pointer;
-    }
-
-    button.danger { background: #e74c3c; }
-    button.secondary { background: #2c3e50; }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 25px;
-    }
-
-    th {
-      background: #2c3e50;
-      color: white;
-      padding: 12px;
-      text-align: left;
-    }
-
-    td {
-      padding: 12px;
-      border-bottom: 1px solid #eee;
-    }
-
-    tr:hover { background: #f8f9fa; }
-
-    .badge {
-      padding: 5px 10px;
-      border-radius: 20px;
-      font-size: .85rem;
-      font-weight: 600;
-    }
-
-    .active { background: #d4edda; color: #155724; }
-    .inactive { background: #f8d7da; color: #721c24; }
-
-    .actions button {
-      margin-right: 5px;
-      padding: 6px 10px;
-      font-size: .8rem;
-    }
-  </style>
+.actions button{
+  border:none;
+  padding:6px 10px;
+  border-radius:6px;
+  cursor:pointer;
+  margin-right:4px
+}
+.edit{background:#3498db;color:#fff}
+.delete{background:#e74c3c;color:#fff}
+.logout{
+  margin-left:auto;
+  background:#e74c3c;
+  color:#fff;
+  border:none;
+  padding:8px 14px;
+  border-radius:6px;
+  cursor:pointer
+}
+</style>
 </head>
 
 <body>
 <div class="container">
 
 <header>
-  <i class="fas fa-user-cog"></i>
+  <i class="fas fa-user-shield"></i>
   <div>
     <h2>Admin Panel</h2>
-    <small>Umoomi Security System</small>
+    <small>Manage Members</small>
   </div>
+  <button class="logout" onclick="logout()">
+    <i class="fas fa-sign-out-alt"></i> Logout
+  </button>
 </header>
 
+<div class="layout">
+
+<!-- SIDEBAR -->
+<aside>
+  <a href="index.html"><i class="fas fa-users"></i> View Members</a>
+  <a href="scanner.html"><i class="fas fa-qrcode"></i> Scan ID</a>
+  <a href="scan-logs.html"><i class="fas fa-history"></i> Activity Logs</a>
+  <a href="admin.html" class="active"><i class="fas fa-user-shield"></i> Admin Panel</a>
+  <a href="settings.html"><i class="fas fa-cog"></i> Settings</a>
+</aside>
+
+<!-- MAIN -->
 <main>
 
-<h2><i class="fas fa-user-plus"></i> Register Member</h2>
+<h3 style="margin-bottom:10px">Add / Update Member</h3>
 
-<div class="grid">
-  <div>
-    <label>Member ID</label>
-    <input id="member_id" placeholder="AMC-001">
-
-    <label>Full Name</label>
-    <input id="full_name">
-
-    <label>Position</label>
-    <input id="position">
-
-    <label>Department</label>
-    <input id="department">
-  </div>
-
-  <div>
-    <label>Region</label>
-    <input id="region">
-
-    <label>Status</label>
-    <select id="status">
-      <option value="Active">Active</option>
-      <option value="Suspended">Suspended</option>
-    </select>
-
-    <label>Expiry Date</label>
-    <input id="expiry_date" type="date">
-
-    <label>Photo URL</label>
-    <input id="photo_url" placeholder="Paste image URL">
-  </div>
-</div>
-
-<button onclick="registerMember()">
-  <i class="fas fa-save"></i> Save Member
-</button>
-
-<hr style="margin:30px 0">
-
-<h2><i class="fas fa-id-card"></i> Members</h2>
+<form id="memberForm">
+  <input id="member_id" placeholder="Member ID (QR value)" required>
+  <input id="full_name" placeholder="Full Name" required>
+  <input id="region" placeholder="Region">
+  <select id="status">
+    <option value="Active">Active</option>
+    <option value="Inactive">Inactive</option>
+  </select>
+  <button type="submit">
+    <i class="fas fa-save"></i> Save
+  </button>
+</form>
 
 <table>
   <thead>
     <tr>
-      <th>ID</th>
+      <th>Member ID</th>
       <th>Name</th>
+      <th>Region</th>
       <th>Status</th>
-      <th>Expiry</th>
       <th>Actions</th>
     </tr>
   </thead>
@@ -177,70 +166,107 @@
 
 </main>
 </div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-/* ADMIN PASSWORD */
-const ADMIN_PASSWORD = "admin123";
-
-if (!sessionStorage.getItem("admin")) {
-  const pass = prompt("Enter Admin Password:");
-  if (pass !== ADMIN_PASSWORD) {
-    alert("Access denied");
-    location.href = "index.html";
-  } else {
-    sessionStorage.setItem("admin","true");
-  }
-}
-
 /* SUPABASE */
 const client = window.supabase.createClient(
   "https://pqrsljahrnjgkadflbmr.supabase.co",
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBxcnNsamFocm5qZ2thZGZsYm1yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA1NTg0NTYsImV4cCI6MjA4NjEzNDQ1Nn0.egED0C2iRp6j3Xp4ldgrdI0GBep2J7VUR52rBbzsVdo"
 );
 
-async function registerMember() {
-  const member = {
-    member_id: member_id.value,
-    full_name: full_name.value,
-    position: position.value,
-    department: department.value,
-    region: region.value,
-    status: status.value,
-    expiry_date: expiry_date.value,
-    photo_url: photo_url.value
-  };
+let editingId=null;
 
-  const { error } = await client.from("umoomi_members").insert(member);
-  if (error) return alert(error.message);
+/* 🔐 AUTH GUARD */
+(async()=>{
+  const { data:{ user } } = await client.auth.getUser();
+  if(!user){
+    window.location.href="login.html";
+  }
+})();
 
-  alert("Member registered");
-  loadMembers();
+/* LOGOUT */
+async function logout(){
+  await client.auth.signOut();
+  window.location.href="login.html";
 }
 
-async function loadMembers() {
-  const { data } = await client.from("umoomi_members").select("*").order("created_at",{ascending:false});
-  membersBody.innerHTML = data.map(m=>`
+/* LOAD MEMBERS */
+async function loadMembers(){
+  const { data } = await client
+    .from("umoomi_members")
+    .select("*")
+    .order("created_at",{ascending:false});
+
+  membersBody.innerHTML=(data||[]).map(m=>`
     <tr>
       <td>${m.member_id}</td>
       <td>${m.full_name}</td>
-      <td><span class="badge ${m.status==="Active"?"active":"inactive"}">${m.status}</span></td>
-      <td>${m.expiry_date||"-"}</td>
+      <td>${m.region||"-"}</td>
+      <td>
+        <span class="badge ${m.status==="Active"?"active":"inactive"}">
+          ${m.status}
+        </span>
+      </td>
       <td class="actions">
-        <button class="secondary" onclick="window.open('id-card.html?id=${m.member_id}')">ID</button>
-        <button class="danger" onclick="disable('${m.member_id}')">Disable</button>
+        <button class="edit" onclick="editMember('${m.id}')">
+          <i class="fas fa-edit"></i>
+        </button>
+        <button class="delete" onclick="deleteMember('${m.id}')">
+          <i class="fas fa-trash"></i>
+        </button>
       </td>
     </tr>
   `).join("");
 }
 
-async function disable(id) {
-  if (!confirm("Disable this member?")) return;
-  await client.from("umoomi_members").update({ status:"Suspended" }).eq("member_id",id);
+/* SAVE MEMBER */
+memberForm.onsubmit=async e=>{
+  e.preventDefault();
+
+  const payload={
+    member_id: member_id.value.trim(),
+    full_name: full_name.value.trim(),
+    region: region.value.trim(),
+    status: status.value
+  };
+
+  if(editingId){
+    await client.from("umoomi_members")
+      .update(payload).eq("id",editingId);
+  }else{
+    await client.from("umoomi_members").insert(payload);
+  }
+
+  memberForm.reset();
+  editingId=null;
+  loadMembers();
+};
+
+/* EDIT */
+async function editMember(id){
+  const { data } = await client
+    .from("umoomi_members")
+    .select("*").eq("id",id).single();
+
+  editingId=id;
+  member_id.value=data.member_id;
+  full_name.value=data.full_name;
+  region.value=data.region||"";
+  status.value=data.status;
+}
+
+/* DELETE */
+async function deleteMember(id){
+  if(!confirm("Delete this member?")) return;
+  await client.from("umoomi_members").delete().eq("id",id);
   loadMembers();
 }
 
+/* INIT */
 loadMembers();
 </script>
+
 </body>
 </html>
