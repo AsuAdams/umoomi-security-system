@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Members – Umoomi</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link rel="stylesheet"
+ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Segoe UI,sans-serif;background:#f2f2f2;padding:20px}
+.container{max-width:1400px;margin:auto}
+
+/* HEADER */
+header{
+  background:#fff;padding:20px;border-radius:10px;
+  display:flex;align-items:center;gap:15px;
+  box-shadow:0 4px 6px rgba(0,0,0,.1);
+  margin-bottom:20px
+}
+
+/* LAYOUT */
+.layout{display:grid;grid-template-columns:240px 1fr;gap:20px}
+
+/* SIDEBAR */
+aside{
+  background:#fff;border-radius:10px;padding:15px;
+  box-shadow:0 4px 6px rgba(0,0,0,.1);
+  height:calc(100vh - 160px)
+}
+aside a{
+  display:block;text-decoration:none;
+  padding:12px 15px;border-radius:6px;
+  color:#2c3e50;margin-bottom:6px;font-size:1rem
+}
+aside a i{width:22px;margin-right:10px}
+aside a:hover,aside a.active{
+  background:#3498db;color:#fff
+}
+
+/* MAIN */
+main{
+  background:#fff;border-radius:10px;padding:20px;
+  box-shadow:0 4px 6px rgba(0,0,0,.1);
+  height:calc(100vh - 160px);overflow:auto
+}
+
+/* SEARCH */
+.search{margin-bottom:15px}
+.search input{
+  width:100%;padding:14px;font-size:1rem;
+  border-radius:8px;border:2px solid #ddd
+}
+
+/* TABLE */
+table{width:100%;border-collapse:collapse}
+th{background:#2c3e50;color:#fff;padding:12px}
+td{padding:10px;border-bottom:1px solid #eee}
+tr:hover{background:#f8f9fa;cursor:pointer}
+
+/* MODAL */
+.modal{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.75);
+  display:none;align-items:center;
+  justify-content:center;z-index:999
+}
+
+/* ID CARD (FROM YOUR DESIGN) */
+.card-container{
+  width:420px;height:250px;
+  perspective:1000px;
+}
+.id-card{
+  width:100%;height:100%;
+  position:relative;
+  transform-style:preserve-3d;
+  transition:transform .6s
+}
+.id-card.flipped{transform:rotateY(180deg)}
+
+.card-face{
+  position:absolute;
+  width:100%;height:100%;
+  backface-visibility:hidden;
+  border-radius:16px;
+  box-shadow:0 4px 12px rgba(0,0,0,.15);
+  display:flex;
+  flex-direction:column
+}
+.card-title-bar{
+  background:#1a3a5f;color:#fff;
+  text-align:center;
+  padding:10px;
+  font-weight:700;
+  font-size:1.05rem
+}
+.card-content{
+  padding:20px;flex:1
+}
+.front-grid{
+  display:grid;
+  grid-template-columns:100px 1fr;
+  gap:18px
+}
+.photo{
+  width:90px;height:110px;
+  background:#f5f7fa;
+  border:2px solid #e0e6ed;
+  border-radius:10px;
+  display:flex;
+  align-items:center;
+  justify-content:center
+}
+.photo img{
+  width:100%;height:100%;
+  object-fit:cover;border-radius:8px
+}
+.photo i{font-size:2.6rem;color:#95a5a6}
+
+.back-grid{
+  display:grid;
+  grid-template-columns:1fr 120px;
+  gap:18px;
+  align-items:center;
+  height:100%
+}
+.qr-container{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:#fff;
+  border-radius:10px;
+  height:100px;
+  box-shadow:inset 0 0 0 1px #eee
+}
+.flip-btn{
+  background:#3498db;color:#fff;
+  border:none;border-radius:8px;
+  padding:10px 24px;
+  font-weight:600;
+  cursor:pointer;
+  margin-top:10px
+}
+.flip-btn:hover{background:#2980b9}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<header>
+  <i class="fas fa-users"></i>
+  <div>
+    <h2>Members</h2>
+    <small>Umoomi Security System</small>
+  </div>
+</header>
+
+<div class="layout">
+
+<aside>
+  <a href="index.html"><i class="fas fa-chart-line"></i> Dashboard</a>
+  <a href="members.html" class="active"><i class="fas fa-users"></i> Members</a>
+  <a href="scanner.html"><i class="fas fa-qrcode"></i> Scan ID</a>
+  <a href="regions.html"><i class="fas fa-map-marker-alt"></i> Regions</a>
+  <a href="scan-logs.html"><i class="fas fa-history"></i> Activity Logs</a>
+  <a href="admin.html"><i class="fas fa-user-shield"></i> Admin Panel</a>
+  <a href="settings.html"><i class="fas fa-cog"></i> Settings</a>
+</aside>
+
+<main>
+  <div class="search">
+    <input id="search" placeholder="Search by name or ID">
+  </div>
+  <table>
+    <thead>
+      <tr><th>ID</th><th>Name</th><th>Status</th><th>Region</th></tr>
+    </thead>
+    <tbody id="membersBody"></tbody>
+  </table>
+</main>
+
+</div>
+</div>
+
+<div class="modal" id="modal"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+document.addEventListener("DOMContentLoaded", async ()=>{
+
+  const supabase = window.supabase.createClient(
+    "https://pqrsljahrnjgkadflbmr.supabase.co",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBxcnNsamFocm5qZ2thZGZsYm1yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA1NTg0NTYsImV4cCI6MjA4NjEzNDQ1Nn0.egED0C2iRp6j3Xp4ldgrdI0GBep2J7VUR52rBbzsVdo"
+  );
+
+  const body=document.getElementById("membersBody");
+  const search=document.getElementById("search");
+  const modal=document.getElementById("modal");
+
+  let members=[], current;
+
+  const {data,error}=await supabase.from("umoomi_members").select("*");
+  if(error){alert("Supabase error");return;}
+
+  members=data||[];
+  render(members);
+
+  function render(list){
+    body.innerHTML=list.map(m=>`
+      <tr onclick="openCard('${m.member_id}')">
+        <td>${m.member_id}</td>
+        <td>${m.full_name}</td>
+        <td>${m.status}</td>
+        <td>${m.region}</td>
+      </tr>`).join("");
+  }
+
+  search.oninput=e=>{
+    const q=e.target.value.toLowerCase();
+    render(members.filter(m=>
+      m.full_name.toLowerCase().includes(q)||
+      m.member_id.toLowerCase().includes(q)
+    ));
+  };
+
+  window.openCard=id=>{
+    current=members.find(m=>m.member_id===id);
+    modal.style.display="flex";
+    modal.innerHTML=`
+      <div class="card-container">
+        <div class="id-card" id="card">
+          <div class="card-face" style="background:#fff;border:1px solid #eee">
+            <div class="card-title-bar">Official ID Card</div>
+            <div class="card-content">
+              <div class="front-grid">
+                <div class="photo">
+                  ${current.photo_url
+                    ? `<img src="${current.photo_url}">`
+                    : `<i class="fas fa-user"></i>`}
+                </div>
+                <div>
+                  <div style="font-size:1.25rem;font-weight:700">${current.full_name}</div>
+                  <div style="color:#7f8c8d;margin:4px 0">${current.member_title||"Member"}</div>
+                  <div><strong>ID:</strong> ${current.member_id}</div>
+                  <div><strong>Status:</strong> ${current.status}</div>
+                  <div><strong>Region:</strong> ${current.region}</div>
+                  <button class="flip-btn" onclick="flip()">View Back</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-face" style="background:#f9fbfd;transform:rotateY(180deg)">
+            <div class="card-title-bar">Official ID Card</div>
+            <div class="card-content">
+              <div class="back-grid">
+                <div>
+                  <div><strong>Issued:</strong> ${current.issued_date||"—"}</div>
+                  <div><strong>Expires:</strong> ${current.expiry_date||"—"}</div>
+                  <div><strong>Organization:</strong> Ahmadiyya Muslim Community</div>
+                  <button class="flip-btn" onclick="flip()">View Front</button>
+                </div>
+                <div class="qr-container" id="qr"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>`;
+    setTimeout(()=>new QRCode("qr",{text:current.member_id,width:90,height:90}),50);
+  };
+
+  window.flip=()=>document.getElementById("card").classList.toggle("flipped");
+
+  modal.onclick=e=>{
+    if(e.target===modal) modal.style.display="none";
+  };
+
+});
+</script>
+</body>
+</html>

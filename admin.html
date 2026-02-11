@@ -2,16 +2,16 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Admin Panel – Umoomi Security System</title>
+<title>Admin Dashboard – Umoomi</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!-- ICONS -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"/>
+<link rel="stylesheet"
+ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"/>
 
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:"Segoe UI",sans-serif;background:#f2f2f2;padding:20px}
-.container{max-width:1400px;margin:auto}
+.container{max-width:1500px;margin:auto}
 
 /* HEADER */
 header{
@@ -20,7 +20,6 @@ header{
   box-shadow:0 4px 6px rgba(0,0,0,.1);
   margin-bottom:20px
 }
-header i{font-size:2.5rem;color:#2c3e50}
 
 /* LAYOUT */
 .layout{display:grid;grid-template-columns:240px 1fr;gap:20px}
@@ -29,15 +28,15 @@ header i{font-size:2.5rem;color:#2c3e50}
 aside{
   background:#fff;border-radius:10px;padding:15px;
   box-shadow:0 4px 6px rgba(0,0,0,.1);
-  height:calc(100vh - 160px)
 }
-aside a{
-  display:block;text-decoration:none;
+aside button{
+  width:100%;border:none;background:none;
   padding:12px 15px;border-radius:6px;
-  color:#2c3e50;margin-bottom:6px;font-size:1rem
+  text-align:left;cursor:pointer;
+  margin-bottom:6px;font-size:1rem;color:#2c3e50
 }
-aside a i{width:22px;margin-right:10px}
-aside a.active,aside a:hover{
+aside button i{width:22px;margin-right:10px}
+aside button.active,aside button:hover{
   background:#3498db;color:#fff
 }
 
@@ -45,66 +44,54 @@ aside a.active,aside a:hover{
 main{
   background:#fff;border-radius:10px;padding:20px;
   box-shadow:0 4px 6px rgba(0,0,0,.1);
-  height:calc(100vh - 160px);
-  overflow:auto
+  min-height:75vh
 }
+
+/* DASH GRID */
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+  gap:20px
+}
+
+/* CARD */
+.card{
+  background:#fafafa;border-radius:10px;
+  padding:18px;border:1px solid #eee
+}
+.card h3{margin-bottom:12px;font-size:1.1rem}
+.card i{color:#3498db;margin-right:6px}
 
 /* FORM */
-form{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:10px;
-  margin-bottom:20px
+input,select{
+  width:100%;padding:10px;
+  border-radius:6px;border:1px solid #ccc;
+  margin-bottom:10px
 }
-form input,form select{
-  padding:10px;border-radius:6px;
-  border:2px solid #ddd;font-size:.95rem
+button.action{
+  padding:10px 14px;border:none;
+  border-radius:6px;background:#3498db;
+  color:#fff;cursor:pointer
 }
-form button{
-  border:none;
-  background:#2ecc71;
-  color:#fff;
-  border-radius:6px;
-  cursor:pointer;
-  font-size:.95rem
-}
+button.danger{background:#c0392b}
+button.success{background:#2ecc71}
 
 /* TABLE */
-table{width:100%;border-collapse:collapse}
-th{
-  background:#2c3e50;color:#fff;
-  padding:12px;position:sticky;top:0
-}
-td{padding:10px;border-bottom:1px solid #eee}
-tr:hover{background:#f8f9fa}
+table{width:100%;border-collapse:collapse;margin-top:10px}
+th,td{padding:8px;border-bottom:1px solid #eee;text-align:left;font-size:.95rem}
 
-.badge.active{
-  background:#d4edda;color:#155724;
-  padding:4px 10px;border-radius:20px;font-size:.85rem
+/* LOGIN MODAL */
+.modal{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.7);
+  display:flex;align-items:center;
+  justify-content:center;z-index:999
 }
-.badge.inactive{
-  background:#f8d7da;color:#721c24;
-  padding:4px 10px;border-radius:20px;font-size:.85rem
+.modal-box{
+  background:#fff;border-radius:10px;
+  padding:25px;width:360px;text-align:center
 }
-
-.actions button{
-  border:none;
-  padding:6px 10px;
-  border-radius:6px;
-  cursor:pointer;
-  margin-right:4px
-}
-.edit{background:#3498db;color:#fff}
-.delete{background:#e74c3c;color:#fff}
-.logout{
-  margin-left:auto;
-  background:#e74c3c;
-  color:#fff;
-  border:none;
-  padding:8px 14px;
-  border-radius:6px;
-  cursor:pointer
-}
+.hidden{display:none}
 </style>
 </head>
 
@@ -112,161 +99,180 @@ tr:hover{background:#f8f9fa}
 <div class="container">
 
 <header>
-  <i class="fas fa-user-shield"></i>
+  <i class="fas fa-user-shield fa-2x"></i>
   <div>
-    <h2>Admin Panel</h2>
-    <small>Manage Members</small>
+    <h2>Admin Dashboard</h2>
+    <small>System Management Panel</small>
   </div>
-  <button class="logout" onclick="logout()">
-    <i class="fas fa-sign-out-alt"></i> Logout
-  </button>
 </header>
 
 <div class="layout">
 
 <!-- SIDEBAR -->
 <aside>
-  <a href="index.html"><i class="fas fa-users"></i> View Members</a>
-  <a href="scanner.html"><i class="fas fa-qrcode"></i> Scan ID</a>
-  <a href="scan-logs.html"><i class="fas fa-history"></i> Activity Logs</a>
-  <a href="admin.html" class="active"><i class="fas fa-user-shield"></i> Admin Panel</a>
-  <a href="settings.html"><i class="fas fa-cog"></i> Settings</a>
+  <button onclick="location.href='index.html'"><i class="fas fa-chart-line"></i> Dashboard</button>
+  <button onclick="location.href='members.html'"><i class="fas fa-users"></i> Members</button>
+  <button onclick="location.href='scanner.html'"><i class="fas fa-qrcode"></i> Scanner</button>
+  <button onclick="location.href='regions.html'"><i class="fas fa-map-marker-alt"></i> Regions</button>
+  <button onclick="location.href='scan-logs.html'"><i class="fas fa-history"></i> Logs</button>
+  <button class="active"><i class="fas fa-user-shield"></i> Admin</button>
+  <button onclick="location.href='settings.html'"><i class="fas fa-cog"></i> Settings</button>
 </aside>
 
 <!-- MAIN -->
-<main>
+<main id="adminContent" class="hidden">
 
-<h3 style="margin-bottom:10px">Add / Update Member</h3>
+<div class="grid">
 
-<form id="memberForm">
-  <input id="member_id" placeholder="Member ID (QR value)" required>
-  <input id="full_name" placeholder="Full Name" required>
-  <input id="region" placeholder="Region">
-  <select id="status">
-    <option value="Active">Active</option>
-    <option value="Inactive">Inactive</option>
-  </select>
-  <button type="submit">
-    <i class="fas fa-save"></i> Save
-  </button>
-</form>
+<!-- ADD MEMBER -->
+<div class="card">
+<h3><i class="fas fa-user-plus"></i>Add Member</h3>
+<input id="m_id" placeholder="Member ID">
+<input id="m_name" placeholder="Full Name">
+<select id="m_region"></select>
+<button class="action" onclick="addMember()">Add Member</button>
+</div>
 
+<!-- ID SETTINGS -->
+<div class="card">
+<h3><i class="fas fa-id-card"></i>ID Expiry</h3>
+<input id="expiry" type="number" placeholder="Expiry (years)">
+<button class="action" onclick="updateExpiry()">Update Expiry</button>
+</div>
+
+<!-- REGIONS -->
+<div class="card">
+<h3><i class="fas fa-map-marker-alt"></i>Regions</h3>
+<input id="newRegion" placeholder="Add Region">
+<button class="success" onclick="addRegion()">Add</button>
+<ul id="regionsList"></ul>
+</div>
+
+<!-- MEMBERS TABLE -->
+<div class="card" style="grid-column:1/-1">
+<h3><i class="fas fa-users-cog"></i>Manage Members</h3>
 <table>
-  <thead>
-    <tr>
-      <th>Member ID</th>
-      <th>Name</th>
-      <th>Region</th>
-      <th>Status</th>
-      <th>Actions</th>
-    </tr>
-  </thead>
-  <tbody id="membersBody"></tbody>
+<thead>
+<tr><th>ID</th><th>Name</th><th>Status</th><th>Actions</th></tr>
+</thead>
+<tbody id="membersTable"></tbody>
 </table>
+</div>
 
+</div>
 </main>
 </div>
 </div>
 
+<!-- LOGIN -->
+<div class="modal" id="loginModal">
+  <div class="modal-box">
+    <h3>Admin Login</h3>
+    <input id="user" placeholder="Username">
+    <input id="pass" type="password" placeholder="Password">
+    <button class="action" onclick="login()">Login</button>
+    <p id="err" style="color:#c0392b;margin-top:10px"></p>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-/* SUPABASE */
-const client = window.supabase.createClient(
-  "https://pqrsljahrnjgkadflbmr.supabase.co",
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBxcnNsamFocm5qZ2thZGZsYm1yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA1NTg0NTYsImV4cCI6MjA4NjEzNDQ1Nn0.egED0C2iRp6j3Xp4ldgrdI0GBep2J7VUR52rBbzsVdo"
-);
+/* ===== CONFIG ===== */
+const ADMIN_USER="admin";
+const ADMIN_PASS="umoomi123";
+const SUPABASE_URL="https://pqrsljahrnjgkadflbmr.supabase.co";
+const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBxcnNsamFocm5qZ2thZGZsYm1yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA1NTg0NTYsImV4cCI6MjA4NjEzNDQ1Nn0.egED0C2iRp6j3Xp4ldgrdI0GBep2J7VUR52rBbzsVdo";
+/* ================== */
 
-let editingId=null;
+const db=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+const modal=document.getElementById("loginModal");
+const admin=document.getElementById("adminContent");
 
-/* 🔐 AUTH GUARD */
-(async()=>{
-  const { data:{ user } } = await client.auth.getUser();
-  if(!user){
-    window.location.href="login.html";
-  }
-})();
-
-/* LOGOUT */
-async function logout(){
-  await client.auth.signOut();
-  window.location.href="login.html";
+/* LOGIN */
+function login(){
+  if(user.value===ADMIN_USER && pass.value===ADMIN_PASS){
+    modal.style.display="none";
+    admin.classList.remove("hidden");
+    sessionStorage.setItem("admin","yes");
+    loadAll();
+  }else err.textContent="Invalid credentials";
+}
+if(sessionStorage.getItem("admin")==="yes"){
+  modal.style.display="none";
+  admin.classList.remove("hidden");
+  loadAll();
 }
 
-/* LOAD MEMBERS */
+/* LOAD */
+async function loadAll(){
+  loadMembers();
+  loadRegions();
+}
+
+/* MEMBERS */
 async function loadMembers(){
-  const { data } = await client
-    .from("umoomi_members")
-    .select("*")
-    .order("created_at",{ascending:false});
-
-  membersBody.innerHTML=(data||[]).map(m=>`
-    <tr>
-      <td>${m.member_id}</td>
-      <td>${m.full_name}</td>
-      <td>${m.region||"-"}</td>
-      <td>
-        <span class="badge ${m.status==="Active"?"active":"inactive"}">
-          ${m.status}
-        </span>
-      </td>
-      <td class="actions">
-        <button class="edit" onclick="editMember('${m.id}')">
-          <i class="fas fa-edit"></i>
-        </button>
-        <button class="delete" onclick="deleteMember('${m.id}')">
-          <i class="fas fa-trash"></i>
-        </button>
-      </td>
-    </tr>
-  `).join("");
+  const {data}=await db.from("umoomi_members").select("*");
+  membersTable.innerHTML=data.map(m=>`
+  <tr>
+    <td>${m.member_id}</td>
+    <td>${m.full_name}</td>
+    <td>${m.status}</td>
+    <td>
+      <button class="action" onclick="toggle('${m.member_id}','${m.status}')">
+        ${m.status==="Active"?"Deactivate":"Activate"}
+      </button>
+      <button class="danger" onclick="printID('${m.member_id}')">Print</button>
+    </td>
+  </tr>`).join("");
 }
 
-/* SAVE MEMBER */
-memberForm.onsubmit=async e=>{
-  e.preventDefault();
-
-  const payload={
-    member_id: member_id.value.trim(),
-    full_name: full_name.value.trim(),
-    region: region.value.trim(),
-    status: status.value
-  };
-
-  if(editingId){
-    await client.from("umoomi_members")
-      .update(payload).eq("id",editingId);
-  }else{
-    await client.from("umoomi_members").insert(payload);
-  }
-
-  memberForm.reset();
-  editingId=null;
-  loadMembers();
-};
-
-/* EDIT */
-async function editMember(id){
-  const { data } = await client
-    .from("umoomi_members")
-    .select("*").eq("id",id).single();
-
-  editingId=id;
-  member_id.value=data.member_id;
-  full_name.value=data.full_name;
-  region.value=data.region||"";
-  status.value=data.status;
-}
-
-/* DELETE */
-async function deleteMember(id){
-  if(!confirm("Delete this member?")) return;
-  await client.from("umoomi_members").delete().eq("id",id);
+/* ACTIONS */
+async function addMember(){
+  await db.from("umoomi_members").insert({
+    member_id:m_id.value,
+    full_name:m_name.value,
+    region:m_region.value,
+    status:"Active"
+  });
   loadMembers();
 }
 
-/* INIT */
-loadMembers();
+async function toggle(id,status){
+  await db.from("umoomi_members")
+    .update({status:status==="Active"?"Inactive":"Active"})
+    .eq("member_id",id);
+  loadMembers();
+}
+
+function printID(id){
+  window.open("members.html?print="+id,"_blank");
+}
+
+/* REGIONS */
+async function loadRegions(){
+  const {data}=await db.from("regions").select("*");
+  m_region.innerHTML=data.map(r=>`<option>${r.name}</option>`).join("");
+  regionsList.innerHTML=data.map(r=>`
+    <li>${r.name}
+    <button class="danger" onclick="removeRegion('${r.id}')">x</button>
+    </li>`).join("");
+}
+async function addRegion(){
+  await db.from("regions").insert({name:newRegion.value});
+  loadRegions();
+}
+async function removeRegion(id){
+  await db.from("regions").delete().eq("id",id);
+  loadRegions();
+}
+
+/* EXPIRY */
+async function updateExpiry(){
+  await db.from("settings")
+    .update({id_expiry_years:expiry.value})
+    .eq("key","global");
+  alert("Expiry updated");
+}
 </script>
-
 </body>
 </html>
