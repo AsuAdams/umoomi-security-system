@@ -2,11 +2,14 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Umoomi Security System</title>
+<title>Regions – Umoomi</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!-- ICONS -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"/>
+<link rel="stylesheet"
+ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"/>
+
+<link rel="stylesheet"
+ href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -15,16 +18,11 @@ body{font-family:"Segoe UI",sans-serif;background:#f2f2f2;padding:20px}
 
 /* HEADER */
 header{
-  background:#fff;
-  padding:20px;
-  border-radius:10px;
-  display:flex;
-  align-items:center;
-  gap:15px;
+  background:#fff;padding:20px;border-radius:10px;
+  display:flex;align-items:center;gap:15px;
   box-shadow:0 4px 6px rgba(0,0,0,.1);
   margin-bottom:20px
 }
-header i{font-size:2.5rem;color:#2c3e50}
 
 /* LAYOUT */
 .layout{
@@ -35,93 +33,75 @@ header i{font-size:2.5rem;color:#2c3e50}
 
 /* SIDEBAR */
 aside{
-  background:#fff;
-  border-radius:10px;
-  padding:15px;
+  background:#fff;border-radius:10px;padding:15px;
   box-shadow:0 4px 6px rgba(0,0,0,.1);
   height:calc(100vh - 160px)
 }
-aside a{
-  display:block;
-  text-decoration:none;
-  width:100%;
-  padding:12px 15px;
-  border-radius:6px;
-  color:#2c3e50;
-  margin-bottom:6px;
-  font-size:1rem
+aside button{
+  width:100%;border:none;background:none;
+  padding:12px 15px;border-radius:6px;
+  text-align:left;cursor:pointer;
+  margin-bottom:6px;font-size:1rem
 }
-aside a i{width:22px;margin-right:10px}
-aside a:hover,
-aside a.active{
-  background:#3498db;
-  color:#fff
+aside button i{width:22px;margin-right:10px}
+aside button.active,aside button:hover{
+  background:#3498db;color:#fff
 }
 
 /* MAIN */
 main{
-  background:#fff;
-  border-radius:10px;
-  padding:20px;
+  background:#fff;border-radius:10px;
   box-shadow:0 4px 6px rgba(0,0,0,.1);
   height:calc(100vh - 160px);
-  overflow:hidden
+  overflow:hidden;
+  position:relative;
 }
 
-/* DASHBOARD */
-.stats{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:15px;
-  margin-bottom:15px
-}
-.stat{
-  background:linear-gradient(135deg,#2c3e50,#3498db);
-  color:#fff;
-  padding:18px;
-  border-radius:10px;
-  text-align:center
-}
-.stat i{font-size:2rem;margin-bottom:6px}
-.stat .number{font-size:1.6rem;font-weight:bold}
-
-/* SEARCH */
-.search-wrap{position:relative;margin-bottom:10px}
-.search-wrap i{
-  position:absolute;
-  left:16px;
-  top:50%;
-  transform:translateY(-50%);
-  color:#888
-}
-.search-wrap input{
+/* MAP */
+#map{
   width:100%;
-  padding:14px 18px 14px 48px;
-  font-size:1.05rem;
-  border-radius:8px;
-  border:2px solid #ddd
+  height:100%;
 }
 
-/* TABLE */
-.table-scroll{max-height:calc(100vh - 420px);overflow-y:auto}
-table{width:100%;border-collapse:collapse}
-th{
+/* REGION MARKER */
+.region-marker{
+  background:#e74c3c;
+  color:#fff;
+  width:34px;
+  height:34px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:700;
+  border:2px solid #fff;
+  box-shadow:0 4px 6px rgba(0,0,0,.35);
+}
+
+/* REGION LABEL */
+.leaflet-tooltip.region-label{
   background:#2c3e50;
   color:#fff;
-  padding:12px;
-  position:sticky;
-  top:0
+  border:none;
+  font-weight:600;
+  padding:4px 8px;
+  border-radius:4px;
 }
-td{padding:10px;border-bottom:1px solid #eee}
-tr:hover{background:#f8f9fa}
 
-/* STATUS BADGE */
-.badge.active{
-  background:#d4edda;
-  color:#155724;
-  padding:4px 10px;
-  border-radius:20px;
-  font-size:.85rem
+/* MODAL */
+.modal{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.7);
+  display:none;align-items:center;
+  justify-content:center;z-index:999
+}
+.modal-content{
+  background:#fff;border-radius:10px;
+  padding:20px;width:420px;
+  max-height:80vh;overflow:auto
+}
+.member{
+  padding:8px 0;border-bottom:1px solid #eee
 }
 </style>
 </head>
@@ -130,140 +110,156 @@ tr:hover{background:#f8f9fa}
 <div class="container">
 
 <header>
-  <i class="fas fa-shield-alt"></i>
+  <i class="fas fa-map-marker-alt"></i>
   <div>
-    <h2>Umoomi Security System</h2>
-    <small>Ahmadiyya Muslim Community Uganda</small>
+    <h2>Regions</h2>
+    <small>Umoomi Security System</small>
   </div>
 </header>
 
 <div class="layout">
 
-<!-- SIDEBAR -->
 <aside>
-  <a href="index.html" class="nav-link">
-    <i class="fas fa-users"></i> Dashboard
-  </a>
-  <a href="scanner.html" class="nav-link">
+  <button onclick="location.href='index.html'">
+    <i class="fas fa-chart-line"></i> Dashboard
+  </button>
+  <button onclick="location.href='members.html'">
+    <i class="fas fa-users"></i> Members List
+  </button>
+  <button onclick="location.href='scanner.html'">
     <i class="fas fa-qrcode"></i> Scan ID
-  </a>
-  <a href="id-cards.html" class="nav-link">
-    <i class="fas fa-id-card"></i> ID Cards
-  </a>
-  <a href="scan-logs.html" class="nav-link">
+  </button>
+  <button class="active">
+    <i class="fas fa-map-marker-alt"></i> Regions
+  </button>
+  <button onclick="location.href='scan-logs.html'">
     <i class="fas fa-history"></i> Activity Logs
-  </a>
-  <a href="admin.html" class="nav-link">
+  </button>
+  <button onclick="location.href='admin.html'">
     <i class="fas fa-user-shield"></i> Admin Panel
-  </a>
-  <a href="settings.html" class="nav-link">
+  </button>
+  <button onclick="location.href='settings.html'">
     <i class="fas fa-cog"></i> Settings
-  </a>
+  </button>
 </aside>
 
-<!-- MAIN CONTENT -->
 <main>
-
-  <div class="stats">
-    <div class="stat">
-      <i class="fas fa-users"></i>
-      <div>Total</div>
-      <div id="totalMembers" class="number">0</div>
-    </div>
-    <div class="stat">
-      <i class="fas fa-user-check"></i>
-      <div>Active</div>
-      <div id="activeMembers" class="number">0</div>
-    </div>
-    <div class="stat">
-      <i class="fas fa-map-marker-alt"></i>
-      <div>Regions</div>
-      <div id="regionsCount" class="number">0</div>
-    </div>
-    <div class="stat">
-      <i class="fas fa-clock"></i>
-      <div>Last Scan</div>
-      <div id="lastScan" class="number">-</div>
-    </div>
-  </div>
-
-  <div class="search-wrap">
-    <i class="fas fa-search"></i>
-    <input id="searchInput" placeholder="Search members by name or ID">
-  </div>
-
-  <div class="table-scroll">
-    <table>
-      <thead>
-        <tr><th>ID</th><th>Name</th><th>Status</th></tr>
-      </thead>
-      <tbody id="membersBody"></tbody>
-    </table>
-  </div>
-
+  <div id="map"></div>
 </main>
+
 </div>
 </div>
+
+<div class="modal" id="modal"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
 <script>
-/* SUPABASE */
-const client = window.supabase.createClient(
-  "https://pqrsljahrnjgkadflbmr.supabase.co",
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBxcnNsamFocm5qZ2thZGZsYm1yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA1NTg0NTYsImV4cCI6MjA4NjEzNDQ1Nn0.egED0C2iRp6j3Xp4ldgrdI0GBep2J7VUR52rBbzsVdo"
-);
+document.addEventListener("DOMContentLoaded", async () => {
 
-/* ELEMENTS */
-const totalMembers  = document.getElementById("totalMembers");
-const activeMembers = document.getElementById("activeMembers");
-const regionsCount  = document.getElementById("regionsCount");
-const lastScan      = document.getElementById("lastScan");
-const membersBody   = document.getElementById("membersBody");
-const searchInput   = document.getElementById("searchInput");
+  const supabase = window.supabase.createClient(
+    "https://pqrsljahrnjgkadflbmr.supabase.co",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBxcnNsamFocm5qZ2thZGZsYm1yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA1NTg0NTYsImV4cCI6MjA4NjEzNDQ1Nn0.egED0C2iRp6j3Xp4ldgrdI0GBep2J7VUR52rBbzsVdo"
+  );
 
-let members = [];
+  /* LOCK MAP TO UGANDA */
+  const ugandaBounds = [[-1.5,29.5],[4.5,35]];
 
-/* LOAD MEMBERS */
-async function loadMembers(){
-  const { data } = await client.from("umoomi_members").select("*");
-  members = data || [];
+  const map = L.map("map",{
+    maxBounds: ugandaBounds,
+    maxBoundsViscosity: 1,
+    minZoom: 7,
+    maxZoom: 11
+  }).setView([1.3733,32.2903],7);
 
-  totalMembers.textContent  = members.length;
-  activeMembers.textContent = members.filter(m=>m.status==="Active").length;
-  regionsCount.textContent  = new Set(members.map(m=>m.region)).size;
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{
+    attribution:"© OpenStreetMap"
+  }).addTo(map);
 
-  render(members);
-}
+  const { data, error } = await supabase
+    .from("umoomi_members")
+    .select("full_name, member_id, region");
 
-function render(list){
-  membersBody.innerHTML = list.map(m=>`
-    <tr>
-      <td>${m.member_id}</td>
-      <td>${m.full_name}</td>
-      <td><span class="badge active">${m.status}</span></td>
-    </tr>
-  `).join("");
-}
-
-/* SEARCH */
-searchInput.addEventListener("input",e=>{
-  const q = e.target.value.toLowerCase();
-  render(members.filter(m =>
-    m.full_name.toLowerCase().includes(q) ||
-    m.member_id.toLowerCase().includes(q)
-  ));
-});
-
-/* ACTIVE SIDEBAR LINK */
-const currentPage = location.pathname.split("/").pop() || "index.html";
-document.querySelectorAll(".nav-link").forEach(link=>{
-  if(link.getAttribute("href") === currentPage){
-    link.classList.add("active");
+  if(error){
+    console.error(error);
+    return;
   }
-});
 
-/* INIT */
-loadMembers();
+  /* GROUP MEMBERS */
+  const grouped = {};
+  data.forEach(m=>{
+    if(!m.region) return;
+    const r = m.region.trim();
+    if(!grouped[r]) grouped[r] = [];
+    grouped[r].push(m);
+  });
+
+  /* REGION COORDS (21) */
+  const regionCoords = {
+    Kampala:[0.3476,32.5825],
+    Wakiso:[0.4044,32.4594],
+    Mukono:[0.3533,32.7553],
+    Mpigi:[0.225,32.313],
+    Luweero:[0.827,32.473],
+    Kayunga:[0.702,32.889],
+    Jinja:[0.439,33.203],
+    Iganga:[0.609,33.468],
+    Mbale:[1.079,34.182],
+    Tororo:[0.692,34.18],
+    Soroti:[1.714,33.611],
+    Lira:[2.249,32.9],
+    Gulu:[2.775,32.299],
+    Arua:[3.02,30.911],
+    Nebbi:[2.48,31.09],
+    Masindi:[1.684,31.716],
+    Hoima:[1.435,31.343],
+    FortPortal:[0.661,30.274],
+    Kasese:[0.183,30.078],
+    Mbarara:[-0.607,30.654],
+    Kabale:[-1.249,29.989]
+  };
+
+  const modal = document.getElementById("modal");
+
+  Object.keys(regionCoords).forEach(region=>{
+    const people = grouped[region] || [];
+
+    const icon = L.divIcon({
+      html:`<div class="region-marker">${people.length}</div>`,
+      className:"",
+      iconSize:[34,34],
+      iconAnchor:[17,17]
+    });
+
+    L.marker(regionCoords[region],{icon})
+      .addTo(map)
+      .bindTooltip(region,{
+        permanent:true,
+        direction:"top",
+        className:"region-label"
+      })
+      .on("click",()=>{
+        modal.innerHTML = `
+          <div class="modal-content">
+            <h3>${region} (${people.length})</h3>
+            ${people.map(p=>`
+              <div class="member">
+                <strong>${p.full_name}</strong><br>
+                <small>${p.member_id}</small>
+              </div>
+            `).join("") || "<p>No members</p>"}
+          </div>
+        `;
+        modal.style.display="flex";
+      });
+  });
+
+  modal.onclick = e=>{
+    if(e.target===modal) modal.style.display="none";
+  };
+
+});
 </script>
 
 </body>

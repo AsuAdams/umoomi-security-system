@@ -7,19 +7,22 @@
 
 <link rel="stylesheet"
  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:Segoe UI,sans-serif;background:#f2f2f2;padding:20px}
 .container{max-width:1400px;margin:auto}
+
+/* HEADER */
 header{
   background:#ccdc;padding:20px;border-radius:10px;
   display:flex;align-items:center;gap:15px;
   box-shadow:0 4px 6px rgba(0,0,0,.1);
   margin-bottom:20px
 }
+
+/* LAYOUT */
 .layout{display:grid;grid-template-columns:240px 1fr;gap:20px}
 
 /* SIDEBAR */
@@ -38,29 +41,86 @@ aside a:hover,aside a.active{
   background:#3498db;color:#fff
 }
 
+/* MAIN */
 main{
   background:#fff;border-radius:10px;padding:20px;
   box-shadow:0 4px 6px rgba(0,0,0,.1);
   height:calc(100vh - 160px);overflow:auto
 }
 
+/* SEARCH */
+.search{margin-bottom:15px}
 .search input{
   width:100%;padding:14px;font-size:1rem;
-  border-radius:8px;border:2px solid #ddd;margin-bottom:15px
+  border-radius:8px;border:2px solid #ddd
 }
 
+/* TABLE */
 table{width:100%;border-collapse:collapse}
-th{background:#2c3e50;color:#fff;padding:12px}
+th{
+  background:#2c3e50;
+  color:#fff;
+  padding:12px;
+  cursor:pointer;
+}
+th:hover{background:#34495e}
 td{padding:10px;border-bottom:1px solid #eee}
 tr:hover{background:#f8f9fa;cursor:pointer}
 
+/* BADGES */
 .badge{
-  padding:6px 12px;border-radius:20px;
-  font-size:0.85rem;font-weight:600;color:#fff
+  padding:6px 12px;
+  border-radius:20px;
+  font-size:0.85rem;
+  font-weight:600;
+  color:#fff;
 }
 .badge.active{background:#27ae60}
 .badge.suspended{background:#e74c3c}
 .badge.inactive{background:#7f8c8d}
+
+/* MODAL */
+.modal{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.75);
+  display:none;align-items:center;
+  justify-content:center;z-index:999
+}
+
+/* EDIT FORM */
+.edit-form{
+  background:#fff;
+  padding:20px;
+  border-radius:10px;
+  width:350px;
+}
+.edit-form input, .edit-form select{
+  width:100%;
+  padding:10px;
+  margin-bottom:10px;
+}
+.edit-form button{
+  padding:10px;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+}
+.save-btn{background:#27ae60;color:#fff}
+.cancel-btn{background:#e74c3c;color:#fff;margin-left:10px}
+
+/* ID CARD */
+.card-container{width:420px;height:250px;perspective:1000px}
+.id-card{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:.6s}
+.id-card.flipped{transform:rotateY(180deg)}
+.card-face{position:absolute;width:100%;height:100%;backface-visibility:hidden;border-radius:16px;box-shadow:0 4px 12px rgba(0,0,0,.15);display:flex;flex-direction:column}
+.card-title-bar{background:#1a3a5f;color:#fff;text-align:center;padding:10px;font-weight:700}
+.card-content{padding:20px;flex:1}
+.front-grid{display:grid;grid-template-columns:100px 1fr;gap:18px}
+.photo{width:90px;height:110px;background:#f5f7fa;border:2px solid #e0e6ed;border-radius:10px;display:flex;align-items:center;justify-content:center}
+.photo img{width:100%;height:100%;object-fit:cover;border-radius:8px}
+.back-grid{display:grid;grid-template-columns:1fr 120px;gap:18px;align-items:center;height:100%}
+.flip-btn{background:#3498db;color:#fff;border:none;border-radius:8px;padding:8px 16px;margin-top:8px;cursor:pointer}
+.admin-btn{background:#f39c12;color:#fff;border:none;border-radius:6px;padding:6px 12px;margin-top:8px;cursor:pointer}
 </style>
 </head>
 <body>
@@ -76,10 +136,12 @@ tr:hover{background:#f8f9fa;cursor:pointer}
 
 <div class="layout">
 <aside>
-  <a href="dashboard.html"><i class="fas fa-chart-line"></i> Dashboard</a>
+  <a href="index.html"><i class="fas fa-chart-line"></i> Dashboard</a>
   <a href="members.html" class="active"><i class="fas fa-users"></i> Members</a>
-  <a href="attendance.html"><i class="fas fa-clipboard-check"></i> Attendance</a>
-  <a href="reports.html"><i class="fas fa-file-alt"></i> Reports</a>
+  <a href="scanner.html"><i class="fas fa-qrcode"></i> Scan ID</a>
+  <a href="regions.html"><i class="fas fa-map-marker-alt"></i> Regions</a>
+  <a href="scan-logs.html"><i class="fas fa-history"></i> Activity Logs</a>
+  <a href="admin.html"><i class="fas fa-user-shield"></i> Admin Panel</a>
   <a href="settings.html"><i class="fas fa-cog"></i> Settings</a>
 </aside>
 
@@ -87,15 +149,14 @@ tr:hover{background:#f8f9fa;cursor:pointer}
   <div class="search">
     <input id="search" placeholder="Search by name or ID">
   </div>
-
   <table>
     <thead>
       <tr>
-        <th>ID</th>
-        <th>Name</th>
-        <th>Position</th>
-        <th>Region</th>
-        <th>Status</th>
+        <th onclick="sortTable('member_id')">ID</th>
+        <th onclick="sortTable('full_name')">Name</th>
+        <th onclick="sortTable('position')">Position</th>
+        <th onclick="sortTable('region')">Region</th>
+        <th onclick="sortTable('status')">Status</th>
       </tr>
     </thead>
     <tbody id="membersBody"></tbody>
@@ -104,18 +165,26 @@ tr:hover{background:#f8f9fa;cursor:pointer}
 </div>
 </div>
 
+<div class="modal" id="modal"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 document.addEventListener("DOMContentLoaded", async ()=>{
 
+const isAdmin = true; // 🔐 Change to false to disable admin editing
+
 const supabase = window.supabase.createClient(
-  "https://pqrsljahrnjgkadflbmr.supabase.co",
+    "https://pqrsljahrnjgkadflbmr.supabase.co",
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBxcnNsamFocm5qZ2thZGZsYm1yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA1NTg0NTYsImV4cCI6MjA4NjEzNDQ1Nn0.egED0C2iRp6j3Xp4ldgrdI0GBep2J7VUR52rBbzsVdo"
   );
 
 const body=document.getElementById("membersBody");
 const search=document.getElementById("search");
+const modal=document.getElementById("modal");
 
-let members=[];
+let members=[], current;
+let sortDirection=1;
+
 const {data}=await supabase.from("umoomi_members").select("*");
 members=data||[];
 render(members);
@@ -126,7 +195,7 @@ function badge(status){
 
 function render(list){
   body.innerHTML=list.map(m=>`
-    <tr onclick="window.location='member-profile.html?id=${m.member_id}'">
+    <tr onclick="openCard('${m.member_id}')">
       <td>${m.member_id}</td>
       <td>${m.full_name}</td>
       <td>${m.position}</td>
@@ -134,6 +203,14 @@ function render(list){
       <td>${badge(m.status)}</td>
     </tr>`).join("");
 }
+
+window.sortTable=field=>{
+  sortDirection*=-1;
+  members.sort((a,b)=>{
+    return (a[field]||"").localeCompare(b[field]||"")*sortDirection;
+  });
+  render(members);
+};
 
 search.oninput=e=>{
   const q=e.target.value.toLowerCase();
@@ -143,8 +220,89 @@ search.oninput=e=>{
   ));
 };
 
+window.openCard=id=>{
+  current=members.find(m=>m.member_id===id);
+  modal.style.display="flex";
+  modal.innerHTML=`
+  <div class="card-container">
+    <div class="id-card" id="card">
+      <div class="card-face" style="background:#fff">
+        <div class="card-title-bar">Official ID Card</div>
+        <div class="card-content">
+          <div class="front-grid">
+            <div class="photo">
+              ${current.photo_url?`<img src="${current.photo_url}">`:`<i class="fas fa-user"></i>`}
+            </div>
+            <div>
+              <div style="font-size:1.2rem;font-weight:700">${current.full_name}</div>
+              <div style="color:#7f8c8d;font-weight:600">${current.position}</div>
+              <div><strong>ID:</strong> ${current.member_id}</div>
+              <div><strong>Region:</strong> ${current.region||"-"}</div>
+              <button class="flip-btn" onclick="flip()">View Back</button>
+              ${isAdmin?`<button class="admin-btn" onclick="editMember()">Edit</button>`:""}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-face" style="background:#f9fbfd;transform:rotateY(180deg)">
+        <div class="card-title-bar">Official ID Card</div>
+        <div class="card-content back-grid">
+          <div>
+            <div><strong>Department:</strong> ${current.department}</div>
+            <div><strong>Date Joined:</strong> ${current.date_joined||"-"}</div>
+            <div><strong>Organization:</strong> Ahmadiyya Muslim Community</div>
+            <button class="flip-btn" onclick="flip()">View Front</button>
+          </div>
+          <div id="qr"></div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+  setTimeout(()=>new QRCode("qr",{text:current.member_id,width:90,height:90}),50);
+};
+
+window.flip=()=>document.getElementById("card").classList.toggle("flipped");
+
+window.editMember=()=>{
+  modal.innerHTML=`
+  <div class="edit-form">
+    <h3>Edit Member</h3>
+    <input id="position" value="${current.position}">
+    <input id="department" value="${current.department}">
+    <input id="region" value="${current.region||""}">
+    <select id="status">
+      <option ${current.status==="Active"?"selected":""}>Active</option>
+      <option ${current.status==="Inactive"?"selected":""}>Inactive</option>
+      <option ${current.status==="Suspended"?"selected":""}>Suspended</option>
+    </select>
+    <button class="save-btn" onclick="saveEdit()">Save</button>
+    <button class="cancel-btn" onclick="closeModal()">Cancel</button>
+  </div>`;
+};
+
+window.saveEdit=async()=>{
+  const updated={
+    position:document.getElementById("position").value,
+    department:document.getElementById("department").value,
+    region:document.getElementById("region").value,
+    status:document.getElementById("status").value
+  };
+  await supabase.from("umoomi_members")
+    .update(updated)
+    .eq("member_id",current.member_id);
+
+  Object.assign(current,updated);
+  render(members);
+  modal.style.display="none";
+};
+
+window.closeModal=()=>modal.style.display="none";
+
+modal.onclick=e=>{
+  if(e.target===modal) modal.style.display="none";
+};
+
 });
 </script>
-
 </body>
 </html>

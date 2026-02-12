@@ -25,7 +25,6 @@ header{
 
 .layout{display:grid;grid-template-columns:240px 1fr;gap:20px}
 
-/* SIDEBAR */
 aside{
   background:#fff;border-radius:10px;padding:15px;
   box-shadow:0 4px 6px rgba(0,0,0,.1);
@@ -41,14 +40,12 @@ aside a:hover,aside a.active{
   background:#3498db;color:#fff
 }
 
-/* MAIN */
 main{
   background:#fff;border-radius:10px;padding:20px;
   box-shadow:0 4px 6px rgba(0,0,0,.1);
   height:calc(100vh - 160px);overflow:auto
 }
 
-/* PROFILE */
 .profile-header{
   display:flex;gap:30px;align-items:center;margin-bottom:20px
 }
@@ -64,9 +61,7 @@ main{
   gap:12px;margin-top:15px
 }
 
-.section{
-  margin-top:30px
-}
+.section{margin-top:30px}
 
 .id-section{
   display:grid;
@@ -114,7 +109,6 @@ button:hover{opacity:.9}
 
 <div class="layout">
 
-<!-- SIDEBAR -->
 <aside>
   <a href="dashboard.html"><i class="fas fa-chart-line"></i> Dashboard</a>
   <a href="members.html" class="active"><i class="fas fa-users"></i> Members</a>
@@ -125,7 +119,6 @@ button:hover{opacity:.9}
   <a href="logout.html"><i class="fas fa-sign-out-alt"></i> Logout</a>
 </aside>
 
-<!-- MAIN CONTENT -->
 <main>
 
 <div id="profileContent"></div>
@@ -141,7 +134,7 @@ button:hover{opacity:.9}
 <div class="section">
   <h3>Add Assistant / Secretary (Max 3)</h3>
   <div id="subMembers"></div>
-  <button onclick="addSubMember()">Add Member</button>
+  <div id="addBtnContainer"></div>
 </div>
 
 </main>
@@ -150,14 +143,14 @@ button:hover{opacity:.9}
 
 <script>
 const supabase = window.supabase.createClient(
-  "YOUR_SUPABASE_URL",
-  "YOUR_PUBLIC_ANON_KEY"
-);
+  "https://pqrsljahrnjgkadflbmr.supabase.co",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBxcnNsamFocm5qZ2thZGZsYm1yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA1NTg0NTYsImV4cCI6MjA4NjEzNDQ1Nn0.egED0C2iRp6j3Xp4ldgrdI0GBep2J7VUR52rBbzsVdo"
+  );
 
-const params=new URLSearchParams(window.location.search);
-const memberId=params.get("id");
+const memberId = new URLSearchParams(window.location.search).get("id");
+const isAdmin = localStorage.getItem("role") === "admin";
 
-let subCount=0;
+let subCount = 0;
 
 document.addEventListener("DOMContentLoaded", async()=>{
 
@@ -179,6 +172,12 @@ return;
 
 renderProfile(data);
 renderID(data);
+loadAssistants();
+
+if(isAdmin){
+document.getElementById("addBtnContainer").innerHTML=
+`<button onclick="addSubMember()">Add Member</button>`;
+}
 
 });
 
@@ -222,20 +221,70 @@ document.getElementById("idBack").innerHTML=`
 setTimeout(()=>new QRCode("qr",{text:m.member_id,width:90,height:90}),100);
 }
 
+async function loadAssistants(){
+const {data}=await supabase
+.from("umoomi_assistants")
+.select("*")
+.eq("parent_member_id",memberId);
+
+subCount = data.length;
+
+document.getElementById("subMembers").innerHTML =
+data.map(a=>`
+<div class="add-box">
+  <input value="${a.photo_url||""}" disabled>
+  <input value="${a.full_name}" disabled>
+  <input value="${a.position}" disabled>
+</div>
+`).join("");
+}
+
 function addSubMember(){
+
+if(!isAdmin) return;
+
 if(subCount>=3){
 alert("Maximum 3 members only.");
 return;
 }
-subCount++;
 
 document.getElementById("subMembers").innerHTML+=`
 <div class="add-box">
-  <input placeholder="Profile Photo URL">
-  <input placeholder="Name">
-  <input placeholder="Position">
+  <input placeholder="Profile Photo URL" class="aPhoto">
+  <input placeholder="Name" class="aName">
+  <input placeholder="Position" class="aPosition">
+  <button onclick="saveAssistant(this)">Save</button>
 </div>
 `;
+}
+
+async function saveAssistant(btn){
+
+if(!isAdmin) return;
+
+if(subCount>=3){
+alert("Maximum 3 members only.");
+return;
+}
+
+const box = btn.closest(".add-box");
+const photo = box.querySelector(".aPhoto").value;
+const name = box.querySelector(".aName").value;
+const position = box.querySelector(".aPosition").value;
+
+if(!name || !position){
+alert("Name and Position required.");
+return;
+}
+
+await supabase.from("umoomi_assistants").insert([{
+  parent_member_id:memberId,
+  full_name:name,
+  position:position,
+  photo_url:photo
+}]);
+
+loadAssistants();
 }
 </script>
 
