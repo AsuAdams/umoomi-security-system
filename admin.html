@@ -2,277 +2,369 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Admin Dashboard – Umoomi</title>
+<title>Admin Dashboard</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <link rel="stylesheet"
- href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"/>
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"/>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:"Segoe UI",sans-serif;background:#f2f2f2;padding:20px}
-.container{max-width:1500px;margin:auto}
+body{font-family:Segoe UI;background:#f2f2f2;height:100vh;overflow:hidden}
 
 /* HEADER */
 header{
-  background:#ccdc;padding:20px;border-radius:10px;
-  display:flex;align-items:center;gap:15px;
-  box-shadow:0 4px 6px rgba(0,0,0,.1);
-  margin-bottom:20px
+position:fixed;
+top:0;left:0;right:0;
+height:90px;
+background:#ccdc;
+display:flex;
+align-items:center;
+gap:15px;
+padding:20px;
+box-shadow:0 4px 6px rgba(0,0,0,.1);
+z-index:1000;
 }
 
 /* LAYOUT */
-.layout{display:grid;grid-template-columns:240px 1fr;gap:20px}
+.layout{
+display:flex;
+margin-top:110px;
+height:calc(100vh - 110px);
+padding:0 20px 20px 20px;
+gap:20px;
+}
 
 /* SIDEBAR */
 aside{
-  background:#fff;border-radius:10px;padding:15px;
-  box-shadow:0 4px 6px rgba(0,0,0,.1);
+position:fixed;
+top:110px;
+left:20px;
+width:240px;
+bottom:20px;
+background:white;
+border-radius:10px;
+padding:15px;
+box-shadow:0 4px 6px rgba(0,0,0,.1);
+overflow-y:auto;
 }
+
 aside button{
-  width:100%;border:none;background:none;
-  padding:12px 15px;border-radius:6px;
-  text-align:left;cursor:pointer;
-  margin-bottom:6px;font-size:1rem;color:#2c3e50
+width:100%;
+border:none;
+background:none;
+padding:10px 15px;
+border-radius:6px;
+text-align:left;
+cursor:pointer;
+margin-bottom:6px;
 }
-aside button i{width:22px;margin-right:10px}
-aside button.active,aside button:hover{
-  background:#3498db;color:#fff
+
+aside button:hover,
+aside button.active{
+background:#3498db;
+color:white;
 }
 
 /* MAIN */
 main{
-  background:#fff;border-radius:10px;padding:20px;
-  box-shadow:0 4px 6px rgba(0,0,0,.1);
-  min-height:75vh
+margin-left:280px;
+flex:1;
+background:white;
+border-radius:10px;
+padding:20px;
+box-shadow:0 4px 6px rgba(0,0,0,.1);
+overflow-y:auto;
 }
 
-/* DASH GRID */
-.grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
-  gap:20px
+.section{display:none}
+.section.active{display:block}
+
+table{
+width:100%;
+border-collapse:collapse;
+margin-top:15px;
 }
 
-/* CARD */
-.card{
-  background:#fafafa;border-radius:10px;
-  padding:18px;border:1px solid #eee
+th,td{
+padding:8px;
+border-bottom:1px solid #eee;
 }
-.card h3{margin-bottom:12px;font-size:1.1rem}
-.card i{color:#3498db;margin-right:6px}
 
-/* FORM */
-input,select{
-  width:100%;padding:10px;
-  border-radius:6px;border:1px solid #ccc;
-  margin-bottom:10px
+tr:hover{background:#f0f8ff}
+
+button{
+padding:5px 8px;
+border:none;
+border-radius:5px;
+cursor:pointer;
 }
-button.action{
-  padding:10px 14px;border:none;
-  border-radius:6px;background:#3498db;
-  color:#fff;cursor:pointer
+
+.success{background:#2ecc71;color:white}
+.warning{background:#f39c12;color:white}
+.danger{background:#e74c3c;color:white}
+.btn{background:#3498db;color:white}
+
+input, select{
+padding:6px;
+width:100%;
+margin-bottom:10px;
 }
-button.danger{background:#c0392b}
-button.success{background:#2ecc71}
 
-/* TABLE */
-table{width:100%;border-collapse:collapse;margin-top:10px}
-th,td{padding:8px;border-bottom:1px solid #eee;text-align:left;font-size:.95rem}
-
-/* LOGIN MODAL */
+/* MODAL */
 .modal{
-  position:fixed;inset:0;
-  background:rgba(0,0,0,.7);
-  display:flex;align-items:center;
-  justify-content:center;z-index:999
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.7);
+display:flex;
+align-items:center;
+justify-content:center;
+z-index:2000;
 }
-.modal-box{
-  background:#fff;border-radius:10px;
-  padding:25px;width:360px;text-align:center
-}
+
 .hidden{display:none}
+
+.modal-box{
+background:white;
+padding:20px;
+border-radius:8px;
+width:450px;
+}
 </style>
 </head>
-
 <body>
-<div class="container">
 
 <header>
-  <i class="fas fa-user-shield fa-2x"></i>
-  <div>
-    <h2>Admin Dashboard</h2>
-    <small>System Management Panel</small>
-  </div>
+<i class="fas fa-user-shield fa-2x"></i>
+<div>
+<h2>Admin Dashboard</h2>
+<small>System Management Panel</small>
+</div>
 </header>
 
 <div class="layout">
 
-<!-- SIDEBAR -->
 <aside>
-  <button onclick="location.href='index.html'"><i class="fas fa-chart-line"></i> Dashboard</button>
-  <button onclick="location.href='members.html'"><i class="fas fa-users"></i> Members</button>
-  <button onclick="location.href='scanner.html'"><i class="fas fa-qrcode"></i> Scanner</button>
-  <button onclick="location.href='regions.html'"><i class="fas fa-map-marker-alt"></i> Regions</button>
-  <button onclick="location.href='scan-logs.html'"><i class="fas fa-history"></i> Logs</button>
-  <button class="active"><i class="fas fa-user-shield"></i> Admin</button>
-  <button onclick="location.href='settings.html'"><i class="fas fa-cog"></i> Settings</button>
+
+<!-- 7 SIDEBAR BUTTONS -->
+<button onclick="location.href='index.html'">
+<i class="fas fa-home"></i> Dashboard
+</button>
+
+<button onclick="location.href='members.html'">
+<i class="fas fa-users"></i> Members Page
+</button>
+
+<button onclick="location.href='scanner.html'">
+<i class="fas fa-qrcode"></i> Scanner
+</button>
+
+<button onclick="location.href='scan-logs.html'">
+<i class="fas fa-clipboard-list"></i> Logs
+</button>
+
+<button onclick="location.href='settings.html'">
+<i class="fas fa-cog"></i> Settings
+</button>
+
+<hr style="margin:10px 0">
+
+<button class="active" onclick="showSection('membersSection', this)">
+<i class="fas fa-id-card"></i> Members Management
+</button>
+
+<button onclick="showSection('regionsSection', this)">
+<i class="fas fa-map-marker-alt"></i> Regions Management
+</button>
+
 </aside>
 
-<!-- MAIN -->
-<main id="adminContent" class="hidden">
+<main>
 
-<div class="grid">
+<!-- MEMBERS -->
+<div id="membersSection" class="section active">
+<h3>Members Management</h3>
+<button class="success" onclick="openMemberModal()">+ Add Member</button>
 
-<!-- ADD MEMBER -->
-<div class="card">
-<h3><i class="fas fa-user-plus"></i>Add Member</h3>
-<input id="m_id" placeholder="Member ID">
-<input id="m_name" placeholder="Full Name">
-<select id="m_region"></select>
-<button class="action" onclick="addMember()">Add Member</button>
-</div>
-
-<!-- ID SETTINGS -->
-<div class="card">
-<h3><i class="fas fa-id-card"></i>ID Expiry</h3>
-<input id="expiry" type="number" placeholder="Expiry (years)">
-<button class="action" onclick="updateExpiry()">Update Expiry</button>
-</div>
-
-<!-- REGIONS -->
-<div class="card">
-<h3><i class="fas fa-map-marker-alt"></i>Regions</h3>
-<input id="newRegion" placeholder="Add Region">
-<button class="success" onclick="addRegion()">Add</button>
-<ul id="regionsList"></ul>
-</div>
-
-<!-- MEMBERS TABLE -->
-<div class="card" style="grid-column:1/-1">
-<h3><i class="fas fa-users-cog"></i>Manage Members</h3>
 <table>
 <thead>
-<tr><th>ID</th><th>Name</th><th>Status</th><th>Actions</th></tr>
+<tr>
+<th>Member ID</th>
+<th>Name</th>
+<th>Region</th>
+<th>Expiry</th>
+<th>Actions</th>
+</tr>
 </thead>
 <tbody id="membersTable"></tbody>
 </table>
 </div>
 
+<!-- REGIONS -->
+<div id="regionsSection" class="section">
+<h3>Regions Management</h3>
+
+<input id="regionInput" placeholder="New region name">
+<button class="success" onclick="addRegion()">Add Region</button>
+
+<table>
+<thead>
+<tr>
+<th>Region Name</th>
+<th>Actions</th>
+</tr>
+</thead>
+<tbody id="regionsTable"></tbody>
+</table>
+
 </div>
+
 </main>
 </div>
+
+<!-- MEMBER MODAL -->
+<div class="modal hidden" id="memberModal">
+<div class="modal-box">
+<h3>Add Member</h3>
+<input id="m_member_id" placeholder="Member ID">
+<input id="m_full_name" placeholder="Full Name">
+<select id="m_region"></select>
+<input type="date" id="m_expiry">
+<button class="btn" onclick="saveMember()">Save</button>
+<button onclick="closeMemberModal()">Cancel</button>
+</div>
 </div>
 
-<!-- LOGIN -->
-<div class="modal" id="loginModal">
-  <div class="modal-box">
-    <h3>Admin Login</h3>
-    <input id="user" placeholder="Username">
-    <input id="pass" type="password" placeholder="Password">
-    <button class="action" onclick="login()">Login</button>
-    <p id="err" style="color:#c0392b;margin-top:10px"></p>
-  </div>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-/* ===== CONFIG ===== */
-const ADMIN_USER="admin";
-const ADMIN_PASS="umoomi123";
+
 const SUPABASE_URL="https://pqrsljahrnjgkadflbmr.supabase.co";
 const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBxcnNsamFocm5qZ2thZGZsYm1yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA1NTg0NTYsImV4cCI6MjA4NjEzNDQ1Nn0.egED0C2iRp6j3Xp4ldgrdI0GBep2J7VUR52rBbzsVdo";
-/* ================== */
-
 const db=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
-const modal=document.getElementById("loginModal");
-const admin=document.getElementById("adminContent");
 
-/* LOGIN */
-function login(){
-  if(user.value===ADMIN_USER && pass.value===ADMIN_PASS){
-    modal.style.display="none";
-    admin.classList.remove("hidden");
-    sessionStorage.setItem("admin","yes");
-    loadAll();
-  }else err.textContent="Invalid credentials";
-}
-if(sessionStorage.getItem("admin")==="yes"){
-  modal.style.display="none";
-  admin.classList.remove("hidden");
-  loadAll();
+let regionsMap = {};
+
+/* SECTION SWITCH */
+function showSection(id, btn){
+document.querySelectorAll(".section")
+.forEach(s=>s.classList.remove("active"));
+
+document.getElementById(id).classList.add("active");
+
+document.querySelectorAll("aside button")
+.forEach(b=>b.classList.remove("active"));
+
+btn.classList.add("active");
 }
 
-/* LOAD */
-async function loadAll(){
-  loadMembers();
-  loadRegions();
-}
-
-/* MEMBERS */
-async function loadMembers(){
-  const {data}=await db.from("umoomi_members").select("*");
-  membersTable.innerHTML=data.map(m=>`
-  <tr>
-    <td>${m.member_id}</td>
-    <td>${m.full_name}</td>
-    <td>${m.status}</td>
-    <td>
-      <button class="action" onclick="toggle('${m.member_id}','${m.status}')">
-        ${m.status==="Active"?"Deactivate":"Activate"}
-      </button>
-      <button class="danger" onclick="printID('${m.member_id}')">Print</button>
-    </td>
-  </tr>`).join("");
-}
-
-/* ACTIONS */
-async function addMember(){
-  await db.from("umoomi_members").insert({
-    member_id:m_id.value,
-    full_name:m_name.value,
-    region:m_region.value,
-    status:"Active"
-  });
-  loadMembers();
-}
-
-async function toggle(id,status){
-  await db.from("umoomi_members")
-    .update({status:status==="Active"?"Inactive":"Active"})
-    .eq("member_id",id);
-  loadMembers();
-}
-
-function printID(id){
-  window.open("members.html?print="+id,"_blank");
-}
-
-/* REGIONS */
+/* LOAD REGIONS */
 async function loadRegions(){
-  const {data}=await db.from("regions").select("*");
-  m_region.innerHTML=data.map(r=>`<option>${r.name}</option>`).join("");
-  regionsList.innerHTML=data.map(r=>`
-    <li>${r.name}
-    <button class="danger" onclick="removeRegion('${r.id}')">x</button>
-    </li>`).join("");
-}
-async function addRegion(){
-  await db.from("regions").insert({name:newRegion.value});
-  loadRegions();
-}
-async function removeRegion(id){
-  await db.from("regions").delete().eq("id",id);
-  loadRegions();
+
+const { data, error } = await db.from("regions").select("*");
+
+if(error){
+console.error("Region load error:", error);
+alert("Regions failed to load. Check console.");
+return;
 }
 
-/* EXPIRY */
-async function updateExpiry(){
-  await db.from("settings")
-    .update({id_expiry_years:expiry.value})
-    .eq("key","global");
-  alert("Expiry updated");
+regionsMap = {};
+data.forEach(r => regionsMap[r.id] = r.name);
+
+regionsTable.innerHTML = data.map(r => `
+<tr>
+<td>${r.name}</td>
+<td>
+<button class="danger" onclick="deleteRegion('${r.id}')">
+Delete
+</button>
+</td>
+</tr>
+`).join("");
+
+m_region.innerHTML = data.map(r =>
+`<option value="${r.id}">${r.name}</option>`
+).join("");
+
 }
+
+/* LOAD MEMBERS */
+async function loadMembers(){
+
+const { data, error } = await db.from("umoomi_members").select("*");
+
+if(error){
+console.error("Member load error:", error);
+alert("Members failed to load. Check console.");
+return;
+}
+
+membersTable.innerHTML = data.map(m => `
+<tr>
+<td>${m.member_id}</td>
+<td>${m.full_name}</td>
+<td>${regionsMap[m.region_id] || ""}</td>
+<td>${m.expiry_date || ""}</td>
+<td>
+<button class="danger" onclick="deleteMember('${m.id}')">
+Delete
+</button>
+</td>
+</tr>
+`).join("");
+
+}
+
+/* ADD REGION */
+async function addRegion(){
+if(!regionInput.value) return;
+
+await db.from("regions").insert({name: regionInput.value});
+regionInput.value="";
+loadRegions();
+}
+
+/* DELETE REGION */
+async function deleteRegion(id){
+await db.from("regions").delete().eq("id", id);
+loadRegions();
+}
+
+/* ADD MEMBER */
+function openMemberModal(){
+memberModal.classList.remove("hidden");
+}
+
+function closeMemberModal(){
+memberModal.classList.add("hidden");
+}
+
+async function saveMember(){
+
+const payload = {
+member_id: m_member_id.value,
+full_name: m_full_name.value,
+region_id: m_region.value,
+expiry_date: m_expiry.value
+};
+
+await db.from("umoomi_members").insert(payload);
+
+closeMemberModal();
+loadMembers();
+}
+
+/* DELETE MEMBER */
+async function deleteMember(id){
+await db.from("umoomi_members").delete().eq("id", id);
+loadMembers();
+}
+
+/* INIT */
+loadRegions().then(loadMembers);
+
 </script>
+
 </body>
 </html>
