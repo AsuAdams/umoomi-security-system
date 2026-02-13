@@ -39,33 +39,37 @@ gap:20px;
 
 /* SIDEBAR */
 aside{
-position:fixed;
-top:110px;
-left:20px;
-width:240px;
-bottom:20px;
-background:white;
-border-radius:10px;
-padding:15px;
-box-shadow:0 4px 6px rgba(0,0,0,.1);
-overflow-y:auto;
+  position:fixed;
+  top:110px;
+  left:20px;
+  width:240px;
+  bottom:20px;
+  background:#fff;
+  border-radius:10px;
+  padding:15px;
+  box-shadow:0 4px 6px rgba(0,0,0,.1);
+  overflow-y:auto;
 }
 
 aside button{
-width:100%;
-border:none;
-background:none;
-padding:10px 15px;
-border-radius:6px;
-text-align:left;
-cursor:pointer;
-margin-bottom:6px;
+  width:100%;
+  border:none;
+  background:none;
+  padding:12px 15px;
+  border-radius:6px;
+  text-align:left;
+  cursor:pointer;
+  margin-bottom:6px;
+  font-size:1rem;
+  color:#2c3e50;
 }
 
-aside button:hover,
-aside button.active{
-background:#3498db;
-color:white;
+aside button i{width:22px;margin-right:10px}
+
+aside button.active,
+aside button:hover{
+  background:#3498db;
+  color:#fff;
 }
 
 /* MAIN */
@@ -100,6 +104,7 @@ padding:5px 8px;
 border:none;
 border-radius:5px;
 cursor:pointer;
+margin-right:4px;
 }
 
 .success{background:#2ecc71;color:white}
@@ -107,10 +112,10 @@ cursor:pointer;
 .danger{background:#e74c3c;color:white}
 .btn{background:#3498db;color:white}
 
-input, select{
-padding:6px;
+input,select{
 width:100%;
-margin-bottom:10px;
+padding:6px;
+margin-bottom:8px;
 }
 
 /* MODAL */
@@ -130,7 +135,7 @@ z-index:2000;
 background:white;
 padding:20px;
 border-radius:8px;
-width:450px;
+width:420px;
 }
 </style>
 </head>
@@ -147,43 +152,28 @@ width:450px;
 <div class="layout">
 
 <aside>
-
-<!-- 7 SIDEBAR BUTTONS -->
-<button onclick="location.href='index.html'">
-<i class="fas fa-home"></i> Dashboard
-</button>
-
-<button onclick="location.href='members.html'">
-<i class="fas fa-users"></i> Members Page
-</button>
-
-<button onclick="location.href='scanner.html'">
-<i class="fas fa-qrcode"></i> Scanner
-</button>
-
-<button onclick="location.href='scan-logs.html'">
-<i class="fas fa-clipboard-list"></i> Logs
-</button>
-
-<button onclick="location.href='settings.html'">
-<i class="fas fa-cog"></i> Settings
-</button>
+  <button onclick="location.href='index.html'"><i class="fas fa-chart-line"></i> Dashboard</button>
+  <button onclick="location.href='members.html'"><i class="fas fa-users"></i> Members</button>
+  <button onclick="location.href='scanner.html'"><i class="fas fa-qrcode"></i> Scanner</button>
+  <button onclick="location.href='regions.html'"><i class="fas fa-map-marker-alt"></i> Regions</button>
+  <button onclick="location.href='scan-logs.html'"><i class="fas fa-history"></i> Logs</button>
+  <button class="active"><i class="fas fa-user-shield"></i> Admin</button>
+  <button onclick="location.href='settings.html'"><i class="fas fa-cog"></i> Settings</button>
 
 <hr style="margin:10px 0">
 
-<button class="active" onclick="showSection('membersSection', this)">
-<i class="fas fa-id-card"></i> Members Management
+<button class="active" onclick="showSection('membersSection',this)">
+<i class="fas fa-id-card"></i> Edit Members
 </button>
 
-<button onclick="showSection('regionsSection', this)">
-<i class="fas fa-map-marker-alt"></i> Regions Management
+<button onclick="showSection('regionsSection',this)">
+<i class="fas fa-map-marker-alt"></i> Edit Regions
 </button>
 
 </aside>
 
 <main>
 
-<!-- MEMBERS -->
 <div id="membersSection" class="section active">
 <h3>Members Management</h3>
 <button class="success" onclick="openMemberModal()">+ Add Member</button>
@@ -191,10 +181,10 @@ width:450px;
 <table>
 <thead>
 <tr>
-<th>Member ID</th>
+<th>ID</th>
 <th>Name</th>
 <th>Region</th>
-<th>Expiry</th>
+<th>Date Joined</th>
 <th>Actions</th>
 </tr>
 </thead>
@@ -202,23 +192,19 @@ width:450px;
 </table>
 </div>
 
-<!-- REGIONS -->
 <div id="regionsSection" class="section">
 <h3>Regions Management</h3>
-
-<input id="regionInput" placeholder="New region name">
-<button class="success" onclick="addRegion()">Add Region</button>
+<button class="success" onclick="openRegionModal()">+ Add Region</button>
 
 <table>
 <thead>
 <tr>
-<th>Region Name</th>
+<th>Name</th>
 <th>Actions</th>
 </tr>
 </thead>
 <tbody id="regionsTable"></tbody>
 </table>
-
 </div>
 
 </main>
@@ -227,7 +213,7 @@ width:450px;
 <!-- MEMBER MODAL -->
 <div class="modal hidden" id="memberModal">
 <div class="modal-box">
-<h3>Add Member</h3>
+<h3 id="memberTitle">Add Member</h3>
 <input id="m_member_id" placeholder="Member ID">
 <input id="m_full_name" placeholder="Full Name">
 <select id="m_region"></select>
@@ -237,102 +223,83 @@ width:450px;
 </div>
 </div>
 
+<!-- REGION MODAL -->
+<div class="modal hidden" id="regionModal">
+<div class="modal-box">
+<h3 id="regionTitle">Add Region</h3>
+<input id="r_name" placeholder="Region Name">
+<button class="btn" onclick="saveRegion()">Save</button>
+<button onclick="closeRegionModal()">Cancel</button>
+</div>
+</div>
+
 <script>
 
 const SUPABASE_URL="https://pqrsljahrnjgkadflbmr.supabase.co";
 const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBxcnNsamFocm5qZ2thZGZsYm1yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA1NTg0NTYsImV4cCI6MjA4NjEzNDQ1Nn0.egED0C2iRp6j3Xp4ldgrdI0GBep2J7VUR52rBbzsVdo";
-const db=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 
-let regionsMap = {};
 
-/* SECTION SWITCH */
-function showSection(id, btn){
+const db = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
+);
+
+let regionsMap={};
+let editingMember=null;
+let editingRegion=null;
+
+function showSection(id,btn){
 document.querySelectorAll(".section")
 .forEach(s=>s.classList.remove("active"));
-
 document.getElementById(id).classList.add("active");
-
 document.querySelectorAll("aside button")
 .forEach(b=>b.classList.remove("active"));
-
 btn.classList.add("active");
 }
 
-/* LOAD REGIONS */
 async function loadRegions(){
+const {data,error}=await db.from("regions").select("*");
+if(error){console.error(error);alert(error.message);return;}
 
-const { data, error } = await db.from("regions").select("*");
+regionsMap={};
+data.forEach(r=>regionsMap[r.id]=r.name);
 
-if(error){
-console.error("Region load error:", error);
-alert("Regions failed to load. Check console.");
-return;
-}
-
-regionsMap = {};
-data.forEach(r => regionsMap[r.id] = r.name);
-
-regionsTable.innerHTML = data.map(r => `
+regionsTable.innerHTML=data.map(r=>`
 <tr>
 <td>${r.name}</td>
 <td>
-<button class="danger" onclick="deleteRegion('${r.id}')">
-Delete
-</button>
+<button class="warning" onclick="editRegion('${r.id}','${r.name}')">Edit</button>
+<button class="danger" onclick="deleteRegion('${r.id}')">Delete</button>
 </td>
 </tr>
 `).join("");
 
-m_region.innerHTML = data.map(r =>
+m_region.innerHTML=data.map(r=>
 `<option value="${r.id}">${r.name}</option>`
 ).join("");
-
 }
 
-/* LOAD MEMBERS */
 async function loadMembers(){
+const {data,error}=await db.from("umoomi_members").select("*");
+if(error){console.error(error);alert(error.message);return;}
 
-const { data, error } = await db.from("umoomi_members").select("*");
-
-if(error){
-console.error("Member load error:", error);
-alert("Members failed to load. Check console.");
-return;
-}
-
-membersTable.innerHTML = data.map(m => `
+membersTable.innerHTML=data.map(m=>`
 <tr>
 <td>${m.member_id}</td>
 <td>${m.full_name}</td>
-<td>${regionsMap[m.region_id] || ""}</td>
-<td>${m.expiry_date || ""}</td>
+<td>${regionsMap[m.region_id]||""}</td>
+<td>${m.date_joined||""}</td>
 <td>
-<button class="danger" onclick="deleteMember('${m.id}')">
-Delete
-</button>
+<button class="warning" onclick="editMember('${m.id}')">Edit</button>
+<button class="danger" onclick="deleteMember('${m.id}')">Delete</button>
 </td>
 </tr>
 `).join("");
-
 }
 
-/* ADD REGION */
-async function addRegion(){
-if(!regionInput.value) return;
-
-await db.from("regions").insert({name: regionInput.value});
-regionInput.value="";
-loadRegions();
-}
-
-/* DELETE REGION */
-async function deleteRegion(id){
-await db.from("regions").delete().eq("id", id);
-loadRegions();
-}
-
-/* ADD MEMBER */
 function openMemberModal(){
+editingMember=null;
+memberTitle.innerText="Add Member";
 memberModal.classList.remove("hidden");
 }
 
@@ -341,27 +308,85 @@ memberModal.classList.add("hidden");
 }
 
 async function saveMember(){
-
-const payload = {
-member_id: m_member_id.value,
-full_name: m_full_name.value,
-region_id: m_region.value,
-expiry_date: m_expiry.value
+const payload={
+member_id:m_member_id.value,
+full_name:m_full_name.value,
+region_id:m_region.value,
+date_joined:m_expiry.value,
+position:"Member",
+department:"General"
 };
 
-await db.from("umoomi_members").insert(payload);
+if(editingMember){
+await db.from("umoomi_members")
+.update(payload).eq("id",editingMember);
+}else{
+await db.from("umoomi_members")
+.insert(payload);
+}
 
 closeMemberModal();
 loadMembers();
 }
 
-/* DELETE MEMBER */
+async function editMember(id){
+editingMember=id;
+const {data}=await db.from("umoomi_members")
+.select("*").eq("id",id).single();
+
+m_member_id.value=data.member_id;
+m_full_name.value=data.full_name;
+m_region.value=data.region_id;
+m_expiry.value=data.date_joined;
+
+memberTitle.innerText="Edit Member";
+memberModal.classList.remove("hidden");
+}
+
 async function deleteMember(id){
-await db.from("umoomi_members").delete().eq("id", id);
+await db.from("umoomi_members").delete().eq("id",id);
 loadMembers();
 }
 
-/* INIT */
+function openRegionModal(){
+editingRegion=null;
+regionTitle.innerText="Add Region";
+regionModal.classList.remove("hidden");
+}
+
+function closeRegionModal(){
+regionModal.classList.add("hidden");
+}
+
+async function saveRegion(){
+const payload={name:r_name.value};
+
+if(editingRegion){
+await db.from("regions")
+.update(payload).eq("id",editingRegion);
+}else{
+await db.from("regions")
+.insert(payload);
+}
+
+closeRegionModal();
+loadRegions();
+loadMembers();
+}
+
+function editRegion(id,name){
+editingRegion=id;
+r_name.value=name;
+regionTitle.innerText="Edit Region";
+regionModal.classList.remove("hidden");
+}
+
+async function deleteRegion(id){
+await db.from("regions").delete().eq("id",id);
+loadRegions();
+loadMembers();
+}
+
 loadRegions().then(loadMembers);
 
 </script>
