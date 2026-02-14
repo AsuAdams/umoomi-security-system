@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>AMC Weekly Reminder Report</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Segoe UI,Arial,sans-serif;background:#f2f2f2;padding:20px}
+.container{max-width:1300px;margin:auto}
+header{background:#e9f2ff;padding:20px;border-radius:10px;display:flex;gap:15px;align-items:center;margin-bottom:20px}
+header i{font-size:2rem;color:#2c3e50}
+.layout{display:grid;grid-template-columns:240px 1fr;gap:20px}
+aside{background:#fff;border-radius:10px;padding:15px;box-shadow:0 4px 6px rgba(0,0,0,.1)}
+aside a{display:block;padding:10px;text-decoration:none;color:#2c3e50;border-radius:6px;margin-bottom:6px}
+aside a:hover,aside a.active{background:#3498db;color:#fff}
+main{background:#fff;border-radius:10px;padding:20px;box-shadow:0 4px 6px rgba(0,0,0,.1)}
+.region-list{display:flex;flex-direction:column;gap:6px;max-width:600px;margin-top:15px}
+.region-item{display:flex;justify-content:space-between;align-items:center;padding:6px 10px;border:1px solid #ddd;border-radius:5px;font-size:14px}
+.region-item.reached{background:#eafaf1;border-color:#27ae60}
+.region-item.not-reached{background:#fdecea;border-color:#e74c3c}
+button{padding:8px 14px;border:none;border-radius:6px;cursor:pointer;background:#2c3e50;color:#fff;font-size:13px;margin-right:8px;margin-top:15px}
+.print-area{display:none}
+
+@media print{
+body{background:#fff;margin:0;padding:0}
+aside, header, .region-list, button{display:none !important}
+main{box-shadow:none;padding:0}
+.print-area{display:block;padding:40px}
+@page{size:A4;margin:20mm}
+.official-header{text-align:center;margin-bottom:20px}
+.official-header img{width:90px;margin-bottom:10px}
+.official-header h2{font-size:24px;margin-bottom:5px}
+.official-header h3{font-size:18px;margin-bottom:5px}
+table{width:100%;border-collapse:collapse;margin-top:20px;font-size:14px}
+th, td{border:1.5px solid #000;padding:8px;text-align:center}
+th{background:#f2f2f2}
+.status-reached{color:green;font-weight:600}
+.status-not{color:red;font-weight:600}
+.summary-section{margin-top:20px;font-size:15px}
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<header>
+<i class="fas fa-shield-alt"></i>
+<div>
+<h2>Weekly Monitor</h2>
+<small>National Office Weekly Monitoring</small>
+</div>
+</header>
+
+<div class="layout">
+<aside>
+<a href="index.html"><i class="fas fa-chart-line"></i> Dashboard</a>
+<a href="members.html"><i class="fas fa-users"></i> Members</a>
+<a href="scanner.html"><i class="fas fa-qrcode"></i> Scan ID</a>
+<a href="regions.html"><i class="fas fa-map-marker-alt"></i> Regions</a>
+<a href="#" class="active"><i class="fas fa-history"></i> Activity Logs</a>
+<a href="admin.html"><i class="fas fa-user-shield"></i> Admin Panel</a>
+  <a href="settings.html"><i class="fas fa-cog"></i> Settings</a>
+</aside>
+
+<main>
+
+<label><strong>Week Starting:</strong></label><br>
+<input type="date" id="weekDate">
+
+<h3 style="margin-top:15px">Regions Call Status</h3>
+<div id="regionContainer" class="region-list"></div>
+
+<button onclick="saveWeeklyData()">Save Weekly Data</button>
+<button onclick="generatePrintView()">Generate & Print Report</button>
+
+<div class="print-area" id="printArea">
+<div class="official-header">
+<img src="images/amc-logo.png">
+<h2>AHMADIYYA MUSLIM COMMUNITY UGANDA</h2>
+<h3>NATIONAL OFFICE</h3>
+<h3>WEEKLY REMINDER REPORT</h3>
+<p><strong>Week Starting:</strong> <span id="printWeek"></span></p>
+<p><strong>Report Generated:</strong> <span id="generatedDate"></span></p>
+<hr>
+</div>
+
+<table id="printTable">
+<thead>
+<tr><th>No.</th><th>Region</th><th>Status</th></tr>
+</thead>
+<tbody></tbody>
+</table>
+
+<div class="summary-section">
+<p><strong>Total Regions:</strong> <span id="pTotal"></span></p>
+<p><strong>Reached:</strong> <span id="pReached"></span></p>
+<p><strong>Not Reached:</strong> <span id="pNot"></span></p>
+<p><strong>Performance:</strong> <span id="pPerformance"></span></p>
+</div>
+</div>
+
+</main>
+</div>
+</div>
+
+<script>
+const SUPABASE_URL="https://pqrsljahrnjgkadflbmr.supabase.co";
+const SUPABASE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBxcnNsamFocm5qZ2thZGZsYm1yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA1NTg0NTYsImV4cCI6MjA4NjEzNDQ1Nn0.egED0C2iRp6j3Xp4ldgrdI0GBep2J7VUR52rBbzsVdo";
+const supabaseClient = window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+
+document.addEventListener("DOMContentLoaded", async ()=>{
+autoMonday();
+await loadRegions();
+await loadWeeklyData();
+document.getElementById("weekDate").addEventListener("change",loadWeeklyData);
+});
+
+function autoMonday(){
+const today=new Date();
+const day=today.getDay();
+const diff=today.getDate()-day+(day===0?-6:1);
+const monday=new Date(today.setDate(diff));
+document.getElementById("weekDate").value=monday.toISOString().split("T")[0];
+}
+
+async function loadRegions(){
+const {data,error}=await supabaseClient
+.from("regions")
+.select("*")
+.eq("active",true)
+.order("id",{ascending:true});
+
+if(error){console.log(error);return;}
+
+const container=document.getElementById("regionContainer");
+container.innerHTML="";
+
+data.forEach((region,index)=>{
+const div=document.createElement("div");
+div.className="region-item";
+div.innerHTML=`
+<span>${index+1}. ${region.name}</span>
+<select data-region="${region.name}">
+<option value="">--</option>
+<option value="Reached">Reached</option>
+<option value="Not Reached">Not Reached</option>
+</select>`;
+div.querySelector("select").addEventListener("change",(e)=>{
+div.classList.remove("reached","not-reached");
+if(e.target.value==="Reached") div.classList.add("reached");
+if(e.target.value==="Not Reached") div.classList.add("not-reached");
+});
+container.appendChild(div);
+});
+}
+
+async function saveWeeklyData(){
+const week=document.getElementById("weekDate").value;
+await supabaseClient.from("weekly_reports").delete().eq("week_date",week);
+
+const rows=[];
+document.querySelectorAll("#regionContainer select").forEach(sel=>{
+if(sel.value){
+rows.push({week_date:week,region:sel.dataset.region,status:sel.value});
+}
+});
+if(rows.length>0){
+await supabaseClient.from("weekly_reports").insert(rows);
+}
+alert("Weekly data saved");
+}
+
+async function loadWeeklyData(){
+const week=document.getElementById("weekDate").value;
+const {data}=await supabaseClient.from("weekly_reports").select("*").eq("week_date",week);
+
+document.querySelectorAll("#regionContainer select").forEach(sel=>{
+sel.value="";
+sel.parentElement.classList.remove("reached","not-reached");
+});
+
+if(data){
+data.forEach(row=>{
+const sel=document.querySelector(`select[data-region="${row.region}"]`);
+if(sel){
+sel.value=row.status;
+if(row.status==="Reached") sel.parentElement.classList.add("reached");
+if(row.status==="Not Reached") sel.parentElement.classList.add("not-reached");
+}
+});
+}
+}
+
+function generatePrintView(){
+const week=document.getElementById("weekDate").value;
+document.getElementById("printWeek").textContent=week;
+document.getElementById("generatedDate").textContent=new Date().toLocaleString();
+
+const tbody=document.querySelector("#printTable tbody");
+tbody.innerHTML="";
+
+let total=0,reached=0,notReached=0;
+
+document.querySelectorAll("#regionContainer select").forEach(sel=>{
+if(sel.value){
+total++;
+if(sel.value==="Reached") reached++;
+if(sel.value==="Not Reached") notReached++;
+const row=document.createElement("tr");
+row.innerHTML=`
+<td>${total}</td>
+<td>${sel.dataset.region}</td>
+<td class="${sel.value==="Reached"?"status-reached":"status-not"}">${sel.value}</td>`;
+tbody.appendChild(row);
+}
+});
+
+const performance=total>0?((reached/total)*100).toFixed(1):0;
+document.getElementById("pTotal").textContent=total;
+document.getElementById("pReached").textContent=reached;
+document.getElementById("pNot").textContent=notReached;
+document.getElementById("pPerformance").textContent=performance+"%";
+
+window.print();
+}
+</script>
+
+</body>
+</html>

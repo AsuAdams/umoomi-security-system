@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Umoomi ID Card</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- QR CODE LIB -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+  <style>
+    body {
+      background: #e6e6e6;
+      font-family: "Segoe UI", sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .id-card-wrapper {
+      perspective: 1000px;
+    }
+
+    .id-card {
+      width: 340px;
+      height: 215px;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform .8s;
+      cursor: pointer;
+    }
+
+    .id-card.flip {
+      transform: rotateY(180deg);
+    }
+
+    .card-face {
+      position: absolute;
+      inset: 0;
+      background: white;
+      border-radius: 12px;
+      padding: 14px 18px;
+      box-shadow: 0 8px 18px rgba(0,0,0,.3);
+      backface-visibility: hidden;
+    }
+
+    /* FRONT */
+    .front {
+      display: flex;
+      gap: 14px;
+    }
+
+    .card-header {
+      position: absolute;
+      top: 10px;
+      left: 18px;
+      right: 18px;
+      font-size: .85rem;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .sub {
+      font-size: .65rem;
+      color: #555;
+    }
+
+    .photo {
+      width: 85px;
+      height: 105px;
+      border-radius: 6px;
+      object-fit: cover;
+      border: 2px solid #2c3e50;
+      margin-top: 40px;
+    }
+
+    .details {
+      flex: 1;
+      margin-top: 40px;
+      font-size: .75rem;
+    }
+
+    .name {
+      font-weight: 700;
+      font-size: .9rem;
+    }
+
+    .role {
+      color: #555;
+      margin-bottom: 6px;
+    }
+
+    .line {
+      margin-top: 4px;
+    }
+
+    /* BACK */
+    .back {
+      transform: rotateY(180deg);
+      font-size: .7rem;
+      text-align: center;
+    }
+
+    .qr {
+      margin: 10px auto;
+      width: 90px;
+      height: 90px;
+    }
+
+    .security {
+      margin-top: 10px;
+      font-size: .6rem;
+      color: #555;
+    }
+
+    .hint {
+      position: fixed;
+      bottom: 20px;
+      font-size: .7rem;
+      color: #555;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="id-card-wrapper">
+  <div class="id-card" id="card">
+
+    <!-- FRONT -->
+    <div class="card-face front">
+      <div class="card-header">
+        UMOOMI SECURITY SYSTEM<br>
+        <span class="sub">Ahmadiyya Muslim Community Uganda</span>
+      </div>
+
+      <img id="photo" class="photo" src="https://via.placeholder.com/120">
+
+      <div class="details">
+        <div class="name" id="name">Loading…</div>
+        <div class="role" id="position"></div>
+
+        <div class="line"><b>ID:</b> <span id="mid"></span></div>
+        <div class="line"><b>Dept:</b> <span id="department"></span></div>
+      </div>
+    </div>
+
+    <!-- BACK -->
+    <div class="card-face back">
+      <b>CARD INFORMATION</b><br><br>
+
+      Region: <span id="region"></span><br>
+      Phone: <span id="phone"></span><br>
+      Status: <span id="status"></span><br>
+      Issued: <span id="issued"></span><br>
+      Expires: <span id="expires"></span><br>
+
+      <div id="qrcode" class="qr"></div>
+
+      <div class="security">
+        Scan QR to verify authenticity<br>
+        Property of Umoomi Security
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="hint">Click card to flip • Print at 100%</div>
+
+<!-- SUPABASE -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+const client = window.supabase.createClient(
+  "https://pqrsljahrnjgkadflbmr.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBxcnNsamFocm5qZ2thZGZsYm1yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA1NTg0NTYsImV4cCI6MjA4NjEzNDQ1Nn0.egED0C2iRp6j3Xp4ldgrdI0GBep2J7VUR52rBbzsVdo"
+);
+
+// GET MEMBER ID FROM URL
+const params = new URLSearchParams(window.location.search);
+const memberId = params.get("member_id");
+
+if (!memberId) {
+  alert("No member ID provided");
+}
+
+// LOAD MEMBER
+async function loadCard() {
+  const { data, error } = await client
+    .from("umoomi_members")
+    .select("*")
+    .eq("member_id", memberId)
+    .single();
+
+  if (error || !data) {
+    alert("Invalid or missing member");
+    return;
+  }
+
+  document.getElementById("name").textContent = data.full_name;
+  document.getElementById("position").textContent = data.position;
+  document.getElementById("mid").textContent = data.member_id;
+  document.getElementById("department").textContent = data.department;
+  document.getElementById("region").textContent = data.region || "-";
+  document.getElementById("phone").textContent = data.phone || "-";
+  document.getElementById("status").textContent = data.status;
+  document.getElementById("issued").textContent = new Date().toLocaleDateString();
+  document.getElementById("expires").textContent =
+    new Date(new Date().setFullYear(new Date().getFullYear() + 2)).toLocaleDateString();
+
+  document.getElementById("photo").src =
+    data.photo_url || "https://via.placeholder.com/120";
+
+  new QRCode(document.getElementById("qrcode"), {
+    text: data.member_id,
+    width: 90,
+    height: 90
+  });
+}
+
+// FLIP
+document.getElementById("card").onclick = () => {
+  document.getElementById("card").classList.toggle("flip");
+};
+
+loadCard();
+</script>
+
+</body>
+</html>

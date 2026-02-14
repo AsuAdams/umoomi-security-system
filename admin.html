@@ -1,111 +1,1416 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel - Umoomi Security</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/admin.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<meta charset="UTF-8">
+<title>Admin Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- PDF Libraries -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #f5f7fa;
+  color: #333;
+  line-height: 1.6;
+  height: 100vh;
+  overflow-x: hidden;
+}
+
+/* HEADER */
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 70px;
+  background: #2c3e50;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 0 25px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  color: white;
+}
+
+header h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+header small {
+  display: block;
+  color: #bdc3c7;
+  font-size: 0.85rem;
+  margin-top: 2px;
+}
+
+/* LAYOUT */
+.layout {
+  display: flex;
+  margin-top: 70px;
+  height: calc(100vh - 70px);
+  padding: 20px;
+  gap: 20px;
+}
+
+/* SIDEBAR */
+aside {
+  position: fixed;
+  top: 70px;
+  left: 20px;
+  width: 260px;
+  bottom: 20px;
+  background: white;
+  border-radius: 12px;
+  padding: 20px 15px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  overflow-y: auto;
+  z-index: 900;
+}
+
+aside button {
+  width: 100%;
+  border: none;
+  background: none;
+  padding: 14px 18px;
+  border-radius: 8px;
+  text-align: left;
+  cursor: pointer;
+  margin-bottom: 8px;
+  font-size: 1.05rem;
+  color: #2c3e50;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  transition: all 0.2s;
+}
+
+aside button i {
+  width: 24px;
+  margin-right: 12px;
+  font-size: 1.1rem;
+}
+
+aside button.active,
+aside button:hover {
+  background: #3498db;
+  color: white;
+  transform: translateX(4px);
+}
+
+aside hr {
+  margin: 15px 0;
+  border: 0;
+  height: 1px;
+  background: #eee;
+}
+
+/* MAIN CONTENT */
+main {
+  margin-left: 290px;
+  flex: 1;
+  background: white;
+  border-radius: 12px;
+  padding: 25px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  overflow-y: auto;
+}
+
+.section {
+  display: none;
+  animation: fadeIn 0.4s ease;
+}
+
+.section.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* SEARCH BAR */
+.search-bar {
+  margin-bottom: 20px;
+  display: flex;
+  gap: 10px;
+}
+
+.search-bar input {
+  flex: 1;
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+/* TABLE STYLING */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+th {
+  background: #3498db;
+  color: white;
+  font-weight: 600;
+  text-align: left;
+  padding: 14px 16px;
+  position: sticky;
+  top: 0;
+}
+
+td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #eee;
+}
+
+tr:hover {
+  background: #f8fbff;
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+/* BUTTON STYLES */
+button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 0.95rem;
+}
+
+button:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.success {
+  background: #27ae60;
+  color: white;
+}
+
+.warning {
+  background: #f39c12;
+  color: white;
+}
+
+.danger {
+  background: #e74c3c;
+  color: white;
+}
+
+.btn {
+  background: #3498db;
+  color: white;
+}
+
+.pdf-btn {
+  background: #8e44ad;
+  color: white;
+}
+
+/* FORM ELEMENTS */
+input, select {
+  width: 100%;
+  padding: 12px 15px;
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.3s;
+}
+
+input:focus, select:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+}
+
+/* MODAL STYLING */
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.modal.hidden {
+  display: none;
+}
+
+.modal-box {
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 480px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  position: relative;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-box h3 {
+  margin-bottom: 20px;
+  color: #2c3e50;
+  font-size: 1.6rem;
+  text-align: center;
+}
+
+.modal-close {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: #eee;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+.modal-close:hover {
+  background: #ff6b6b;
+  color: white;
+}
+
+/* ===== LANDSCAPE ID CARD - PRINT/PDF READY ===== */
+#idCardModal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3000;
+  padding: 20px;
+}
+
+#idCardModal.hidden {
+  display: none;
+}
+
+#idCardContainer {
+  width: 600px;
+  perspective: 1200px;
+  margin: 0 auto;
+}
+
+#idCardInner {
+  width: 100%;
+  height: 360px;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.9s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+  border-radius: 12px;
+}
+
+#idCard.flipped #idCardInner {
+  transform: rotateY(180deg);
+}
+
+.id-card-side {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border-radius: 12px;
+  padding: 24px;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  display: flex;
+  overflow: hidden;
+}
+
+#idCardFront {
+  background: white;
+  color: #2c3e50;
+  border: 1px solid #ccc;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05);
+}
+
+#idCardFront .header {
+  text-align: center;
+  margin-bottom: 18px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #3498db;
+}
+
+#idCardFront .header h2 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #1a3a6c;
+  letter-spacing: 0.5px;
+}
+
+#idCardFront .header p {
+  font-size: 0.95rem;
+  color: #7f8c8d;
+  margin-top: 4px;
+}
+
+.id-card-content {
+  display: flex;
+  gap: 24px;
+}
+
+.id-photo {
+  flex: 0 0 120px;
+}
+
+.id-photo img {
+  width: 110px;
+  height: 140px;
+  object-fit: cover;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: #f9f9f9;
+}
+
+.id-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.id-details p {
+  margin: 6px 0;
+  font-size: 1.05rem;
+  line-height: 1.4;
+}
+
+.id-details label {
+  display: inline-block;
+  width: 100px;
+  color: #7f8c8d;
+  font-weight: 600;
+}
+
+.id-details span {
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.expiry-highlight {
+  background: #fff8e1;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+  color: #e67e22;
+  display: inline-block;
+  margin-top: 4px;
+}
+
+#idCardBack {
+  background: #f8f9fa;
+  color: #2c3e50;
+  transform: rotateY(180deg);
+  border: 1px solid #ddd;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+#idCardBack .back-header {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #3498db;
+  margin-bottom: 20px;
+}
+
+.qr-display {
+  width: 180px;
+  height: 180px;
+  background: white;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  margin-bottom: 20px;
+}
+
+.qr-display img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+#idCardBack .id-text {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #7f8c8d;
+  letter-spacing: 0.5px;
+}
+
+.card-actions {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.card-btn {
+  padding: 10px 22px;
+  background: #3498db;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-size: 1rem;
+}
+
+.card-btn:hover {
+  background: #2980b9;
+}
+
+.card-btn.close {
+  background: #e74c3c;
+}
+
+.card-btn.close:hover {
+  background: #c0392b;
+}
+
+/* PRINT PREVIEW MODAL */
+#printPreviewModal {
+  z-index: 4000;
+}
+
+#printPreviewHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+#printPreviewControls {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+#printPreviewSearch {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  min-width: 200px;
+}
+
+#printCardsContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 25px;
+}
+
+/* PRINT CARD STYLE */
+.print-id-card {
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 16px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  page-break-inside: avoid;
+  break-inside: avoid;
+  position: relative;
+}
+
+.print-id-card.back {
+  background: #f8f9fa;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.print-id-card .header {
+  text-align: center;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #3498db;
+}
+
+.print-id-card .header h4 {
+  font-size: 1rem;
+  color: #1a3a6c;
+  margin: 0;
+  font-weight: 700;
+}
+
+.print-id-card .content {
+  display: flex;
+  gap: 12px;
+}
+
+.print-id-card .photo {
+  flex: 0 0 80px;
+}
+
+.print-id-card .photo img {
+  width: 75px;
+  height: 100px;
+  object-fit: cover;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.print-id-card .details {
+  flex: 1;
+  font-size: 0.85rem;
+}
+
+.print-id-card .details p {
+  margin: 4px 0;
+  line-height: 1.3;
+}
+
+.print-id-card .details label {
+  display: inline-block;
+  width: 70px;
+  color: #7f8c8d;
+  font-weight: 600;
+}
+
+.print-id-card .details span {
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.print-id-card .expiry {
+  background: #fff8e1;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-weight: 600;
+  color: #e67e22;
+  display: inline-block;
+  font-size: 0.8rem;
+}
+
+.print-id-card .qr-display {
+  width: 120px;
+  height: 120px;
+  background: white;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  margin-bottom: 15px;
+}
+
+.print-id-card .qr-display img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.print-id-card .id-text {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #7f8c8d;
+}
+
+/* PRINT STYLES */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #printCardsContainer, #printCardsContainer * {
+    visibility: visible;
+  }
+  #printCardsContainer {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    padding: 5mm;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 5mm;
+  }
+  @page {
+    size: A4;
+    margin: 0;
+  }
+}
+
+/* LOADING SPINNER */
+.loading-spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(142, 68, 173, 0.3);
+  border-radius: 50%;
+  border-top-color: #8e44ad;
+  animation: spin 1s linear infinite;
+  margin-right: 8px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .layout {
+    flex-direction: column;
+    margin-top: 70px;
+    height: calc(100vh - 70px);
+    padding: 15px;
+  }
+  
+  aside {
+    position: relative;
+    top: 0;
+    width: 100%;
+    height: auto;
+    max-height: 300px;
+    margin-bottom: 20px;
+  }
+  
+  main {
+    margin-left: 0;
+  }
+  
+  #idCardContainer {
+    width: 95vw;
+  }
+  
+  #idCardInner {
+    height: auto;
+    min-height: 300px;
+  }
+}
+</style>
 </head>
 <body>
-    <div class="container">
-        <header class="header">
-            <div class="logo">
-                <i class="fas fa-user-cog"></i>
-                <h1>Admin Panel</h1>
-                <p>Umoomi Security System Management</p>
-            </div>
-            <a href="index.html" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
-        </header>
 
-        <div class="admin-container">
-            <div class="admin-sidebar">
-                <nav>
-                    <ul>
-                        <li><a href="#add-member" class="active"><i class="fas fa-user-plus"></i> Add Member</a></li>
-                        <li><a href="#edit-member"><i class="fas fa-edit"></i> Edit Member</a></li>
-                        <li><a href="#manage-users"><i class="fas fa-users-cog"></i> Manage Users</a></li>
-                        <li><a href="#generate-cards"><i class="fas fa-id-card"></i> Generate Cards</a></li>
-                        <li><a href="#activity-logs"><i class="fas fa-history"></i> Activity Logs</a></li>
-                        <li><a href="#settings"><i class="fas fa-cog"></i> Settings</a></li>
-                    </ul>
-                </nav>
-            </div>
+<header>
+  <i class="fas fa-user-shield fa-2x"></i>
+  <div>
+    <h2>Admin Dashboard</h2>
+    <small>System Management Panel</small>
+  </div>
+</header>
 
-            <div class="admin-content">
-                <!-- Add Member Form -->
-                <div id="add-member" class="admin-section active">
-                    <h2><i class="fas fa-user-plus"></i> Add New Member</h2>
-                    <form id="addMemberForm">
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label>Member ID *</label>
-                                <input type="text" id="memberId" required>
-                            </div>
-                            <div class="form-group">
-                                <label>Full Name *</label>
-                                <input type="text" id="fullName" required>
-                            </div>
-                            <div class="form-group">
-                                <label>Position *</label>
-                                <select id="position" required>
-                                    <option value="">Select Position</option>
-                                    <option value="Sadr Mulk">Sadr Mulk</option>
-                                    <option value="Secretary">Secretary</option>
-                                    <option value="Lead">Lead</option>
-                                    <option value="Assistant">Assistant</option>
-                                    <option value="Regional Qaid">Regional Qaid</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Department *</label>
-                                <select id="department" required>
-                                    <option value="">Select Department</option>
-                                    <option value="Head Office">Head Office</option>
-                                    <option value="General Office">General Office</option>
-                                    <option value="Regional">Regional</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Region</label>
-                                <input type="text" id="region">
-                            </div>
-                            <div class="form-group">
-                                <label>Phone</label>
-                                <input type="tel" id="phone">
-                            </div>
-                            <div class="form-group">
-                                <label>Email</label>
-                                <input type="email" id="email">
-                            </div>
-                            <div class="form-group">
-                                <label>Address</label>
-                                <textarea id="address" rows="2"></textarea>
-                            </div>
-                            <div class="form-group">
-                                <label>Status</label>
-                                <select id="status">
-                                    <option value="Active">Active</option>
-                                    <option value="Inactive">Inactive</option>
-                                    <option value="Suspended">Suspended</option>
-                                </select>
-                            </div>
-                        </div>
-                        <button type="submit" class="btn btn-primary btn-large">
-                            <i class="fas fa-save"></i> Add Member
-                        </button>
-                    </form>
-                </div>
+<div class="layout">
+  <aside>
+    <button onclick="location.href='index.html'"><i class="fas fa-chart-line"></i> Dashboard</button>
+    <button onclick="location.href='members.html'"><i class="fas fa-users"></i> Members</button>
+    <button onclick="location.href='scanner.html'"><i class="fas fa-qrcode"></i> Scanner</button>
+    <button onclick="location.href='regions.html'"><i class="fas fa-map-marker-alt"></i> Regions</button>
+    <button onclick="location.href='scan-logs.html'"><i class="fas fa-history"></i> Logs</button>
+    <button class="active"><i class="fas fa-user-shield"></i> Admin</button>
+    <button onclick="location.href='settings.html'"><i class="fas fa-cog"></i> Settings</button>
 
-                <!-- Other admin sections will be added here -->
-            </div>
-        </div>
+    <hr>
+
+    <button class="active" onclick="showSection('membersSection',this)">
+      <i class="fas fa-id-card"></i> Edit Members
+    </button>
+    <button onclick="showSection('regionsSection',this)">
+      <i class="fas fa-map-marker-alt"></i> Edit Regions
+    </button>
+  </aside>
+
+  <main>
+    <div id="membersSection" class="section active">
+      <h3 style="margin-bottom: 20px; color: #2c3e50;">
+        <i class="fas fa-users"></i> Members Management
+      </h3>
+      
+      <!-- Search and Action Buttons -->
+      <div class="search-bar">
+        <input type="text" id="memberSearch" placeholder="Search members by name or ID..." oninput="filterMembers()">
+        <button class="success" onclick="openMemberModal()">
+          <i class="fas fa-plus"></i> Add Member
+        </button>
+        <button class="pdf-btn" onclick="exportIDCardsToPDF()" id="pdfButton">
+          <i class="fas fa-file-pdf"></i> Export as PDF
+        </button>
+        <button class="btn" onclick="printAllIDCards()" style="background: #27ae60;">
+          <i class="fas fa-print"></i> Print ID Cards
+        </button>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Region</th>
+            <th>Position</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="membersTable"></tbody>
+      </table>
     </div>
 
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/config.js"></script>
-    <script src="js/admin.js"></script>
+    <div id="regionsSection" class="section">
+      <h3 style="margin-bottom: 20px; color: #2c3e50;">
+        <i class="fas fa-map-marker-alt"></i> Regions Management
+      </h3>
+      <button class="success" onclick="openRegionModal()">
+        <i class="fas fa-plus"></i> Add Region
+      </button>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="regionsTable"></tbody>
+      </table>
+    </div>
+  </main>
+</div>
+
+<!-- MEMBER MODAL -->
+<div class="modal hidden" id="memberModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeMemberModal()">&times;</button>
+    <h3 id="memberTitle">Add Member</h3>
+    <input id="m_member_id" placeholder="Member ID (required)">
+    <input id="m_full_name" placeholder="Full Name (required)">
+    <select id="m_region"></select>
+    <input id="m_position" placeholder="Position">
+    <input id="m_expiry_date" type="date" placeholder="Expiry Date">
+    <button class="btn" onclick="saveMember()">Save</button>
+    <button onclick="closeMemberModal()">Cancel</button>
+  </div>
+</div>
+
+<!-- REGION MODAL -->
+<div class="modal hidden" id="regionModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeRegionModal()">&times;</button>
+    <h3 id="regionTitle">Add Region</h3>
+    <input id="r_name" placeholder="Region Name (required)">
+    <button class="btn" onclick="saveRegion()">Save</button>
+    <button onclick="closeRegionModal()">Cancel</button>
+  </div>
+</div>
+
+<!-- ID CARD MODAL -->
+<div class="modal hidden" id="idCardModal" onclick="closeIDCard()">
+  <div id="idCardContainer" onclick="event.stopPropagation()">
+    <div id="idCard">
+      <div id="idCardInner">
+        <div class="id-card-side" id="idCardFront">
+          <div class="header">
+            <h2>AHMADIYYA MUSLIM COMMUNITY</h2>
+            <p>Official Identity Card</p>
+          </div>
+          <div class="id-card-content">
+            <div class="id-photo">
+              <img id="cardPhoto" src="https://via.placeholder.com/110x140?text=No+Photo" alt="Member Photo">
+            </div>
+            <div class="id-details">
+              <p><label>Name:</label> <span id="cardNameFront">John Doe</span></p>
+              <p><label>ID:</label> <span id="cardIDFront">MEMBER-000</span></p>
+              <p><label>Position:</label> <span id="cardPosition">Member</span></p>
+              <p><label>Department:</label> <span id="cardDepartment">General</span></p>
+              <p>
+                <label>Expires:</label> 
+                <span id="cardExpiry" class="expiry-highlight">2027-12-31</span>
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="id-card-side" id="idCardBack">
+          <div class="back-header">Scan for Verification</div>
+          <div class="qr-display">
+            <img id="qrCode" src="" alt="QR Code">
+          </div>
+          <div class="id-text" id="cardIDBack">ID: MEMBER-000</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-actions">
+      <button class="card-btn" onclick="flipCard()">
+        <i class="fas fa-sync-alt"></i> Flip Card
+      </button>
+      <button class="card-btn close" onclick="closeIDCard()">
+        <i class="fas fa-times"></i> Close
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- PRINT PREVIEW MODAL -->
+<div class="modal hidden" id="printPreviewModal" onclick="closePrintPreview()">
+  <div style="width: 90%; max-width: 1000px; background: white; border-radius: 12px; padding: 25px; max-height: 90vh; overflow-y: auto;" onclick="event.stopPropagation()">
+    <div id="printPreviewHeader">
+      <h3 style="color: #2c3e50;"><i class="fas fa-id-card"></i> Print Preview – ID Cards</h3>
+      <div id="printPreviewControls">
+        <select id="printMode" onchange="updatePrintPreview()">
+          <option value="front">Front Only</option>
+          <option value="both" selected>Front & Back</option>
+        </select>
+        <input type="text" id="printPreviewSearch" placeholder="Search members..." oninput="filterPrintPreview()">
+        <button class="btn" onclick="window.print()" style="background: #27ae60;">
+          <i class="fas fa-print"></i> Print Now
+        </button>
+        <button class="pdf-btn" onclick="exportPreviewToPDF()">
+          <i class="fas fa-file-pdf"></i> Save as PDF
+        </button>
+        <button onclick="closePrintPreview()">Close</button>
+      </div>
+    </div>
+    
+    <div id="printCardsContainer"></div>
+  </div>
+</div>
+
+<script>
+// ⚠️ SECURITY: Replace with your actual Supabase credentials
+const SUPABASE_URL = "https://pqrsljahrnjgkadflbmr.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBxcnNsamFocm5qZ2thZGZsYm1yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA1NTg0NTYsImV4cCI6MjA4NjEzNDQ1Nn0.egED0C2iRp6j3Xp4ldgrdI0GBep2J7VUR52rBbzsVdo";
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+let regionsMap = {};
+let editingMember = null;
+let editingRegion = null;
+let allMembers = [];
+
+function showSection(id, btn) {
+  document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
+  document.querySelectorAll("aside button").forEach(b => b.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  btn.classList.add("active");
+}
+
+function escapeHtml(str) {
+  if (!str) return '';
+  return str.toString()
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function formatDate(dateStr) {
+  if (!dateStr) return 'N/A';
+  const d = new Date(dateStr);
+  return d.toISOString().split('T')[0];
+}
+
+// Load Regions
+async function loadRegions() {
+  try {
+    const { data, error } = await db.from("regions").select("*");
+    if (error) throw error;
+    
+    regionsMap = {};
+    data.forEach(r => regionsMap[r.id] = r.name);
+    
+    regionsTable.innerHTML = data.map(r => `
+      <tr>
+        <td>${escapeHtml(r.name)}</td>
+        <td>
+          <button class="warning" onclick="editRegion('${r.id}', '${escapeHtml(r.name)}')">Edit</button>
+          <button class="danger" onclick="deleteRegion('${r.id}')">Delete</button>
+        </td>
+      </tr>
+    `).join("");
+    
+    m_region.innerHTML = `<option value="">-- Select Region --</option>` + 
+      data.map(r => `<option value="${r.id}">${escapeHtml(r.name)}</option>`).join("");
+  } catch (error) {
+    console.error("Error loading regions:", error);
+    alert("Failed to load regions: " + error.message);
+  }
+}
+
+// Load Members
+async function loadMembers() {
+  try {
+    const { data, error } = await db.from("umoomi_members").select("*");
+    if (error) throw error;
+    
+    allMembers = data;
+    renderMembersTable();
+  } catch (error) {
+    console.error("Error loading members:", error);
+    alert("Failed to load members: " + error.message);
+  }
+}
+
+function renderMembersTable(searchTerm = '') {
+  const filtered = allMembers.filter(m => 
+    m.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    m.member_id.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+  
+  membersTable.innerHTML = filtered.length ? filtered.map(m => `
+    <tr>
+      <td>${escapeHtml(m.member_id)}</td>
+      <td>${escapeHtml(m.full_name)}</td>
+      <td>${regionsMap[m.region_id] || "–"}</td>
+      <td>${m.position || "–"}</td>
+      <td>
+        <button class="warning" onclick="editMember('${m.id}')">Edit</button>
+        <button class="success" onclick="viewIDCard(
+          '${escapeHtml(m.member_id)}',
+          '${escapeHtml(m.full_name)}',
+          '${m.region_id}',
+          '${escapeHtml(m.position || '')}',
+          '${escapeHtml(m.department || 'General')}',
+          '${m.expiry_date || ''}'
+        )">View ID</button>
+        <button class="danger" onclick="deleteMember('${m.id}')">Delete</button>
+      </td>
+    </tr>
+  `).join("") : `
+    <tr>
+      <td colspan="5" style="text-align:center; padding:30px; color:#7f8c8d;">
+        No members found.
+      </td>
+    </tr>
+  `;
+}
+
+function filterMembers() {
+  const searchTerm = document.getElementById('memberSearch').value;
+  renderMembersTable(searchTerm);
+}
+
+// Member Modal
+function openMemberModal() {
+  editingMember = null;
+  memberTitle.innerText = "Add Member";
+  m_member_id.value = "";
+  m_full_name.value = "";
+  m_region.value = "";
+  m_position.value = "";
+  m_expiry_date.value = "";
+  memberModal.classList.remove("hidden");
+}
+
+function closeMemberModal() {
+  memberModal.classList.add("hidden");
+}
+
+async function saveMember() {
+  const payload = {
+    member_id: m_member_id.value.trim(),
+    full_name: m_full_name.value.trim(),
+    region_id: m_region.value,
+    position: m_position.value.trim() || null,
+    department: "General",
+    expiry_date: m_expiry_date.value || null
+  };
+  
+  if (!payload.member_id || !payload.full_name || !payload.region_id) {
+    alert("Please fill all required fields.");
+    return;
+  }
+  
+  try {
+    if (editingMember) {
+      await db.from("umoomi_members").update(payload).eq("id", editingMember);
+    } else {
+      await db.from("umoomi_members").insert(payload);
+    }
+    closeMemberModal();
+    loadMembers();
+  } catch (error) {
+    console.error("Save error:", error);
+    alert("Failed to save member: " + error.message);
+  }
+}
+
+async function editMember(id) {
+  editingMember = id;
+  const { data } = await db.from("umoomi_members").select("*").eq("id", id).single();
+  m_member_id.value = data.member_id;
+  m_full_name.value = data.full_name;
+  m_region.value = data.region_id;
+  m_position.value = data.position || "";
+  m_expiry_date.value = data.expiry_date ? data.expiry_date.split('T')[0] : "";
+  memberTitle.innerText = "Edit Member";
+  memberModal.classList.remove("hidden");
+}
+
+async function deleteMember(id) {
+  if (!confirm("Delete this member?")) return;
+  await db.from("umoomi_members").delete().eq("id", id);
+  loadMembers();
+}
+
+// Region Modal
+function openRegionModal() {
+  editingRegion = null;
+  regionTitle.innerText = "Add Region";
+  r_name.value = "";
+  regionModal.classList.remove("hidden");
+}
+
+function closeRegionModal() {
+  regionModal.classList.add("hidden");
+}
+
+async function saveRegion() {
+  const name = r_name.value.trim();
+  if (!name) { alert("Region name is required"); return; }
+  
+  try {
+    if (editingRegion) {
+      await db.from("regions").update({ name }).eq("id", editingRegion);
+    } else {
+      await db.from("regions").insert({ name });
+    }
+    closeRegionModal();
+    loadRegions();
+    loadMembers();
+  } catch (error) {
+    console.error("Save region error:", error);
+    alert("Failed to save region: " + error.message);
+  }
+}
+
+function editRegion(id, name) {
+  editingRegion = id;
+  r_name.value = name;
+  regionTitle.innerText = "Edit Region";
+  regionModal.classList.remove("hidden");
+}
+
+async function deleteRegion(id) {
+  if (!confirm("Delete this region?")) return;
+  await db.from("regions").delete().eq("id", id);
+  loadRegions();
+  loadMembers();
+}
+
+// ID CARD FUNCTIONS
+function viewIDCard(memberID, memberName, regionId, position, department, expiryDate) {
+  document.getElementById("idCardModal").classList.remove("hidden");
+  document.getElementById("idCard").classList.remove("flipped");
+  
+  document.getElementById("cardNameFront").textContent = memberName;
+  document.getElementById("cardIDFront").textContent = memberID;
+  document.getElementById("cardPosition").textContent = position || "Member";
+  document.getElementById("cardDepartment").textContent = department || "General";
+  document.getElementById("cardExpiry").textContent = expiryDate ? formatDate(expiryDate) : "N/A";
+  
+  document.getElementById("cardIDBack").textContent = "ID: " + memberID;
+  document.getElementById("qrCode").src = `https://quickchart.io/qr?text=${encodeURIComponent(memberID)}&size=180`;
+}
+
+function flipCard() {
+  document.getElementById("idCard").classList.toggle("flipped");
+}
+
+function closeIDCard() {
+  document.getElementById("idCardModal").classList.add("hidden");
+}
+
+// PRINT ALL ID CARDS
+async function printAllIDCards() {
+  try {
+    if (!allMembers || allMembers.length === 0) {
+      alert("No members to print.");
+      return;
+    }
+    
+    // Store current state for filtering
+    window.printMembers = [...allMembers];
+    updatePrintPreview();
+    document.getElementById("printPreviewModal").classList.remove("hidden");
+  } catch (error) {
+    console.error("Error preparing print preview:", error);
+    alert("Failed to prepare print preview: " + error.message);
+  }
+}
+
+function updatePrintPreview() {
+  const mode = document.getElementById('printMode').value;
+  const searchTerm = document.getElementById('printPreviewSearch').value.toLowerCase();
+  
+  const filtered = window.printMembers.filter(m => 
+    m.full_name.toLowerCase().includes(searchTerm) ||
+    m.member_id.toLowerCase().includes(searchTerm)
+  );
+  
+  const container = document.getElementById("printCardsContainer");
+  container.innerHTML = "";
+  
+  filtered.forEach(m => {
+    // Front card
+    const frontCard = createPrintCard(m, 'front');
+    container.appendChild(frontCard);
+    
+    // Back card (if selected)
+    if (mode === 'both') {
+      const backCard = createPrintCard(m, 'back');
+      container.appendChild(backCard);
+    }
+  });
+}
+
+function createPrintCard(member, side) {
+  const card = document.createElement("div");
+  card.className = `print-id-card ${side === 'back' ? 'back' : ''}`;
+  
+  if (side === 'front') {
+    card.innerHTML = `
+      <div class="header">
+        <h4>AHMADIYYA MUSLIM COMMUNITY</h4>
+      </div>
+      <div class="content">
+        <div class="photo">
+          <img src="https://via.placeholder.com/75x100?text=No+Photo" alt="Photo">
+        </div>
+        <div class="details">
+          <p><label>Name:</label> <span>${escapeHtml(member.full_name)}</span></p>
+          <p><label>ID:</label> <span>${escapeHtml(member.member_id)}</span></p>
+          <p><label>Position:</label> <span>${escapeHtml(member.position || 'Member')}</span></p>
+          <p><label>Dept:</label> <span>${escapeHtml(member.department || 'General')}</span></p>
+          <p>
+            <label>Expires:</label> 
+            <span class="expiry">${member.expiry_date ? formatDate(member.expiry_date) : 'N/A'}</span>
+          </p>
+        </div>
+      </div>
+    `;
+  } else {
+    card.innerHTML = `
+      <div class="back-header">Scan for Verification</div>
+      <div class="qr-display">
+        <img src="https://quickchart.io/qr?text=${encodeURIComponent(member.member_id)}&size=120" alt="QR Code">
+      </div>
+      <div class="id-text">ID: ${escapeHtml(member.member_id)}</div>
+    `;
+  }
+  
+  return card;
+}
+
+function filterPrintPreview() {
+  updatePrintPreview();
+}
+
+function closePrintPreview() {
+  document.getElementById("printPreviewModal").classList.add("hidden");
+}
+
+// PDF EXPORT FUNCTIONS
+async function exportIDCardsToPDF() {
+  const button = document.getElementById("pdfButton");
+  const originalText = button.innerHTML;
+  button.disabled = true;
+  button.innerHTML = '<span class="loading-spinner"></span> Generating...';
+  
+  try {
+    if (!allMembers || allMembers.length === 0) {
+      alert("No members to export.");
+      return;
+    }
+    
+    // Create hidden container for PDF generation
+    const pdfContainer = document.createElement("div");
+    pdfContainer.id = "pdf-temp-container";
+    pdfContainer.style.position = "absolute";
+    pdfContainer.style.left = "-9999px";
+    pdfContainer.style.width = "210mm"; // A4 width
+    pdfContainer.style.padding = "5mm";
+    pdfContainer.style.display = "grid";
+    pdfContainer.style.gridTemplateColumns = "repeat(2, 1fr)";
+    pdfContainer.style.gap = "5mm";
+    pdfContainer.style.fontSize = "8px";
+    document.body.appendChild(pdfContainer);
+    
+    // Add cards to container (front and back)
+    allMembers.forEach(m => {
+      // Front card
+      const frontCard = createPDFCard(m, 'front');
+      pdfContainer.appendChild(frontCard);
+      
+      // Back card
+      const backCard = createPDFCard(m, 'back');
+      pdfContainer.appendChild(backCard);
+    });
+    
+    // Generate PDF
+    const { jsPDF } = window.jspdf;
+    const canvas = await html2canvas(pdfContainer, {
+      scale: 2,
+      useCORS: true,
+      allowTaint: true
+    });
+    
+    const imgData = canvas.toDataURL('image/png');
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const imgWidth = 210;
+    const pageHeight = 297;
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+    
+    let heightLeft = imgHeight;
+    let position = 0;
+    
+    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+    heightLeft -= pageHeight;
+    
+    while (heightLeft >= 0) {
+      position = heightLeft - imgHeight;
+      pdf.addPage();
+      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+    }
+    
+    // Save PDF
+    pdf.save(`AMC_ID_Cards_${new Date().toISOString().slice(0, 10)}.pdf`);
+    
+    // Clean up
+    document.body.removeChild(pdfContainer);
+  } catch (error) {
+    console.error("PDF export error:", error);
+    alert("Failed to generate PDF: " + (error.message || 'Unknown error'));
+  } finally {
+    button.disabled = false;
+    button.innerHTML = originalText;
+  }
+}
+
+function createPDFCard(member, side) {
+  const card = document.createElement("div");
+  card.style.width = "90mm";
+  card.style.height = "55mm";
+  card.style.border = "1px solid #ccc";
+  card.style.borderRadius = "4px";
+  card.style.padding = "4px";
+  card.style.fontFamily = "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif";
+  card.style.fontSize = "8px";
+  card.style.overflow = "hidden";
+  
+  if (side === 'front') {
+    card.innerHTML = `
+      <div style="text-align:center; margin-bottom:4px; padding-bottom:3px; border-bottom:1px solid #3498db;">
+        <div style="font-weight:700; color:#1a3a6c; font-size:9px;">AHMADIYYA MUSLIM COMMUNITY</div>
+      </div>
+      <div style="display:flex; gap:5px;">
+        <div style="flex:0 0 30px;">
+          <img src="https://via.placeholder.com/30x40?text=NP" alt="Photo" style="width:30px;height:40px;object-fit:cover;border:1px solid #ddd;border-radius:2px;">
+        </div>
+        <div style="flex:1; font-size:7px;">
+          <p style="margin:1px 0;"><span style="color:#7f8c8d;width:35px;display:inline-block;">Name:</span> ${escapeHtml(member.full_name)}</p>
+          <p style="margin:1px 0;"><span style="color:#7f8c8d;width:35px;display:inline-block;">ID:</span> ${escapeHtml(member.member_id)}</p>
+          <p style="margin:1px 0;"><span style="color:#7f8c8d;width:35px;display:inline-block;">Position:</span> ${escapeHtml(member.position || 'Member')}</p>
+          <p style="margin:1px 0;"><span style="color:#7f8c8d;width:35px;display:inline-block;">Dept:</span> ${escapeHtml(member.department || 'General')}</p>
+          <p style="margin:1px 0;">
+            <span style="color:#7f8c8d;width:35px;display:inline-block;">Expires:</span> 
+            <span style="background:#fff8e1;padding:1px 3px;border-radius:2px;font-weight:600;color:#e67e22;font-size:6px;">${member.expiry_date ? formatDate(member.expiry_date) : 'N/A'}</span>
+          </p>
+        </div>
+      </div>
+    `;
+  } else {
+    card.innerHTML = `
+      <div style="height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; color:#2c3e50;">
+        <div style="font-weight:600; color:#3498db; font-size:9px; margin-bottom:8px;">Scan for Verification</div>
+        <div style="width:40px; height:40px; background:white; border:1px solid #eee; border-radius:4px; display:flex; align-items:center; justify-content:center; margin-bottom:8px;">
+          <img src="https://quickchart.io/qr?text=${encodeURIComponent(member.member_id)}&size=40" alt="QR" style="width:36px;height:36px;object-fit:contain;">
+        </div>
+        <div style="font-weight:600; color:#7f8c8d; font-size:8px;">ID: ${escapeHtml(member.member_id)}</div>
+      </div>
+    `;
+  }
+  
+  return card;
+}
+
+// Export from preview modal
+async function exportPreviewToPDF() {
+  const container = document.getElementById("printCardsContainer");
+  if (!container.children.length) {
+    alert("No cards to export.");
+    return;
+  }
+  
+  const { jsPDF } = window.jspdf;
+  const canvas = await html2canvas(container, { scale: 2 });
+  const imgData = canvas.toDataURL('image/png');
+  
+  const pdf = new jsPDF('p', 'mm', 'a4');
+  const imgWidth = 210;
+  const pageHeight = 297;
+  const imgHeight = (canvas.height * imgWidth) / canvas.width;
+  
+  let heightLeft = imgHeight;
+  let position = 0;
+  
+  pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+  heightLeft -= pageHeight;
+  
+  while (heightLeft >= 0) {
+    position = heightLeft - imgHeight;
+    pdf.addPage();
+    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+    heightLeft -= pageHeight;
+  }
+  
+  pdf.save(`AMC_ID_Cards_Preview_${new Date().toISOString().slice(0, 10)}.pdf`);
+}
+
+// Initialize
+loadRegions().then(loadMembers);
+
+// Close modals on Escape
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    closeMemberModal();
+    closeRegionModal();
+    closeIDCard();
+    closePrintPreview();
+  }
+});
+</script>
+
 </body>
 </html>

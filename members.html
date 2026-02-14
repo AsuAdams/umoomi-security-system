@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Members – Umoomi</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link rel="stylesheet"
+ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Segoe UI,sans-serif;background:#f2f2f2;padding:20px}
+.container{max-width:1400px;margin:auto}
+
+/* HEADER */
+header{
+  background:#ccdc;padding:20px;border-radius:10px;
+  display:flex;gap:15px;align-items:center;
+  box-shadow:0 4px 6px rgba(0,0,0,.1);
+  margin-bottom:20px
+}
+
+.layout{display:grid;grid-template-columns:240px 1fr;gap:20px}
+
+/* SIDEBAR */
+aside{
+  background:#fff;border-radius:10px;padding:15px;
+  box-shadow:0 4px 6px rgba(0,0,0,.1);
+  height:calc(100vh - 160px)
+}
+aside a{
+  display:block;text-decoration:none;
+  padding:12px 15px;border-radius:6px;
+  color:#2c3e50;margin-bottom:6px;font-size:1rem
+}
+aside a i{width:22px;margin-right:10px}
+aside a:hover,aside a.active{
+  background:#3498db;color:#fff
+}
+
+main{
+  background:#fff;border-radius:6px;padding:20px;
+  box-shadow:0 4px 6px rgba(0,0,0,.1);
+  height:calc(100vh - 160px);overflow:auto
+}
+
+.search{margin-bottom:15px}
+.search input{
+  width:100%;padding:10px;
+  border:1px solid #ccc;
+}
+
+table{width:100%;border-collapse:collapse}
+th{
+  background:#1a3a5f;color:#fff;
+  padding:10px;
+}
+td{padding:8px;border-bottom:1px solid #ddd}
+tr:hover{background:#f5f5f5;cursor:pointer}
+
+.badge{
+  padding:4px 10px;
+  border-radius:4px;
+  font-size:0.8rem;
+  color:#fff;
+}
+.badge.active{background:#2e7d32}
+.badge.suspended{background:#c62828}
+.badge.inactive{background:#616161}
+
+/* MODAL */
+.modal{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.7);
+  display:none;align-items:center;
+  justify-content:center;z-index:999;
+  padding:20px;
+}
+
+/* PROFILE BOX */
+.profile-box{
+  background:#fff;
+  width:900px;
+  max-height:95vh;
+  overflow:auto;
+  border:3px solid #1a3a5f;
+  position:relative;
+}
+
+/* CLOSE BUTTON */
+.close-btn{
+  position:absolute;
+  top:10px;
+  right:15px;
+  font-size:1.4rem;
+  color:#fff;
+  cursor:pointer;
+  z-index:10;
+}
+.close-btn:hover{
+  opacity:0.7;
+}
+
+.profile-header{
+  background:#1a3a5f;
+  color:#fff;
+  padding:15px;
+  text-align:center;
+}
+
+.profile-header h2{
+  font-size:1.4rem;
+  letter-spacing:1px;
+}
+
+.profile-body{
+  padding:25px;
+}
+
+.profile-top{
+  display:grid;
+  grid-template-columns:180px 1fr;
+  gap:30px;
+  margin-bottom:25px;
+}
+
+.profile-photo{
+  width:160px;height:180px;
+  border:2px solid #000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.profile-photo img{
+  width:100%;height:100%;
+  object-fit:cover;
+}
+
+.profile-summary h3{
+  margin-bottom:10px;
+  font-size:1.2rem;
+  text-transform:uppercase;
+}
+
+.summary-row{
+  margin-bottom:6px;
+}
+
+.section-title{
+  margin:25px 0 10px;
+  padding-bottom:5px;
+  border-bottom:2px solid #1a3a5f;
+  font-weight:bold;
+  text-transform:uppercase;
+  font-size:0.95rem;
+}
+
+.info-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  border:1px solid #000;
+}
+
+.info-item{
+  border:1px solid #000;
+  padding:8px;
+  font-size:0.9rem;
+}
+
+.info-item strong{
+  display:block;
+  font-size:0.75rem;
+  margin-bottom:4px;
+}
+
+.assistants-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:15px;
+  margin-top:10px;
+}
+
+.assistant-card{
+  border:1px solid #000;
+  padding:10px;
+  text-align:center;
+}
+
+.assistant-card img{
+  width:80px;height:80px;
+  object-fit:cover;
+  border:1px solid #000;
+  margin-bottom:8px;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+<header>
+  <i class="fas fa-landmark"></i>
+  <div>
+    <h2>MEMBERS</h2>
+    <small>Official Member Registry</small>
+  </div>
+</header>
+
+<div class="layout">
+<aside>
+  <a href="index.html"><i class="fas fa-chart-line"></i> Dashboard</a>
+  <a href="memebers.html" class="active"><i class="fas fa-users"></i> Members</a>
+  <a href="scanner.html"><i class="fas fa-qrcode"></i> Scan ID</a>
+  <a href="regions.html"><i class="fas fa-map-marker-alt"></i> Regions</a>
+  <a href="scan-logs.html"><i class="fas fa-history"></i> Activity Logs</a>
+  <a href="admin.html"><i class="fas fa-user-shield"></i> Admin Panel</a>
+  <a href="settings.html"><i class="fas fa-cog"></i> Settings</a>
+</aside>
+
+<main>
+  <div class="search">
+    <input id="search" placeholder="Search by name or ID">
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Position</th>
+        <th>Region</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody id="membersBody"></tbody>
+  </table>
+</main>
+</div>
+</div>
+
+<div class="modal" id="modal"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+document.addEventListener("DOMContentLoaded", async ()=>{
+
+const supabase = window.supabase.createClient(
+  "https://pqrsljahrnjgkadflbmr.supabase.co",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBxcnNsamFocm5qZ2thZGZsYm1yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA1NTg0NTYsImV4cCI6MjA4NjEzNDQ1Nn0.egED0C2iRp6j3Xp4ldgrdI0GBep2J7VUR52rBbzsVdo"
+  );
+
+const body=document.getElementById("membersBody");
+const search=document.getElementById("search");
+const modal=document.getElementById("modal");
+
+let members=[];
+const {data}=await supabase.from("umoomi_members").select("*");
+members=data||[];
+render(members);
+
+function badge(status){
+  return `<span class="badge ${status.toLowerCase()}">${status}</span>`;
+}
+
+function render(list){
+  body.innerHTML=list.map(m=>`
+    <tr data-id="${m.member_id}">
+      <td>${m.member_id}</td>
+      <td>${m.full_name}</td>
+      <td>${m.position}</td>
+      <td>${m.region||"-"}</td>
+      <td>${badge(m.status)}</td>
+    </tr>`).join("");
+
+  document.querySelectorAll("tbody tr").forEach(row=>{
+    row.addEventListener("click",()=>{
+      const member=members.find(m=>m.member_id===row.dataset.id);
+      openProfile(member);
+    });
+  });
+}
+
+search.oninput=e=>{
+  const q=e.target.value.toLowerCase();
+  render(members.filter(m=>
+    m.full_name.toLowerCase().includes(q)||
+    m.member_id.toLowerCase().includes(q)
+  ));
+};
+
+async function openProfile(member){
+
+  const {data:assistants}=await supabase
+    .from("umoomi_assistants")
+    .select("*")
+    .eq("parent_member_id",member.member_id);
+
+  modal.style.display="flex";
+
+  modal.innerHTML=`
+  <div class="profile-box">
+
+    <div class="close-btn" id="closeModal">
+      <i class="fas fa-times"></i>
+    </div>
+
+    <div class="profile-header">
+      <h2>OFFICIAL PERSONNEL RECORD</h2>
+    </div>
+
+    <div class="profile-body">
+
+      <div class="profile-top">
+        <div class="profile-photo">
+          ${member.photo_url?`<img src="${member.photo_url}">`:`<i class="fas fa-user fa-4x"></i>`}
+        </div>
+
+        <div class="profile-summary">
+          <h3>${member.full_name}</h3>
+          <div class="summary-row"><strong>Member ID:</strong> ${member.member_id}</div>
+          <div class="summary-row"><strong>Position:</strong> ${member.position}</div>
+          <div class="summary-row"><strong>Status:</strong> ${member.status}</div>
+        </div>
+      </div>
+
+      <div class="section-title">Complete Member Information</div>
+
+      <div class="info-grid">
+        ${
+          Object.entries(member).map(([key,value])=>`
+            <div class="info-item">
+              <strong>${key.replace(/_/g," ").toUpperCase()}</strong>
+              ${value || "-"}
+            </div>
+          `).join("")
+        }
+      </div>
+
+      <div class="section-title">Assigned Assistants</div>
+
+      <div class="assistants-grid">
+        ${
+          assistants && assistants.length>0
+          ? assistants.map(a=>`
+            <div class="assistant-card">
+              ${a.photo_url?`<img src="${a.photo_url}">`:`<i class="fas fa-user fa-3x"></i>`}
+              <div><strong>${a.full_name}</strong></div>
+              <div>${a.position}</div>
+            </div>
+          `).join("")
+          : `<div>No assistants assigned</div>`
+        }
+      </div>
+
+    </div>
+  </div>`;
+
+  document.getElementById("closeModal").onclick = () => {
+    modal.style.display="none";
+  };
+}
+
+modal.onclick=e=>{
+  if(e.target===modal) modal.style.display="none";
+};
+
+document.addEventListener("keydown", (e)=>{
+  if(e.key==="Escape"){
+    modal.style.display="none";
+  }
+});
+
+});
+</script>
+</body>
+</html>

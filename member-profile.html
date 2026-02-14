@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Member Profile – Umoomi</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link rel="stylesheet"
+ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Segoe UI,sans-serif;background:#f2f2f2;padding:20px}
+.container{max-width:1400px;margin:auto}
+
+header{
+  background:#ccdc;padding:20px;border-radius:10px;
+  display:flex;align-items:center;gap:15px;
+  box-shadow:0 4px 6px rgba(0,0,0,.1);
+  margin-bottom:20px
+}
+
+.layout{display:grid;grid-template-columns:240px 1fr;gap:20px}
+
+aside{
+  background:#fff;border-radius:10px;padding:15px;
+  box-shadow:0 4px 6px rgba(0,0,0,.1);
+  height:calc(100vh - 160px)
+}
+aside a{
+  display:block;text-decoration:none;
+  padding:12px 15px;border-radius:6px;
+  color:#2c3e50;margin-bottom:6px;font-size:1rem
+}
+aside a i{width:22px;margin-right:10px}
+aside a:hover,aside a.active{
+  background:#3498db;color:#fff
+}
+
+main{
+  background:#fff;border-radius:10px;padding:20px;
+  box-shadow:0 4px 6px rgba(0,0,0,.1);
+  height:calc(100vh - 160px);overflow:auto
+}
+
+.profile-header{
+  display:flex;gap:30px;align-items:center;margin-bottom:20px
+}
+.profile-header img{
+  width:170px;height:200px;
+  object-fit:cover;border-radius:12px;
+  border:3px solid #e0e6ed
+}
+
+.data-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;margin-top:15px
+}
+
+.section{margin-top:30px}
+
+.id-section{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:20px;margin-top:15px
+}
+
+.id-card{
+  background:#fff;
+  padding:20px;border-radius:12px;
+  box-shadow:0 4px 8px rgba(0,0,0,.1)
+}
+
+.add-box{
+  background:#f9fbfd;
+  padding:15px;
+  border-radius:8px;
+  margin-bottom:10px
+}
+.add-box input{
+  display:block;width:100%;
+  padding:10px;margin-bottom:8px;
+  border-radius:6px;border:1px solid #ddd
+}
+
+button{
+  padding:10px 15px;
+  border:none;border-radius:6px;
+  cursor:pointer;background:#3498db;color:#fff
+}
+button:hover{opacity:.9}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<header>
+  <i class="fas fa-id-card"></i>
+  <div>
+    <h2>Member Profile</h2>
+    <small>Umoomi Security System</small>
+  </div>
+</header>
+
+<div class="layout">
+
+<aside>
+  <a href="dashboard.html"><i class="fas fa-chart-line"></i> Dashboard</a>
+  <a href="members.html" class="active"><i class="fas fa-users"></i> Members</a>
+  <a href="attendance.html"><i class="fas fa-clipboard-check"></i> Attendance</a>
+  <a href="reports.html"><i class="fas fa-file-alt"></i> Reports</a>
+  <a href="add-member.html"><i class="fas fa-user-plus"></i> Add Member</a>
+  <a href="settings.html"><i class="fas fa-cog"></i> Settings</a>
+  <a href="logout.html"><i class="fas fa-sign-out-alt"></i> Logout</a>
+</aside>
+
+<main>
+
+<div id="profileContent"></div>
+
+<div class="section">
+  <h3>ID Card</h3>
+  <div class="id-section">
+    <div class="id-card" id="idFront"></div>
+    <div class="id-card" id="idBack"></div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>Add Assistant / Secretary (Max 3)</h3>
+  <div id="subMembers"></div>
+  <div id="addBtnContainer"></div>
+</div>
+
+</main>
+</div>
+</div>
+
+<script>
+const supabase = window.supabase.createClient(
+  "https://pqrsljahrnjgkadflbmr.supabase.co",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBxcnNsamFocm5qZ2thZGZsYm1yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA1NTg0NTYsImV4cCI6MjA4NjEzNDQ1Nn0.egED0C2iRp6j3Xp4ldgrdI0GBep2J7VUR52rBbzsVdo"
+  );
+
+const memberId = new URLSearchParams(window.location.search).get("id");
+const isAdmin = localStorage.getItem("role") === "admin";
+
+let subCount = 0;
+
+document.addEventListener("DOMContentLoaded", async()=>{
+
+if(!memberId){
+document.getElementById("profileContent").innerHTML="<h3>No Member Selected</h3>";
+return;
+}
+
+const {data,error}=await supabase
+.from("umoomi_members")
+.select("*")
+.eq("member_id",memberId)
+.single();
+
+if(error){
+document.getElementById("profileContent").innerHTML="<h3>Member not found</h3>";
+return;
+}
+
+renderProfile(data);
+renderID(data);
+loadAssistants();
+
+if(isAdmin){
+document.getElementById("addBtnContainer").innerHTML=
+`<button onclick="addSubMember()">Add Member</button>`;
+}
+
+});
+
+function renderProfile(m){
+document.getElementById("profileContent").innerHTML=`
+<div class="profile-header">
+  <img src="${m.photo_url||'https://via.placeholder.com/170x200'}">
+  <div>
+    <h2>${m.full_name}</h2>
+    <p style="font-size:1.1rem;font-weight:600;color:#555">${m.position}</p>
+  </div>
+</div>
+
+<div class="data-grid">
+  <div><strong>ID:</strong> ${m.member_id}</div>
+  <div><strong>Status:</strong> ${m.status}</div>
+  <div><strong>Department:</strong> ${m.department}</div>
+  <div><strong>Region:</strong> ${m.region||"-"}</div>
+  <div><strong>Phone:</strong> ${m.phone||"-"}</div>
+  <div><strong>Email:</strong> ${m.email||"-"}</div>
+  <div><strong>Address:</strong> ${m.address||"-"}</div>
+  <div><strong>Date Joined:</strong> ${m.date_joined||"-"}</div>
+</div>
+`;
+}
+
+function renderID(m){
+document.getElementById("idFront").innerHTML=`
+<h3>${m.full_name}</h3>
+<p>${m.position}</p>
+<p>ID: ${m.member_id}</p>
+`;
+
+document.getElementById("idBack").innerHTML=`
+<p><strong>Department:</strong> ${m.department}</p>
+<p><strong>Region:</strong> ${m.region||"-"}</p>
+<p><strong>Organization:</strong> Ahmadiyya Muslim Community</p>
+<div id="qr"></div>
+`;
+
+setTimeout(()=>new QRCode("qr",{text:m.member_id,width:90,height:90}),100);
+}
+
+async function loadAssistants(){
+const {data}=await supabase
+.from("umoomi_assistants")
+.select("*")
+.eq("parent_member_id",memberId);
+
+subCount = data.length;
+
+document.getElementById("subMembers").innerHTML =
+data.map(a=>`
+<div class="add-box">
+  <input value="${a.photo_url||""}" disabled>
+  <input value="${a.full_name}" disabled>
+  <input value="${a.position}" disabled>
+</div>
+`).join("");
+}
+
+function addSubMember(){
+
+if(!isAdmin) return;
+
+if(subCount>=3){
+alert("Maximum 3 members only.");
+return;
+}
+
+document.getElementById("subMembers").innerHTML+=`
+<div class="add-box">
+  <input placeholder="Profile Photo URL" class="aPhoto">
+  <input placeholder="Name" class="aName">
+  <input placeholder="Position" class="aPosition">
+  <button onclick="saveAssistant(this)">Save</button>
+</div>
+`;
+}
+
+async function saveAssistant(btn){
+
+if(!isAdmin) return;
+
+if(subCount>=3){
+alert("Maximum 3 members only.");
+return;
+}
+
+const box = btn.closest(".add-box");
+const photo = box.querySelector(".aPhoto").value;
+const name = box.querySelector(".aName").value;
+const position = box.querySelector(".aPosition").value;
+
+if(!name || !position){
+alert("Name and Position required.");
+return;
+}
+
+await supabase.from("umoomi_assistants").insert([{
+  parent_member_id:memberId,
+  full_name:name,
+  position:position,
+  photo_url:photo
+}]);
+
+loadAssistants();
+}
+</script>
+
+</body>
+</html>
