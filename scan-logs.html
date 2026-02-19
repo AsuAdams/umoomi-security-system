@@ -2,46 +2,365 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>AMC Weekly Reminder Report</title>
+<title>AMC Weekly Reminder · Umoomi Monitor</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Segoe UI,Arial,sans-serif;background:#f2f2f2;padding:20px}
-.container{max-width:1300px;margin:auto}
-header{background:#e9f2ff;padding:20px;border-radius:10px;display:flex;gap:15px;align-items:center;margin-bottom:20px}
-header i{font-size:2rem;color:#2c3e50}
-.layout{display:grid;grid-template-columns:240px 1fr;gap:20px}
-aside{background:#fff;border-radius:10px;padding:15px;box-shadow:0 4px 6px rgba(0,0,0,.1)}
-aside a{display:block;padding:10px;text-decoration:none;color:#2c3e50;border-radius:6px;margin-bottom:6px}
-aside a:hover,aside a.active{background:#3498db;color:#fff}
-main{background:#fff;border-radius:10px;padding:20px;box-shadow:0 4px 6px rgba(0,0,0,.1)}
-.region-list{display:flex;flex-direction:column;gap:6px;max-width:600px;margin-top:15px}
-.region-item{display:flex;justify-content:space-between;align-items:center;padding:6px 10px;border:1px solid #ddd;border-radius:5px;font-size:14px}
-.region-item.reached{background:#eafaf1;border-color:#27ae60}
-.region-item.not-reached{background:#fdecea;border-color:#e74c3c}
-button{padding:8px 14px;border:none;border-radius:6px;cursor:pointer;background:#2c3e50;color:#fff;font-size:13px;margin-right:8px;margin-top:15px}
-.print-area{display:none}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Segoe UI', Roboto, sans-serif;
+  background: #f4f6f9;
+  height: 100vh;
+  overflow: hidden;
+  padding: 20px;
+}
+.container { 
+  max-width: 1400px; 
+  margin: 0 auto;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
 
-@media print{
-body{background:#fff;margin:0;padding:0}
-aside, header, .region-list, button{display:none !important}
-main{box-shadow:none;padding:0}
-.print-area{display:block;padding:40px}
-@page{size:A4;margin:20mm}
-.official-header{text-align:center;margin-bottom:20px}
-.official-header img{width:90px;margin-bottom:10px}
-.official-header h2{font-size:24px;margin-bottom:5px}
-.official-header h3{font-size:18px;margin-bottom:5px}
-table{width:100%;border-collapse:collapse;margin-top:20px;font-size:14px}
-th, td{border:1.5px solid #000;padding:8px;text-align:center}
-th{background:#f2f2f2}
-.status-reached{color:green;font-weight:600}
-.status-not{color:red;font-weight:600}
-.summary-section{margin-top:20px;font-size:15px}
+/* HEADER - FROZEN - Umoomi design */
+header {
+  background: linear-gradient(145deg, #ffffff 0%, #f0f4f8 100%);
+  padding: 20px 28px;
+  border-radius: 28px;
+  margin-bottom: 24px;
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  box-shadow: 0 8px 18px rgba(0,20,30,0.06);
+  flex-shrink: 0;
+}
+header i {
+  font-size: 3rem;
+  color: #1e3c5c;
+  filter: drop-shadow(0 2px 4px rgba(0,60,120,0.2));
+}
+header h2 {
+  font-weight: 600;
+  color: #0b2a41;
+  letter-spacing: -0.02em;
+}
+header small {
+  color: #3a5e7a;
+  font-size: 0.9rem;
+}
+
+/* LAYOUT - FROZEN SIDEBAR */
+.layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 24px;
+  height: calc(100vh - 140px);
+  overflow: hidden;
+}
+
+/* SIDEBAR - FROZEN - Umoomi design */
+aside {
+  background: #ffffff;
+  border-radius: 28px;
+  padding: 16px 10px;
+  box-shadow: 0 12px 28px rgba(0,20,40,0.06);
+  backdrop-filter: blur(2px);
+  height: fit-content;
+  max-height: calc(100vh - 140px);
+  overflow-y: auto;
+  position: sticky;
+  top: 0;
+  flex-shrink: 0;
+}
+aside a {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-decoration: none;
+  padding: 12px 18px;
+  border-radius: 18px;
+  color: #1e3b5c;
+  font-weight: 500;
+  margin-bottom: 6px;
+  transition: all 0.15s ease;
+  cursor: pointer;
+}
+aside a i { width: 22px; font-size: 1.2rem; }
+aside a:hover, aside a.active {
+  background: #1d4d7c;
+  color: #ffffff;
+  box-shadow: 0 6px 14px rgba(27,85,140,0.3);
+}
+aside a.active { background: #113753; }
+
+/* MAIN PANEL - SCROLLABLE - Umoomi design */
+main {
+  background: #ffffff;
+  border-radius: 32px;
+  padding: 24px 28px;
+  box-shadow: 0 16px 30px rgba(0,10,30,0.04);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Quick stats cards - ABOVE content */
+.quick-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+  margin-bottom: 24px;
+  flex-shrink: 0;
+}
+.stat-card {
+  background: linear-gradient(145deg, #1e3f5f, #2c5a85);
+  color: white;
+  padding: 20px 14px;
+  border-radius: 26px;
+  text-align: center;
+  box-shadow: 0 16px 28px -8px #1d3f5e60;
+}
+.stat-card i {
+  font-size: 2rem;
+  opacity: 0.95;
+  margin-bottom: 8px;
+}
+.stat-card .stat-number {
+  font-size: 1.8rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  line-height: 1.2;
+}
+.stat-card .stat-label {
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+/* Content styling */
+.content-header {
+  margin-bottom: 20px;
+  flex-shrink: 0;
+}
+.content-header label {
+  color: #1e3f5f;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+.date-input {
+  margin-top: 8px;
+  margin-bottom: 15px;
+}
+#weekDate {
+  padding: 12px 18px;
+  border: 1px solid #c4d7ec;
+  border-radius: 40px;
+  font-size: 0.95rem;
+  background: #f4faff;
+  outline: none;
+  width: 250px;
+  color: #1e3f5f;
+  font-weight: 500;
+}
+
+/* Section title */
+.section-title {
+  color: #1e3f5f;
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 20px 0 15px 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.section-title i {
+  color: #1d4d7c;
+  font-size: 1.4rem;
+}
+
+/* Region list styling - enhanced */
+.region-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+.region-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 18px;
+  border: 1px solid rgba(148, 184, 218, 0.2);
+  border-radius: 20px;
+  font-size: 1rem;
+  background: #f8faff;
+  transition: all 0.15s ease;
+}
+.region-item:hover {
+  box-shadow: 0 4px 12px rgba(0,20,40,0.08);
+  transform: translateX(5px);
+}
+.region-item.reached {
+  background: #eafaf1;
+  border-color: #27ae60;
+  border-left: 5px solid #27ae60;
+}
+.region-item.not-reached {
+  background: #fdecea;
+  border-color: #e74c3c;
+  border-left: 5px solid #e74c3c;
+}
+.region-item span:first-child {
+  font-weight: 600;
+  color: #1e3f5f;
+}
+.region-item select {
+  padding: 8px 14px;
+  border: 1px solid #c4d7ec;
+  border-radius: 30px;
+  background: white;
+  color: #1e3f5f;
+  font-weight: 500;
+  outline: none;
+  cursor: pointer;
+  min-width: 130px;
+}
+.region-item select:hover {
+  border-color: #1d4d7c;
+}
+
+/* Button styling - Umoomi style */
+.action-buttons {
+  display: flex;
+  gap: 12px;
+  margin: 25px 0 15px 0;
+  flex-wrap: wrap;
+}
+button {
+  padding: 14px 24px;
+  border: none;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: #f6faff;
+  color: #1e3f5f;
+  border: 1px solid rgba(148, 184, 218, 0.3);
+  box-shadow: 0 2px 8px rgba(0,20,50,0.04);
+}
+button i { font-size: 1.1rem; }
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 22px rgba(0,30,60,0.12);
+  background: #1d4d7c;
+  color: white;
+  border-color: #1d4d7c;
+}
+button.save-btn { background: #e3f0fd; border-color: #9ac7ff; }
+button.print-btn { background: #efe6fd; border-color: #ccb5ff; }
+
+/* Print area (hidden normally) */
+.print-area {
+  display: none;
+}
+
+/* Custom scrollbar */
+main::-webkit-scrollbar {
+  width: 8px;
+}
+main::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+main::-webkit-scrollbar-thumb {
+  background: #1e3f5f;
+  border-radius: 10px;
+}
+main::-webkit-scrollbar-thumb:hover {
+  background: #2c5a85;
+}
+
+/* Print styles */
+@media print {
+  body { background: #fff; margin: 0; padding: 0; height: auto; overflow: visible; }
+  .container { height: auto; overflow: visible; }
+  aside, header, .quick-stats, .action-buttons, .region-list, .date-input, .section-title { display: none !important; }
+  main { box-shadow: none; padding: 0; overflow: visible; height: auto; }
+  .print-area { 
+    display: block; 
+    padding: 40px;
+    background: white;
+  }
+  @page { 
+    size: A4; 
+    margin: 20mm;
+  }
+  .official-header { 
+    text-align: center; 
+    margin-bottom: 30px;
+    border-bottom: 2px solid #1e3f5f;
+    padding-bottom: 20px;
+  }
+  .official-header img { 
+    width: 90px; 
+    margin-bottom: 15px;
+  }
+  .official-header h2 { 
+    font-size: 24px; 
+    margin-bottom: 8px;
+    color: #1e3f5f;
+  }
+  .official-header h3 { 
+    font-size: 18px; 
+    margin-bottom: 5px;
+    color: #2c5a85;
+  }
+  table { 
+    width: 100%; 
+    border-collapse: collapse; 
+    margin: 30px 0; 
+    font-size: 14px;
+  }
+  th, td { 
+    border: 1.5px solid #1e3f5f; 
+    padding: 10px; 
+    text-align: center;
+  }
+  th { 
+    background: #e3f0fd; 
+    color: #1e3f5f;
+    font-weight: 600;
+  }
+  .status-reached { 
+    color: #27ae60; 
+    font-weight: 600;
+  }
+  .status-not { 
+    color: #e74c3c; 
+    font-weight: 600;
+  }
+  .summary-section { 
+    margin-top: 30px; 
+    font-size: 16px;
+    background: #f8faff;
+    padding: 20px;
+    border-radius: 16px;
+    border: 1px solid #c4d7ec;
+  }
+  .summary-section p { 
+    margin: 8px 0;
+    color: #1e3f5f;
+  }
+  .summary-section strong { 
+    color: #1d4d7c;
+  }
 }
 </style>
 </head>
@@ -49,186 +368,271 @@ th{background:#f2f2f2}
 <body>
 <div class="container">
 
+<!-- HEADER - FROZEN - Umoomi design -->
 <header>
-<i class="fas fa-shield-alt"></i>
-<div>
-<h2>Weekly Monitor</h2>
-<small>National Office Weekly Monitoring</small>
-</div>
+  <i class="fas fa-shield-halved"></i>
+  <div>
+    <h2>Umoomi Security · Weekly Monitor</h2>
+    <small>Ahmadiyya Muslim Community Uganda · national office reporting</small>
+  </div>
 </header>
 
 <div class="layout">
-<aside>
-<a href="index.html"><i class="fas fa-chart-line"></i> Dashboard</a>
-<a href="members.html"><i class="fas fa-users"></i> Members</a>
-<a href="scanner.html"><i class="fas fa-qrcode"></i> Scan ID</a>
-<a href="regions.html"><i class="fas fa-map-marker-alt"></i> Regions</a>
-<a href="#" class="active"><i class="fas fa-history"></i> Activity Logs</a>
-<a href="admin.html"><i class="fas fa-user-shield"></i> Admin Panel</a>
+  <!-- SIDEBAR - FROZEN - Umoomi design -->
+  <aside>
+  <a href="index.html"><i class="fas fa-users"></i> Dashboard</a>
+  <a href="members.html"><i class="fas fa-chart-line"></i> Members</a>
+  <a href="scanner.html"><i class="fas fa-qrcode"></i> Scan ID</a>
+  <a href="regions.html"><i class="fas fa-map-marker-alt"></i> Regions</a>
+  <a href="#" class="active"><i class="fas fa-history"></i> Activity Logs</a>
   <a href="settings.html"><i class="fas fa-cog"></i> Settings</a>
 </aside>
 
-<main>
+  <!-- MAIN PANEL - SCROLLABLE -->
+  <main>
+    <!-- Quick stats - ABOVE content (dynamically updated) -->
+    <div class="quick-stats" id="quickStats">
+      <div class="stat-card">
+        <i class="fas fa-map-locations"></i>
+        <div class="stat-number" id="statTotal">0</div>
+        <div class="stat-label">Total Regions</div>
+      </div>
+      <div class="stat-card">
+        <i class="fas fa-check-circle"></i>
+        <div class="stat-number" id="statReached">0</div>
+        <div class="stat-label">Reached</div>
+      </div>
+      <div class="stat-card">
+        <i class="fas fa-times-circle"></i>
+        <div class="stat-number" id="statNot">0</div>
+        <div class="stat-label">Not Reached</div>
+      </div>
+      <div class="stat-card">
+        <i class="fas fa-chart-line"></i>
+        <div class="stat-number" id="statPercent">0%</div>
+        <div class="stat-label">Performance</div>
+      </div>
+    </div>
 
-<label><strong>Week Starting:</strong></label><br>
-<input type="date" id="weekDate">
+    <!-- Content header with date picker -->
+    <div class="content-header">
+      <label><i class="fas fa-calendar-week"></i> Week Starting:</label>
+      <div class="date-input">
+        <input type="date" id="weekDate">
+      </div>
+    </div>
 
-<h3 style="margin-top:15px">Regions Call Status</h3>
-<div id="regionContainer" class="region-list"></div>
+    <!-- Region status section -->
+    <div class="section-title">
+      <i class="fas fa-phone-alt"></i>
+      <span>Regions Call Status</span>
+    </div>
+    
+    <div id="regionContainer" class="region-list"></div>
 
-<button onclick="saveWeeklyData()">Save Weekly Data</button>
-<button onclick="generatePrintView()">Generate & Print Report</button>
+    <!-- Action buttons -->
+    <div class="action-buttons">
+      <button onclick="saveWeeklyData()" class="save-btn">
+        <i class="fas fa-save"></i> Save Weekly Data
+      </button>
+      <button onclick="generatePrintView()" class="print-btn">
+        <i class="fas fa-print"></i> Generate & Print Report
+      </button>
+    </div>
 
-<div class="print-area" id="printArea">
-<div class="official-header">
-<img src="images/amc-logo.png">
-<h2>AHMADIYYA MUSLIM COMMUNITY UGANDA</h2>
-<h3>NATIONAL OFFICE</h3>
-<h3>WEEKLY REMINDER REPORT</h3>
-<p><strong>Week Starting:</strong> <span id="printWeek"></span></p>
-<p><strong>Report Generated:</strong> <span id="generatedDate"></span></p>
-<hr>
-</div>
+    <!-- Print area (hidden) -->
+    <div class="print-area" id="printArea">
+      <div class="official-header">
+        <img src="images/amc-logo.png" alt="AMC Logo" onerror="this.style.display='none'">
+        <h2>AHMADIYYA MUSLIM COMMUNITY UGANDA</h2>
+        <h3>NATIONAL OFFICE</h3>
+        <h3>WEEKLY REMINDER REPORT</h3>
+        <p><strong>Week Starting:</strong> <span id="printWeek"></span></p>
+        <p><strong>Report Generated:</strong> <span id="generatedDate"></span></p>
+      </div>
 
-<table id="printTable">
-<thead>
-<tr><th>No.</th><th>Region</th><th>Status</th></tr>
-</thead>
-<tbody></tbody>
-</table>
+      <table id="printTable">
+        <thead>
+          <tr>
+            <th>No.</th>
+            <th>Region</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
 
-<div class="summary-section">
-<p><strong>Total Regions:</strong> <span id="pTotal"></span></p>
-<p><strong>Reached:</strong> <span id="pReached"></span></p>
-<p><strong>Not Reached:</strong> <span id="pNot"></span></p>
-<p><strong>Performance:</strong> <span id="pPerformance"></span></p>
-</div>
-</div>
-
-</main>
+      <div class="summary-section">
+        <p><strong>Total Regions:</strong> <span id="pTotal"></span></p>
+        <p><strong>Reached:</strong> <span id="pReached"></span></p>
+        <p><strong>Not Reached:</strong> <span id="pNot"></span></p>
+        <p><strong>Performance:</strong> <span id="pPerformance"></span></p>
+      </div>
+    </div>
+  </main>
 </div>
 </div>
 
 <script>
-const SUPABASE_URL="https://pqrsljahrnjgkadflbmr.supabase.co";
-const SUPABASE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBxcnNsamFocm5qZ2thZGZsYm1yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA1NTg0NTYsImV4cCI6MjA4NjEzNDQ1Nn0.egED0C2iRp6j3Xp4ldgrdI0GBep2J7VUR52rBbzsVdo";
-const supabaseClient = window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const SUPABASE_URL = "https://pqrsljahrnjgkadflbmr.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBxcnNsamFocm5qZ2thZGZsYm1yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA1NTg0NTYsImV4cCI6MjA4NjEzNDQ1Nn0.egED0C2iRp6j3Xp4ldgrdI0GBep2J7VUR52rBbzsVdo";
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 document.addEventListener("DOMContentLoaded", async ()=>{
-autoMonday();
-await loadRegions();
-await loadWeeklyData();
-document.getElementById("weekDate").addEventListener("change",loadWeeklyData);
+  autoMonday();
+  await loadRegions();
+  await loadWeeklyData();
+  document.getElementById("weekDate").addEventListener("change", loadWeeklyData);
 });
 
-function autoMonday(){
-const today=new Date();
-const day=today.getDay();
-const diff=today.getDate()-day+(day===0?-6:1);
-const monday=new Date(today.setDate(diff));
-document.getElementById("weekDate").value=monday.toISOString().split("T")[0];
+function autoMonday() {
+  const today = new Date();
+  const day = today.getDay();
+  const diff = today.getDate() - day + (day === 0 ? -6 : 1);
+  const monday = new Date(today.setDate(diff));
+  document.getElementById("weekDate").value = monday.toISOString().split("T")[0];
 }
 
-async function loadRegions(){
-const {data,error}=await supabaseClient
-.from("regions")
-.select("*")
-.eq("active",true)
-.order("id",{ascending:true});
+async function loadRegions() {
+  const { data, error } = await supabaseClient
+    .from("regions")
+    .select("*")
+    .eq("active", true)
+    .order("id", { ascending: true });
 
-if(error){console.log(error);return;}
+  if (error) { console.log(error); return; }
 
-const container=document.getElementById("regionContainer");
-container.innerHTML="";
+  const container = document.getElementById("regionContainer");
+  container.innerHTML = "";
 
-data.forEach((region,index)=>{
-const div=document.createElement("div");
-div.className="region-item";
-div.innerHTML=`
-<span>${index+1}. ${region.name}</span>
-<select data-region="${region.name}">
-<option value="">--</option>
-<option value="Reached">Reached</option>
-<option value="Not Reached">Not Reached</option>
-</select>`;
-div.querySelector("select").addEventListener("change",(e)=>{
-div.classList.remove("reached","not-reached");
-if(e.target.value==="Reached") div.classList.add("reached");
-if(e.target.value==="Not Reached") div.classList.add("not-reached");
-});
-container.appendChild(div);
-});
+  data.forEach((region, index) => {
+    const div = document.createElement("div");
+    div.className = "region-item";
+    div.innerHTML = `
+      <span>${index + 1}. ${region.name}</span>
+      <select data-region="${region.name}">
+        <option value="">-- Select Status --</option>
+        <option value="Reached">✅ Reached</option>
+        <option value="Not Reached">❌ Not Reached</option>
+      </select>`;
+    
+    div.querySelector("select").addEventListener("change", (e) => {
+      div.classList.remove("reached", "not-reached");
+      if (e.target.value === "Reached") div.classList.add("reached");
+      if (e.target.value === "Not Reached") div.classList.add("not-reached");
+      updateQuickStats();
+    });
+    
+    container.appendChild(div);
+  });
+  
+  updateQuickStats();
 }
 
-async function saveWeeklyData(){
-const week=document.getElementById("weekDate").value;
-await supabaseClient.from("weekly_reports").delete().eq("week_date",week);
-
-const rows=[];
-document.querySelectorAll("#regionContainer select").forEach(sel=>{
-if(sel.value){
-rows.push({week_date:week,region:sel.dataset.region,status:sel.value});
-}
-});
-if(rows.length>0){
-await supabaseClient.from("weekly_reports").insert(rows);
-}
-alert("Weekly data saved");
-}
-
-async function loadWeeklyData(){
-const week=document.getElementById("weekDate").value;
-const {data}=await supabaseClient.from("weekly_reports").select("*").eq("week_date",week);
-
-document.querySelectorAll("#regionContainer select").forEach(sel=>{
-sel.value="";
-sel.parentElement.classList.remove("reached","not-reached");
-});
-
-if(data){
-data.forEach(row=>{
-const sel=document.querySelector(`select[data-region="${row.region}"]`);
-if(sel){
-sel.value=row.status;
-if(row.status==="Reached") sel.parentElement.classList.add("reached");
-if(row.status==="Not Reached") sel.parentElement.classList.add("not-reached");
-}
-});
-}
+function updateQuickStats() {
+  let total = 0, reached = 0;
+  document.querySelectorAll("#regionContainer select").forEach(sel => {
+    if (sel.value) {
+      total++;
+      if (sel.value === "Reached") reached++;
+    }
+  });
+  const notReached = total - reached;
+  const percent = total > 0 ? ((reached / total) * 100).toFixed(1) : 0;
+  
+  document.getElementById("statTotal").textContent = total;
+  document.getElementById("statReached").textContent = reached;
+  document.getElementById("statNot").textContent = notReached;
+  document.getElementById("statPercent").textContent = percent + "%";
 }
 
-function generatePrintView(){
-const week=document.getElementById("weekDate").value;
-document.getElementById("printWeek").textContent=week;
-document.getElementById("generatedDate").textContent=new Date().toLocaleString();
+async function saveWeeklyData() {
+  const week = document.getElementById("weekDate").value;
+  await supabaseClient.from("weekly_reports").delete().eq("week_date", week);
 
-const tbody=document.querySelector("#printTable tbody");
-tbody.innerHTML="";
-
-let total=0,reached=0,notReached=0;
-
-document.querySelectorAll("#regionContainer select").forEach(sel=>{
-if(sel.value){
-total++;
-if(sel.value==="Reached") reached++;
-if(sel.value==="Not Reached") notReached++;
-const row=document.createElement("tr");
-row.innerHTML=`
-<td>${total}</td>
-<td>${sel.dataset.region}</td>
-<td class="${sel.value==="Reached"?"status-reached":"status-not"}">${sel.value}</td>`;
-tbody.appendChild(row);
+  const rows = [];
+  document.querySelectorAll("#regionContainer select").forEach(sel => {
+    if (sel.value) {
+      rows.push({ week_date: week, region: sel.dataset.region, status: sel.value });
+    }
+  });
+  
+  if (rows.length > 0) {
+    await supabaseClient.from("weekly_reports").insert(rows);
+  }
+  
+  alert("✅ Weekly data saved successfully");
+  updateQuickStats();
 }
-});
 
-const performance=total>0?((reached/total)*100).toFixed(1):0;
-document.getElementById("pTotal").textContent=total;
-document.getElementById("pReached").textContent=reached;
-document.getElementById("pNot").textContent=notReached;
-document.getElementById("pPerformance").textContent=performance+"%";
+async function loadWeeklyData() {
+  const week = document.getElementById("weekDate").value;
+  const { data } = await supabaseClient.from("weekly_reports").select("*").eq("week_date", week);
 
-window.print();
+  document.querySelectorAll("#regionContainer select").forEach(sel => {
+    sel.value = "";
+    sel.parentElement.classList.remove("reached", "not-reached");
+  });
+
+  if (data) {
+    data.forEach(row => {
+      const sel = document.querySelector(`select[data-region="${row.region}"]`);
+      if (sel) {
+        sel.value = row.status;
+        if (row.status === "Reached") sel.parentElement.classList.add("reached");
+        if (row.status === "Not Reached") sel.parentElement.classList.add("not-reached");
+      }
+    });
+  }
+  
+  updateQuickStats();
 }
+
+function generatePrintView() {
+  const week = document.getElementById("weekDate").value;
+  document.getElementById("printWeek").textContent = week;
+  document.getElementById("generatedDate").textContent = new Date().toLocaleString();
+
+  const tbody = document.querySelector("#printTable tbody");
+  tbody.innerHTML = "";
+
+  let total = 0, reached = 0;
+
+  document.querySelectorAll("#regionContainer select").forEach(sel => {
+    if (sel.value) {
+      total++;
+      if (sel.value === "Reached") reached++;
+      
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${total}</td>
+        <td>${sel.dataset.region}</td>
+        <td class="${sel.value === "Reached" ? "status-reached" : "status-not"}">${sel.value}</td>`;
+      tbody.appendChild(row);
+    }
+  });
+
+  const notReached = total - reached;
+  const performance = total > 0 ? ((reached / total) * 100).toFixed(1) : 0;
+  
+  document.getElementById("pTotal").textContent = total;
+  document.getElementById("pReached").textContent = reached;
+  document.getElementById("pNot").textContent = notReached;
+  document.getElementById("pPerformance").textContent = performance + "%";
+
+  window.print();
+}
+
+// Page switching function (for sidebar navigation)
+window.switchPage = function(pageName) {
+  alert(`Navigate to ${pageName} page - This would link to your other pages`);
+  
+  // Update active state in sidebar
+  document.querySelectorAll('aside a').forEach(link => {
+    link.classList.remove('active');
+  });
+  event.target.closest('a').classList.add('active');
+};
 </script>
 
 </body>
