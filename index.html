@@ -2,253 +2,747 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Umoomi Security System</title>
+<title>Umoomi Security · Dashboard</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- Font Awesome, Chart.js -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css ">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js "></script>
 
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Segoe UI,sans-serif;background:#f2f2f2;padding:20px}
-.container{max-width:1400px;margin:auto}
+*{box-sizing:border-box; margin:0; padding:0}
+body{font-family:'Segoe UI',Roboto,sans-serif; background:#f4f6f9; padding:20px}
+.container{max-width:1400px; margin:0 auto}
 
-/* HEADER */
+/* header */
 header{
-  background:#ccdc;padding:20px;border-radius:10px;
-  display:flex;gap:15px;align-items:center;
-  box-shadow:0 4px 6px rgba(0,0,0,.1);
-  margin-bottom:20px
+  background:linear-gradient(145deg, #ffffff 0%, #f0f4f8 100%);
+  padding:20px 28px; border-radius:28px; margin-bottom:24px;
+  display:flex; gap:18px; align-items:center;
+  box-shadow:0 8px 18px rgba(0,20,30,0.06);
 }
-header i{font-size:2.5rem;color:#2c3e50}
+header i{font-size:3rem; color:#1e3c5c; filter:drop-shadow(0 2px 4px rgba(0,60,120,0.2));}
+header h2{font-weight:600; color:#0b2a41; letter-spacing:-0.02em;}
+header small{color:#3a5e7a; font-size:0.9rem;}
 
-/* LAYOUT */
-.layout{display:grid;grid-template-columns:240px 1fr;gap:20px}
+/* layout */
+.layout{display:grid; grid-template-columns:260px 1fr; gap:24px;}
 
-/* SIDEBAR */
+/* sidebar */
 aside{
-  background:#fff;border-radius:10px;padding:15px;
-  box-shadow:0 4px 6px rgba(0,0,0,.1);
-  height:calc(100vh - 160px)
+  background:#ffffff; border-radius:28px; padding:16px 10px;
+  box-shadow:0 12px 28px rgba(0,20,40,0.06); height:fit-content;
+  backdrop-filter:blur(2px);
 }
 aside a{
-  display:block;text-decoration:none;
-  padding:12px 15px;border-radius:6px;
-  color:#2c3e50;margin-bottom:6px;font-size:1rem
+  display:flex; align-items:center; gap:14px;
+  text-decoration:none; padding:12px 18px; border-radius:18px;
+  color:#1e3b5c; font-weight:500; margin-bottom:6px;
+  transition:all 0.15s ease; cursor:pointer;
 }
-aside a i{width:22px;margin-right:10px}
-aside a:hover,aside a.active{
-  background:#3498db;color:#fff
+aside a i{width:22px; font-size:1.2rem;}
+aside a:hover, aside a.active{
+  background:#1d4d7c; color:#ffffff; box-shadow:0 6px 14px rgba(27,85,140,0.3);
 }
+aside a.active{background:#113753;}
 
-/* MAIN */
+/* main panel */
 main{
-  background:#fff;border-radius:10px;padding:20px;
-  box-shadow:0 4px 6px rgba(0,0,0,.1)
+  background:#ffffff; border-radius:32px; padding:24px 28px;
+  box-shadow:0 16px 30px rgba(0,10,30,0.04);
+  min-height: 600px;
 }
 
-/* QUICK ACTIONS */
+/* Page content */
+.page {
+  display: none;
+}
+
+.page.active-page {
+  display: block;
+}
+
+/* quick action cards */
 .quick-actions{
-  display:grid;grid-template-columns:repeat(4,1fr);
-  gap:12px;margin-bottom:20px
+  display:grid; grid-template-columns:repeat(4,1fr); gap:16px;
+  margin-bottom:28px;
 }
 .quick-actions button{
-  padding:14px;border:none;border-radius:10px;
-  cursor:pointer;font-weight:600;
-  display:flex;align-items:center;justify-content:center;gap:8px
+  padding:16px 4px; border:none; border-radius:26px;
+  font-weight:600; font-size:1rem; background:#f6faff;
+  display:flex; align-items:center; justify-content:center; gap:10px;
+  box-shadow:0 2px 8px rgba(0,20,50,0.04); cursor:pointer;
+  transition:all 0.2s ease; border:1px solid #ffffff60;
+  backdrop-filter:blur(4px); color:#1f3c5a;
 }
-.qa-msg{background:#e8f4fd}
-.qa-rem{background:#fff3cd}
-.qa-evt{background:#e9f7ef}
-.qa-rep{background:#f5eef8}
+.qa-msg{background:#e3f0fd; border-color:#9ac7ff;}
+.qa-rem{background:#fff0cf; border-color:#ffd98c;}
+.qa-evt{background:#e0f3e5; border-color:#a8e0b7;}
+.qa-rep{background:#efe6fd; border-color:#ccb5ff;}
+.quick-actions button:hover{transform:translateY(-3px); box-shadow:0 12px 22px rgba(0,30,60,0.12);}
 
-/* STATS */
+/* stats cards */
 .stats{
-  display:grid;grid-template-columns:repeat(4,1fr);
-  gap:15px;margin-bottom:20px
+  display:grid; grid-template-columns:repeat(4,1fr); gap:18px;
+  margin-bottom:32px;
 }
 .stat{
-  background:linear-gradient(135deg,#2c3e50,#3498db);
-  color:#fff;padding:18px;border-radius:10px;text-align:center
+  background:linear-gradient(145deg, #1e3f5f, #2c5a85);
+  color:white; padding:22px 14px; border-radius:26px; text-align:center;
+  box-shadow:0 16px 28px -8px #1d3f5e60;
 }
-.stat i{font-size:2rem;margin-bottom:6px}
-.stat .number{font-size:1.8rem;font-weight:bold}
+.stat i{font-size:2.4rem; opacity:0.95; margin-bottom:10px;}
+.stat .number{font-size:2.1rem; font-weight:700; letter-spacing:1px;}
 
-/* CHARTS */
-.charts{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
-.chart-box{background:#f8f9fa;border-radius:10px;padding:15px}
-.chart-box h4{text-align:center;margin-bottom:10px}
+/* charts grid */
+.charts{
+  display:grid; grid-template-columns:repeat(3,1fr); gap:22px;
+  margin-top:10px;
+}
+.chart-box{
+  background:#fafdff; border-radius:24px; padding:16px 12px 10px 12px;
+  box-shadow:inset 0 1px 3px #ffffff, 0 8px 18px rgba(0,20,40,0.04);
+  border:1px solid rgba(148, 184, 218, 0.2);
+}
+.chart-box h4{text-align:center; color:#203f5c; font-weight:500; margin-bottom:12px;}
 
-/* MODALS */
+/* Page-specific styles */
+.members-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.member-card {
+  background: linear-gradient(145deg, #f8faff, #f0f4fa);
+  border-radius: 24px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0,20,40,0.04);
+  border: 1px solid rgba(148, 184, 218, 0.2);
+}
+
+.member-card h3 {
+  color: #1e3f5f;
+  margin-bottom: 8px;
+}
+
+.member-card .badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-top: 10px;
+}
+
+.badge.active {
+  background: #c8e6c9;
+  color: #256029;
+}
+
+.badge.inactive {
+  background: #ffcdd2;
+  color: #c63737;
+}
+
+.scan-history {
+  background: #f8faff;
+  border-radius: 20px;
+  padding: 20px;
+  margin-top: 20px;
+}
+
+.scan-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px;
+  border-bottom: 1px solid #e0e9f0;
+}
+
+.scan-item:last-child {
+  border-bottom: none;
+}
+
+.region-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.region-card {
+  background: linear-gradient(135deg, #1e3f5f, #2c5a85);
+  color: white;
+  padding: 24px;
+  border-radius: 24px;
+  text-align: center;
+}
+
+.region-card h3 {
+  margin-bottom: 10px;
+  font-size: 1.3rem;
+}
+
+.region-card .count {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 10px 0;
+}
+
+.activity-log {
+  background: #f8faff;
+  border-radius: 20px;
+  padding: 20px;
+}
+
+.log-entry {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 15px;
+  border-bottom: 1px solid #e0e9f0;
+}
+
+.log-entry i {
+  width: 30px;
+  color: #1e3f5f;
+}
+
+.settings-form {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.settings-group {
+  margin-bottom: 30px;
+}
+
+.settings-group h3 {
+  color: #1e3f5f;
+  margin-bottom: 15px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #e0e9f0;
+}
+
+.settings-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 12px;
+  background: #f8faff;
+  border-radius: 16px;
+  margin-bottom: 10px;
+}
+
+/* modal backdrop + windows */
 .modal-backdrop{
-  display:none;position:fixed;inset:0;
-  background:rgba(0,0,0,.5);z-index:999
+  display:none; position:fixed; inset:0;
+  background:rgba(8, 25, 45, 0.5); backdrop-filter:blur(3px);
+  z-index:998;
 }
 .modal{
-  display:none;position:fixed;top:50%;left:50%;
+  display:none; position:fixed; top:50%; left:50%;
   transform:translate(-50%,-50%);
-  background:#fff;padding:20px;border-radius:10px;
-  width:380px;z-index:1000
+  background:#ffffff; padding:26px 28px; border-radius:42px;
+  width:400px; max-width:90vw; z-index:999;
+  box-shadow:0 40px 60px rgba(0,15,40,0.4);
+  border:1px solid #b9d4f0;
 }
+.modal h3{margin-bottom:16px; color:#113853;}
 .modal input,.modal textarea,.modal select{
-  width:100%;padding:10px;margin-bottom:10px;
-  border:1px solid #ccc;border-radius:6px
+  width:100%; padding:14px 18px; margin-bottom:14px;
+  border:1px solid #c4d7ec; border-radius:40px; font-size:0.95rem;
+  background:#f4faff; outline:none;
 }
+.modal textarea{border-radius:28px; resize:vertical;}
 .modal button{
-  width:100%;padding:10px;border:none;
-  background:#3498db;color:#fff;border-radius:6px;cursor:pointer
+  width:100%; padding:16px; border:none; border-radius:50px;
+  background:#1b4f7c; color:#fff; font-weight:700; font-size:1rem;
+  cursor:pointer; transition:0.15s; margin-top:4px;
 }
+.modal button:hover{background:#0f3d60;}
+
+/* micro */
+#lastScan{font-size:1.1rem; word-break:break-word;}
 </style>
 </head>
-
 <body>
+
 <div class="container">
 
 <header>
-  <i class="fas fa-shield-alt"></i>
+  <i class="fas fa-shield-halved"></i>
   <div>
     <h2>Umoomi Security System</h2>
-    <small>Ahmadiyya Muslim Community Uganda</small>
+    <small>Ahmadiyya Muslim Community Uganda · central dashboard</small>
   </div>
 </header>
 
 <div class="layout">
 
 <aside>
-  <a href="index.html" class="active"><i class="fas fa-users"></i> Dashboard</a>
-  <a href="members.html"><i class="fas fa-chart-line"></i> Members</a>
-  <a href="scanner.html"><i class="fas fa-qrcode"></i> Scan ID</a>
-  <a href="regions.html"><i class="fas fa-map-marker-alt"></i> Regions</a>
-  <a href="scan-logs.html"><i class="fas fa-history"></i> Activity Logs</a>
-  <a href="admin.html"><i class="fas fa-user-shield"></i> Admin Panel</a>
-  <a href="settings.html"><i class="fas fa-cog"></i> Settings</a>
+  <a onclick="switchPage('dashboard')" class="active" id="nav-dashboard"><i class="fas fa-chart-pie"></i> Dashboard</a>
+  <a href="members.html" id="nav-members"><i class="fas fa-people-group"></i> Members</a>
+  <a href="scanner.html" id="nav-scan"><i class="fas fa-qrcode"></i> Scan ID</a>
+  <a href="regions.html" id="nav-regions"><i class="fas fa-map-locations"></i> Regions</a>
+  <a href="scan-logs.html" id="nav-logs"><i class="fas fa-clock-rotate-left"></i> Activity logs</a>
+  <a href="settings.html" id="nav-settings"><i class="fas fa-gear"></i> Settings</a>
 </aside>
 
 <main>
+  <!-- Dashboard Page -->
+  <div id="page-dashboard" class="page active-page">
+    <!-- quick action row -->
+    <div class="quick-actions">
+      <button class="qa-msg" id="btnMsg"><i class="fas fa-envelope-open-text"></i> Messages</button>
+      <button class="qa-rem" id="btnRem"><i class="fas fa-bell"></i> Reminders</button>
+      <button class="qa-evt" id="btnEvt"><i class="fas fa-calendar-check"></i> Events</button>
+      <button class="qa-rep" id="btnRep"><i class="fas fa-file-pdf"></i> Reports</button>
+    </div>
 
-<div class="quick-actions">
-  <button class="qa-msg" id="btnMsg"><i class="fas fa-envelope"></i> Messages</button>
-  <button class="qa-rem" id="btnRem"><i class="fas fa-bell"></i> Reminders</button>
-  <button class="qa-evt" id="btnEvt"><i class="fas fa-calendar"></i> Events</button>
-  <button class="qa-rep" id="btnRep"><i class="fas fa-file-alt"></i> Reports</button>
-</div>
+    <!-- stats tiles -->
+    <div class="stats">
+      <div class="stat"><i class="fas fa-users"></i><div>Total Members</div><div id="totalMembers" class="number">0</div></div>
+      <div class="stat"><i class="fas fa-user-check"></i><div>Active</div><div id="activeMembers" class="number">0</div></div>
+      <div class="stat"><i class="fas fa-map-pin"></i><div>Regions</div><div id="regionsCount" class="number">0</div></div>
+      <div class="stat"><i class="fas fa-clock"></i><div>Last Scan</div><div id="lastScan" class="number">—</div></div>
+    </div>
 
-<div class="stats">
-  <div class="stat"><i class="fas fa-users"></i><div>Total Members</div><div id="totalMembers" class="number">0</div></div>
-  <div class="stat"><i class="fas fa-user-check"></i><div>Active Members</div><div id="activeMembers" class="number">0</div></div>
-  <div class="stat"><i class="fas fa-map-marker-alt"></i><div>Total Regions</div><div id="regionsCount" class="number">0</div></div>
-  <div class="stat"><i class="fas fa-clock"></i><div>Last Scan</div><div id="lastScan" class="number">-</div></div>
-</div>
+    <!-- three charts -->
+    <div class="charts">
+      <div class="chart-box"><h4><i class="fa-regular fa-building" style="margin-right:6px;"></i>Members per region</h4><canvas id="membersRegionChart"></canvas></div>
+      <div class="chart-box"><h4><i class="fa-regular fa-star"></i> Scan activity (region)</h4><canvas id="activeRegionChart"></canvas></div>
+      <div class="chart-box"><h4><i class="fa-regular fa-calendar"></i> Daily scan trend</h4><canvas id="scanTrendChart"></canvas></div>
+    </div>
+  </div>
 
-<div class="charts">
-  <div class="chart-box"><h4>Members per Region</h4><canvas id="membersRegionChart"></canvas></div>
-  <div class="chart-box"><h4>Most Active Regions</h4><canvas id="activeRegionChart"></canvas></div>
-  <div class="chart-box"><h4>Scan Trend</h4><canvas id="scanTrendChart"></canvas></div>
-</div>
+  <!-- Members Page -->
+  <div id="page-members" class="page">
+    <h2 style="color: #1e3f5f; margin-bottom: 20px;"><i class="fas fa-people-group"></i> Members Management</h2>
+    <div class="quick-actions">
+      <button class="qa-msg"><i class="fas fa-user-plus"></i> Add Member</button>
+      <button class="qa-rem"><i class="fas fa-filter"></i> Filter</button>
+      <button class="qa-evt"><i class="fas fa-download"></i> Export</button>
+    </div>
+    <div id="membersList" class="members-grid"></div>
+  </div>
 
+  <!-- Scan ID Page -->
+  <div id="page-scan" class="page">
+    <h2 style="color: #1e3f5f; margin-bottom: 20px;"><i class="fas fa-qrcode"></i> Scan ID Management</h2>
+    <div style="text-align: center; padding: 40px;">
+      <i class="fas fa-qrcode" style="font-size: 120px; color: #1e3f5f; opacity: 0.5;"></i>
+      <h3 style="margin: 20px 0;">Scan Member ID Card</h3>
+      <button class="qa-msg" style="padding: 16px 40px; margin: 0 auto;"><i class="fas fa-camera"></i> Start Scanning</button>
+    </div>
+    <div id="recentScans" class="scan-history">
+      <h3 style="color: #1e3f5f; margin-bottom: 15px;">Recent Scans</h3>
+      <div id="scansList"></div>
+    </div>
+  </div>
+
+  <!-- Regions Page -->
+  <div id="page-regions" class="page">
+    <h2 style="color: #1e3f5f; margin-bottom: 20px;"><i class="fas fa-map-locations"></i> Regions Overview</h2>
+    <div id="regionsList" class="region-grid"></div>
+  </div>
+
+  <!-- Activity Logs Page -->
+  <div id="page-logs" class="page">
+    <h2 style="color: #1e3f5f; margin-bottom: 20px;"><i class="fas fa-clock-rotate-left"></i> Activity Logs</h2>
+    <div class="quick-actions">
+      <button class="qa-rem"><i class="fas fa-calendar"></i> Filter by date</button>
+      <button class="qa-rep"><i class="fas fa-download"></i> Export logs</button>
+    </div>
+    <div id="activityLogs" class="activity-log"></div>
+  </div>
+
+  <!-- Settings Page -->
+  <div id="page-settings" class="page">
+    <h2 style="color: #1e3f5f; margin-bottom: 20px;"><i class="fas fa-gear"></i> Settings</h2>
+    <div class="settings-form">
+      <div class="settings-group">
+        <h3>General Settings</h3>
+        <div class="settings-item">
+          <i class="fas fa-bell"></i>
+          <span>Notifications</span>
+          <label class="switch" style="margin-left: auto;">
+            <input type="checkbox" checked> <span class="slider"></span>
+          </label>
+        </div>
+        <div class="settings-item">
+          <i class="fas fa-language"></i>
+          <span>Language</span>
+          <select style="margin-left: auto; width: auto; padding: 5px;">
+            <option>English</option>
+            <option>Swahili</option>
+            <option>Arabic</option>
+          </select>
+        </div>
+      </div>
+      <div class="settings-group">
+        <h3>Security Settings</h3>
+        <div class="settings-item">
+          <i class="fas fa-lock"></i>
+          <span>Two-factor authentication</span>
+          <label class="switch" style="margin-left: auto;">
+            <input type="checkbox"> <span class="slider"></span>
+          </label>
+        </div>
+        <div class="settings-item">
+          <i class="fas fa-history"></i>
+          <span>Session timeout (minutes)</span>
+          <input type="number" value="30" style="width: 80px; margin-left: auto;">
+        </div>
+      </div>
+    </div>
+  </div>
 </main>
-</div>
-</div>
+</div> <!-- .layout -->
+</div> <!-- .container -->
 
-<!-- MODALS -->
+<!-- modals (keep these outside pages as they're global) -->
 <div id="backdrop" class="modal-backdrop"></div>
-
 <div id="msgModal" class="modal">
-  <h3>Send Message</h3>
-  <input placeholder="Title">
-  <select><option>All Members</option><option>By Region</option></select>
-  <textarea placeholder="Message content"></textarea>
-  <button onclick="closeModals()">Send</button>
+  <h3>✉️ Send message</h3>
+  <input placeholder="Title / subject" value="Community notice">
+  <select><option>All members (default)</option><option>Kampala region</option><option>Jinja region</option></select>
+  <textarea placeholder="Message content ...">Peace be upon you,</textarea>
+  <button onclick="closeModals()">Send now</button>
 </div>
-
 <div id="remModal" class="modal">
-  <h3>Create Reminder</h3>
-  <input placeholder="Reminder title">
-  <input type="datetime-local">
-  <textarea placeholder="Notes"></textarea>
-  <button onclick="closeModals()">Save</button>
+  <h3>⏰ Create reminder</h3>
+  <input placeholder="Reminder title" value="Evening security briefing">
+  <input type="datetime-local" value="2025-05-20T19:00">
+  <textarea placeholder="Additional notes">Zoom link / venue</textarea>
+  <button onclick="closeModals()">Save reminder</button>
 </div>
-
 <div id="evtModal" class="modal">
-  <h3>Create Event</h3>
-  <input placeholder="Event name">
-  <input type="date">
-  <input placeholder="Location">
-  <textarea placeholder="Description"></textarea>
-  <button onclick="closeModals()">Create</button>
+  <h3>📅 Add event</h3>
+  <input placeholder="Event name" value="Jalsa Salana">
+  <input type="date" value="2025-08-15">
+  <input placeholder="Location" value="Masjid complex">
+  <textarea placeholder="Details">Security coordination</textarea>
+  <button onclick="closeModals()">Create event</button>
 </div>
-
 <div id="repModal" class="modal">
-  <h3>Generate Report</h3>
+  <h3>📊 Report</h3>
   <select>
-    <option>Members</option>
-    <option>Scans</option>
-    <option>Regions</option>
+    <option>Members summary</option>
+    <option>Scan log analysis</option>
+    <option>Region activity</option>
   </select>
-  <button onclick="closeModals()">Generate</button>
+  <button onclick="closeModals()">Generate PDF</button>
 </div>
 
 <script>
-document.addEventListener("DOMContentLoaded", async ()=>{
+// Page switching function
+window.switchPage = function(pageName) {
+  // Hide all pages
+  document.querySelectorAll('.page').forEach(page => {
+    page.classList.remove('active-page');
+  });
+  
+  // Show selected page
+  document.getElementById(`page-${pageName}`).classList.add('active-page');
+  
+  // Update active state in sidebar
+  document.querySelectorAll('aside a').forEach(link => {
+    link.classList.remove('active');
+  });
+  document.getElementById(`nav-${pageName}`).classList.add('active');
+  
+  // Load page-specific data
+  loadPageData(pageName);
+};
 
-  const supabase = window.supabase.createClient(
-    "https://pqrsljahrnjgkadflbmr.supabase.co",
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBxcnNsamFocm5qZ2thZGZsYm1yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA1NTg0NTYsImV4cCI6MjA4NjEzNDQ1Nn0.egED0C2iRp6j3Xp4ldgrdI0GBep2J7VUR52rBbzsVdo"
-  );
+// Load data for specific pages
+function loadPageData(pageName) {
+  switch(pageName) {
+    case 'members':
+      displayMembersList();
+      break;
+    case 'scan':
+      displayRecentScans();
+      break;
+    case 'regions':
+      displayRegions();
+      break;
+    case 'logs':
+      displayActivityLogs();
+      break;
+    case 'dashboard':
+      // Dashboard data is already loaded
+      break;
+  }
+}
 
-  const { data: members=[] } = await supabase.from("umoomi_members").select("*");
-  const { data: scans=[] } = await supabase.from("scan_logs").select("*");
+// Mock data (keeping your existing mock data)
+const mockMembers = [
+  { id: 1, name: "Ahmad Kibirige", status: "Active", region: "Kampala", lastScan: "2024-01-15" },
+  { id: 2, name: "Fatuma Nakawojja", status: "Active", region: "Kampala", lastScan: "2024-01-14" },
+  { id: 3, name: "Yusuf Ssewanyana", status: "Active", region: "Jinja", lastScan: "2024-01-15" },
+  { id: 4, name: "Aisha Nabatanzi", status: "Inactive", region: "Jinja", lastScan: "2024-01-10" },
+  { id: 5, name: "Hassan Mukasa", status: "Active", region: "Mbarara", lastScan: "2024-01-15" },
+  { id: 6, name: "Mariam Nantongo", status: "Active", region: "Mbarara", lastScan: "2024-01-14" },
+  { id: 7, name: "Musa Kyeyune", status: "Active", region: "Gulu", lastScan: "2024-01-15" },
+  { id: 8, name: "Khadija Nakato", status: "Active", region: "Gulu", lastScan: "2024-01-13" },
+  { id: 9, name: "Ibrahim Wasswa", status: "Active", region: "Mbale", lastScan: "2024-01-15" },
+  { id: 10, name: "Zahara Nambuusi", status: "Active", region: "Mbale", lastScan: "2024-01-12" },
+  { id: 11, name: "Omar Kintu", status: "Active", region: "Kampala", lastScan: "2024-01-15" },
+  { id: 12, name: "Amina Nalwoga", status: "Active", region: "Kampala", lastScan: "2024-01-14" },
+  { id: 13, name: "Ali Ssali", status: "Inactive", region: "Masaka", lastScan: "2024-01-08" },
+  { id: 14, name: "Salim Kasule", status: "Active", region: "Masaka", lastScan: "2024-01-15" },
+  { id: 15, name: "Nakitto Fauzia", status: "Active", region: "Masaka", lastScan: "2024-01-14" },
+];
 
-  totalMembers.textContent = members.length;
-  activeMembers.textContent = members.filter(m=>m.status==="Active").length;
-  regionsCount.textContent = new Set(members.map(m=>m.region)).size;
-  if(scans.length) lastScan.textContent=new Date(scans[0].created_at).toLocaleString();
+const mockScans = [
+  { id: 1, memberName: "Ahmad Kibirige", region: "Kampala", time: "2024-01-15 14:30", type: "Entry" },
+  { id: 2, memberName: "Fatuma Nakawojja", region: "Kampala", time: "2024-01-15 14:25", type: "Entry" },
+  { id: 3, memberName: "Yusuf Ssewanyana", region: "Jinja", time: "2024-01-15 14:20", type: "Exit" },
+  { id: 4, memberName: "Hassan Mukasa", region: "Mbarara", time: "2024-01-15 14:15", type: "Entry" },
+  { id: 5, memberName: "Musa Kyeyune", region: "Gulu", time: "2024-01-15 14:00", type: "Entry" },
+];
 
-  const regionMap={};
-  members.forEach(m=>regionMap[m.region]=(regionMap[m.region]||0)+1);
+// Display functions for each page
+function displayMembersList() {
+  const container = document.getElementById('membersList');
+  if (!container) return;
+  
+  container.innerHTML = mockMembers.map(member => `
+    <div class="member-card">
+      <h3>${member.name}</h3>
+      <p><i class="fas fa-map-pin"></i> ${member.region}</p>
+      <p><i class="fas fa-clock"></i> Last scan: ${member.lastScan}</p>
+      <span class="badge ${member.status.toLowerCase()}">${member.status}</span>
+    </div>
+  `).join('');
+}
 
-  new Chart(membersRegionChart,{
-    type:"bar",
-    data:{labels:Object.keys(regionMap),datasets:[{data:Object.values(regionMap)}]}
+function displayRecentScans() {
+  const container = document.getElementById('scansList');
+  if (!container) return;
+  
+  container.innerHTML = mockScans.map(scan => `
+    <div class="scan-item">
+      <span><strong>${scan.memberName}</strong> (${scan.region})</span>
+      <span>${scan.time}</span>
+      <span class="badge ${scan.type === 'Entry' ? 'active' : 'inactive'}">${scan.type}</span>
+    </div>
+  `).join('');
+}
+
+function displayRegions() {
+  const container = document.getElementById('regionsList');
+  if (!container) return;
+  
+  const regionStats = {};
+  mockMembers.forEach(m => {
+    regionStats[m.region] = (regionStats[m.region] || 0) + 1;
+  });
+  
+  container.innerHTML = Object.entries(regionStats).map(([region, count]) => `
+    <div class="region-card">
+      <h3>${region}</h3>
+      <div class="count">${count}</div>
+      <p>Members</p>
+      <small>Last scan: Today</small>
+    </div>
+  `).join('');
+}
+
+function displayActivityLogs() {
+  const container = document.getElementById('activityLogs');
+  if (!container) return;
+  
+  const logs = [
+    { action: "Member scan", user: "Ahmad Kibirige", time: "2 min ago", icon: "fa-qrcode" },
+    { action: "New member added", user: "Admin", time: "15 min ago", icon: "fa-user-plus" },
+    { action: "Region updated", user: "System", time: "1 hour ago", icon: "fa-map-pin" },
+    { action: "Report generated", user: "Admin", time: "3 hours ago", icon: "fa-file-pdf" },
+    { action: "Settings changed", user: "Admin", time: "5 hours ago", icon: "fa-gear" },
+  ];
+  
+  container.innerHTML = logs.map(log => `
+    <div class="log-entry">
+      <i class="fas ${log.icon}"></i>
+      <div style="flex: 1;">
+        <strong>${log.action}</strong>
+        <div style="color: #666;">by ${log.user}</div>
+      </div>
+      <span style="color: #888;">${log.time}</span>
+    </div>
+  `).join('');
+}
+
+document.addEventListener("DOMContentLoaded", ()=>{
+  // Initialize dashboard with mock data
+  const members = mockMembers;
+  const scans = mockScans;
+
+  // Update dashboard stats
+  document.getElementById("totalMembers").innerText = members.length;
+  document.getElementById("activeMembers").innerText = members.filter(m => m.status === "Active").length;
+  
+  const uniqueRegions = [...new Set(members.map(m => m.region).filter(Boolean))];
+  document.getElementById("regionsCount").innerText = uniqueRegions.length;
+
+  if (scans.length > 0) {
+    document.getElementById("lastScan").innerText = scans[0].time;
+  }
+
+  // Chart 1: Members per region
+  const regionCounts = {};
+  members.forEach(m => {
+    regionCounts[m.region] = (regionCounts[m.region] || 0) + 1;
+  });
+  
+  new Chart(document.getElementById('membersRegionChart'), {
+    type: 'bar',
+    data: {
+      labels: Object.keys(regionCounts),
+      datasets: [{
+        label: 'members',
+        data: Object.values(regionCounts),
+        backgroundColor: '#3679b5',
+        borderRadius: 10,
+        barPercentage: 0.65
+      }]
+    },
+    options: { 
+      responsive: true, 
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } } 
+    }
   });
 
-  const scanMap={};
-  scans.forEach(s=>scanMap[s.region]=(scanMap[s.region]||0)+1);
-
-  new Chart(activeRegionChart,{
-    type:"doughnut",
-    data:{labels:Object.keys(scanMap),datasets:[{data:Object.values(scanMap)}]}
+  // Chart 2: Scan activity by region
+  const scanRegion = {};
+  scans.forEach(s => {
+    scanRegion[s.region] = (scanRegion[s.region] || 0) + 1;
   });
 
-  const trend={};
-  scans.forEach(s=>{
-    const d=new Date(s.created_at).toLocaleDateString();
-    trend[d]=(trend[d]||0)+1;
+  new Chart(document.getElementById('activeRegionChart'), {
+    type: 'doughnut',
+    data: {
+      labels: Object.keys(scanRegion),
+      datasets: [{
+        data: Object.values(scanRegion),
+        backgroundColor: ['#1b6d8a','#2b9c7c','#f3b33d','#a14a76','#4e79a7','#59a14f']
+      }]
+    },
+    options: { 
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { position: 'bottom' } } 
+    }
   });
 
-  new Chart(scanTrendChart,{
-    type:"line",
-    data:{labels:Object.keys(trend),datasets:[{data:Object.values(trend),tension:.4}]}
+  // Chart 3: Daily scan trend
+  const daily = {};
+  scans.forEach(s => {
+    const d = s.time.split(' ')[0];
+    daily[d] = (daily[d] || 0) + 1;
+  });
+  
+  const sortedDates = Object.keys(daily).sort();
+  
+  new Chart(document.getElementById('scanTrendChart'), {
+    type: 'line',
+    data: {
+      labels: sortedDates,
+      datasets: [{
+        data: sortedDates.map(date => daily[date]),
+        borderColor: '#c44536',
+        backgroundColor: '#f3c6b7',
+        tension: 0.2,
+        fill: false,
+        pointRadius: 4,
+        pointBackgroundColor: '#c44536'
+      }]
+    },
+    options: { 
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } } 
+    }
   });
 
-  // BUTTON HANDLERS
-  btnMsg.onclick=()=>openModal(msgModal);
-  btnRem.onclick=()=>openModal(remModal);
-  btnEvt.onclick=()=>openModal(evtModal);
-  btnRep.onclick=()=>openModal(repModal);
+  // Modal triggers
+  const backdrop = document.getElementById('backdrop');
+  
+  document.getElementById('btnMsg').onclick = () => openModal(document.getElementById('msgModal'));
+  document.getElementById('btnRem').onclick = () => openModal(document.getElementById('remModal'));
+  document.getElementById('btnEvt').onclick = () => openModal(document.getElementById('evtModal'));
+  document.getElementById('btnRep').onclick = () => openModal(document.getElementById('repModal'));
+
+  window.openModal = (modalEl) => {
+    backdrop.style.display = 'block';
+    modalEl.style.display = 'block';
+  };
+
+  window.closeModals = () => {
+    backdrop.style.display = 'none';
+    document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
+  };
+  backdrop.onclick = closeModals;
 });
 
-function openModal(m){
-  backdrop.style.display="block";
-  m.style.display="block";
-}
-function closeModals(){
-  backdrop.style.display="none";
-  document.querySelectorAll(".modal").forEach(m=>m.style.display="none");
-}
-backdrop.onclick=closeModals;
 </script>
+
+<!-- extra style for charts and lastScan -->
+<style>
+#lastScan { font-size: 1.1rem; line-height: 1.2; }
+.stat .number { text-shadow: 0 2px 6px rgba(0,0,0,0.2); }
+.chart-box canvas { max-height: 200px; width:100% !important; height: auto !important; }
+
+/* Toggle switch for settings */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: .4s;
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #1d4d7c;
+}
+
+input:checked + .slider:before {
+  transform: translateX(26px);
+}
+</style>
 
 </body>
 </html>
