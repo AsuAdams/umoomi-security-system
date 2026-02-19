@@ -2,102 +2,318 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Settings – Umoomi Security System</title>
+<title>Umoomi Security · System Settings</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <!-- ICONS -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"/>
 
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:"Segoe UI",sans-serif;background:#f2f2f2;padding:20px}
-.container{max-width:1400px;margin:auto}
-
-/* HEADER */
-header{
-  background:#ccdc;padding:20px;border-radius:10px;
-  display:flex;align-items:center;gap:15px;
-  box-shadow:0 4px 6px rgba(0,0,0,.1);
-  margin-bottom:20px
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
-header i{font-size:2.5rem;color:#2c3e50}
-
-/* LAYOUT */
-.layout{display:grid;grid-template-columns:240px 1fr;gap:20px}
-
-/* SIDEBAR */
-aside{
-  background:#fff;border-radius:10px;padding:15px;
-  box-shadow:0 4px 6px rgba(0,0,0,.1);
-  height:calc(100vh - 160px)
+body {
+  font-family: 'Segoe UI', Roboto, sans-serif;
+  background: #f4f6f9;
+  height: 100vh;
+  overflow: hidden;
+  padding: 20px;
 }
-aside a{
-  display:block;text-decoration:none;
-  padding:12px 15px;border-radius:6px;
-  color:#2c3e50;margin-bottom:6px;font-size:1rem
-}
-aside a i{width:22px;margin-right:10px}
-aside a.active,aside a:hover{
-  background:#3498db;color:#fff
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
-/* MAIN */
-main{
-  background:#fff;border-radius:10px;padding:20px;
-  box-shadow:0 4px 6px rgba(0,0,0,.1);
-  height:calc(100vh - 160px);
-  overflow:auto
+/* HEADER - FROZEN - Umoomi design */
+header {
+  background: linear-gradient(145deg, #ffffff 0%, #f0f4f8 100%);
+  padding: 20px 28px;
+  border-radius: 28px;
+  margin-bottom: 24px;
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  box-shadow: 0 8px 18px rgba(0,20,30,0.06);
+  flex-shrink: 0;
+}
+header i {
+  font-size: 3rem;
+  color: #1e3c5c;
+  filter: drop-shadow(0 2px 4px rgba(0,60,120,0.2));
+}
+header h2 {
+  font-weight: 600;
+  color: #0b2a41;
+  letter-spacing: -0.02em;
+}
+header small {
+  color: #3a5e7a;
+  font-size: 0.9rem;
 }
 
-/* SETTINGS */
-.setting-group{margin-bottom:25px}
-.setting-group h3{margin-bottom:10px;color:#2c3e50}
-
-.setting{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:12px 0;
-  border-bottom:1px solid #eee
-}
-.setting input[type="text"]{
-  padding:8px;
-  border-radius:6px;
-  border:2px solid #ddd;
-  width:320px
+/* LAYOUT - FROZEN SIDEBAR */
+.layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 24px;
+  height: calc(100vh - 140px);
+  overflow: hidden;
 }
 
-/* TOGGLE */
-.toggle{
-  width:50px;
-  height:26px;
-  background:#ccc;
-  border-radius:20px;
-  position:relative;
-  cursor:pointer
+/* SIDEBAR - FROZEN - Umoomi design */
+aside {
+  background: #ffffff;
+  border-radius: 28px;
+  padding: 16px 10px;
+  box-shadow: 0 12px 28px rgba(0,20,40,0.06);
+  backdrop-filter: blur(2px);
+  height: fit-content;
+  max-height: calc(100vh - 140px);
+  overflow-y: auto;
+  position: sticky;
+  top: 0;
+  flex-shrink: 0;
 }
-.toggle::after{
-  content:"";
-  width:22px;
-  height:22px;
-  background:#fff;
-  border-radius:50%;
-  position:absolute;
-  top:2px;
-  left:2px;
-  transition:.2s
+aside a {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-decoration: none;
+  padding: 12px 18px;
+  border-radius: 18px;
+  color: #1e3b5c;
+  font-weight: 500;
+  margin-bottom: 6px;
+  transition: all 0.15s ease;
+  cursor: pointer;
 }
-.toggle.active{background:#2ecc71}
-.toggle.active::after{left:26px}
+aside a i { width: 22px; font-size: 1.2rem; }
+aside a:hover, aside a.active {
+  background: #1d4d7c;
+  color: #ffffff;
+  box-shadow: 0 6px 14px rgba(27,85,140,0.3);
+}
+aside a.active { background: #113753; }
 
-.save-btn{
-  background:#3498db;
-  color:#fff;
-  border:none;
-  padding:10px 18px;
-  border-radius:6px;
-  cursor:pointer;
-  font-size:1rem
+/* MAIN PANEL - SCROLLABLE */
+main {
+  background: #ffffff;
+  border-radius: 32px;
+  padding: 24px 28px;
+  box-shadow: 0 16px 30px rgba(0,10,30,0.04);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Quick stats cards - ABOVE content */
+.quick-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+  margin-bottom: 24px;
+  flex-shrink: 0;
+}
+.stat-card {
+  background: linear-gradient(145deg, #1e3f5f, #2c5a85);
+  color: white;
+  padding: 20px 14px;
+  border-radius: 26px;
+  text-align: center;
+  box-shadow: 0 16px 28px -8px #1d3f5e60;
+}
+.stat-card i {
+  font-size: 2rem;
+  opacity: 0.95;
+  margin-bottom: 8px;
+}
+.stat-card .stat-number {
+  font-size: 1.8rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  line-height: 1.2;
+}
+.stat-card .stat-label {
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+/* Settings container */
+.settings-container {
+  background: #f8faff;
+  border-radius: 24px;
+  padding: 25px;
+  border: 1px solid rgba(148, 184, 218, 0.2);
+  margin-bottom: 20px;
+}
+
+.setting-group {
+  margin-bottom: 30px;
+}
+.setting-group h3 {
+  color: #1e3f5f;
+  font-size: 1.3rem;
+  margin-bottom: 15px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #1d4d7c;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.setting-group h3 i {
+  color: #1d4d7c;
+  font-size: 1.2rem;
+}
+
+.setting {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  background: white;
+  border-radius: 16px;
+  margin-bottom: 10px;
+  border: 1px solid rgba(148, 184, 218, 0.2);
+  transition: all 0.15s ease;
+}
+.setting:hover {
+  box-shadow: 0 4px 12px rgba(0,20,40,0.08);
+  transform: translateX(5px);
+  border-color: #1d4d7c;
+}
+.setting span {
+  color: #1e3f5f;
+  font-weight: 500;
+  font-size: 1rem;
+}
+.setting input[type="text"] {
+  padding: 10px 15px;
+  border-radius: 30px;
+  border: 1px solid #c4d7ec;
+  background: #f4faff;
+  width: 320px;
+  outline: none;
+  transition: all 0.15s ease;
+  font-size: 0.95rem;
+}
+.setting input[type="text"]:focus {
+  border-color: #1d4d7c;
+  box-shadow: 0 0 0 3px rgba(29, 77, 124, 0.1);
+}
+
+/* TOGGLE SWITCH - Enhanced */
+.toggle {
+  width: 60px;
+  height: 30px;
+  background: #ccc;
+  border-radius: 30px;
+  position: relative;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+}
+.toggle::after {
+  content: "";
+  width: 26px;
+  height: 26px;
+  background: white;
+  border-radius: 50%;
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  transition: 0.2s;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+.toggle.active {
+  background: #2ecc71;
+  background: linear-gradient(145deg, #2ecc71, #27ae60);
+}
+.toggle.active::after {
+  left: 32px;
+}
+
+/* Save button - Umoomi style */
+.save-btn {
+  background: linear-gradient(145deg, #1e3f5f, #2c5a85);
+  color: white;
+  border: none;
+  padding: 14px 28px;
+  border-radius: 50px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 8px 16px -4px #1d3f5e80;
+  transition: all 0.15s ease;
+  margin-top: 10px;
+}
+.save-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 22px rgba(27,85,140,0.4);
+  background: linear-gradient(145deg, #2c5a85, #1e3f5f);
+}
+.save-btn i {
+  font-size: 1.1rem;
+}
+
+/* Info card for additional settings info */
+.info-card {
+  background: #e3f0fd;
+  border-radius: 20px;
+  padding: 15px 20px;
+  margin-top: 20px;
+  border: 1px solid #9ac7ff;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  color: #1e3f5f;
+}
+.info-card i {
+  font-size: 1.5rem;
+  color: #1d4d7c;
+}
+.info-card p {
+  font-size: 0.95rem;
+  opacity: 0.9;
+}
+
+/* Custom scrollbar */
+main::-webkit-scrollbar,
+aside::-webkit-scrollbar {
+  width: 6px;
+}
+main::-webkit-scrollbar-track,
+aside::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+main::-webkit-scrollbar-thumb,
+aside::-webkit-scrollbar-thumb {
+  background: #1e3f5f;
+  border-radius: 10px;
+}
+main::-webkit-scrollbar-thumb:hover,
+aside::-webkit-scrollbar-thumb:hover {
+  background: #2c5a85;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .setting {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .setting input[type="text"] {
+    width: 100%;
+  }
 }
 </style>
 </head>
@@ -105,63 +321,94 @@ main{
 <body>
 <div class="container">
 
+<!-- HEADER - FROZEN - Umoomi design -->
 <header>
-  <i class="fas fa-cog"></i>
+  <i class="fas fa-shield-halved"></i>
   <div>
-    <h2>System Settings</h2>
-    <small>Umoomi Security System</small>
+    <h2>Umoomi Security · Settings</h2>
+    <small>Ahmadiyya Muslim Community Uganda · system configuration</small>
   </div>
 </header>
 
 <div class="layout">
 
-<!-- SIDEBAR -->
+<!-- SIDEBAR - FROZEN - Umoomi design -->
 <aside>
-  <a href="index.html" class="nav-link"><i class="fas fa-users"></i> Dashboard</a>
-  <a href="members.html" class="nav-link"><i class="fas fa-users"></i> Members</a>
-  <a href="scanner.html" class="nav-link"><i class="fas fa-qrcode"></i> Scan ID</a>
-  <a href="regions.html" class="nav-link"><i class="fas fa-id-card"></i> Regions</a>
-  <a href="scan-logs.html" class="nav-link"><i class="fas fa-history"></i> Activity Logs</a>
-  <a href="admin.html" class="nav-link"><i class="fas fa-user-shield"></i> Admin Panel</a>
-  <a href="settings.html" class="nav-link"><i class="fas fa-cog"></i> Settings</a>
+  <a href="index.html"><i class="fas fa-chart-pie"></i> Dashboard</a>
+  <a href="members.html"><i class="fas fa-people-group"></i> Members</a>
+  <a href="scanner.html"><i class="fas fa-qrcode"></i> Scan ID</a>
+  <a href="regions.html"><i class="fas fa-map-locations"></i> Regions</a>
+  <a href="scan-logs.html"><i class="fas fa-clock-rotate-left"></i> Activity Logs</a>
+  <a href="settings.html" class="active"><i class="fas fa-gear"></i> Settings</a>
 </aside>
 
-
-<!-- MAIN -->
+<!-- MAIN PANEL - SCROLLABLE -->
 <main>
-
-<div class="setting-group">
-  <h3>General</h3>
-
-  <div class="setting">
-    <span>System Name</span>
-    <input id="system_name">
+  <!-- Quick stats cards - ABOVE content -->
+  <div class="quick-stats">
+    <div class="stat-card">
+      <i class="fas fa-sliders-h"></i>
+      <div class="stat-number">2</div>
+      <div class="stat-label">Config Sections</div>
+    </div>
+    <div class="stat-card">
+      <i class="fas fa-toggle-on"></i>
+      <div class="stat-number" id="activeToggles">0</div>
+      <div class="stat-label">Active Toggles</div>
+    </div>
+    <div class="stat-card">
+      <i class="fas fa-save"></i>
+      <div class="stat-number" id="lastSaved">-</div>
+      <div class="stat-label">Last Saved</div>
+    </div>
+    <div class="stat-card">
+      <i class="fas fa-check-circle"></i>
+      <div class="stat-number" id="configStatus">Ready</div>
+      <div class="stat-label">Status</div>
+    </div>
   </div>
 
-  <div class="setting">
-    <span>Organization Name</span>
-    <input id="org_name">
+  <!-- Settings container -->
+  <div class="settings-container">
+    <div class="setting-group">
+      <h3><i class="fas fa-building"></i> General Settings</h3>
+
+      <div class="setting">
+        <span><i class="fas fa-tag" style="margin-right: 8px; color: #1d4d7c;"></i> System Name</span>
+        <input type="text" id="system_name" placeholder="e.g., Umoomi Security">
+      </div>
+
+      <div class="setting">
+        <span><i class="fas fa-sitemap" style="margin-right: 8px; color: #1d4d7c;"></i> Organization Name</span>
+        <input type="text" id="org_name" placeholder="e.g., Ahmadiyya Muslim Community">
+      </div>
+    </div>
+
+    <div class="setting-group">
+      <h3><i class="fas fa-qrcode"></i> Scanner Configuration</h3>
+
+      <div class="setting">
+        <span><i class="fas fa-volume-up" style="margin-right: 8px; color: #1d4d7c;"></i> Enable Scan Sound</span>
+        <div class="toggle" id="soundToggle"></div>
+      </div>
+
+      <div class="setting">
+        <span><i class="fas fa-sync-alt" style="margin-right: 8px; color: #1d4d7c;"></i> Auto Restart Scanner</span>
+        <div class="toggle" id="autoToggle"></div>
+      </div>
+    </div>
+
+    <!-- Info card -->
+    <div class="info-card">
+      <i class="fas fa-info-circle"></i>
+      <p>Changes are saved to the database and will take effect immediately across the system.</p>
+    </div>
   </div>
-</div>
 
-<div class="setting-group">
-  <h3>Scanner</h3>
-
-  <div class="setting">
-    <span>Enable Scan Sound</span>
-    <div class="toggle" id="soundToggle"></div>
-  </div>
-
-  <div class="setting">
-    <span>Auto Restart Scanner</span>
-    <div class="toggle" id="autoToggle"></div>
-  </div>
-</div>
-
-<button class="save-btn" onclick="saveSettings()">
-  <i class="fas fa-save"></i> Save Settings
-</button>
-
+  <!-- Save button -->
+  <button class="save-btn" onclick="saveSettings()">
+    <i class="fas fa-save"></i> Save Settings
+  </button>
 </main>
 </div>
 </div>
@@ -172,49 +419,111 @@ const client = window.supabase.createClient(
   "https://pqrsljahrnjgkadflbmr.supabase.co",
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBxcnNsamFocm5qZ2thZGZsYm1yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA1NTg0NTYsImV4cCI6MjA4NjEzNDQ1Nn0.egED0C2iRp6j3Xp4ldgrdI0GBep2J7VUR52rBbzsVdo"
 );
-  /* ACTIVE LINK */
-document.querySelectorAll(".nav-link").forEach(l=>{
-  if(l.getAttribute("href")==="settings.html") l.classList.add("active");
-});
 
-/* TOGGLE */
-function toggle(el){
-  el.classList.toggle("active");
+// DOM elements
+const soundToggle = document.getElementById('soundToggle');
+const autoToggle = document.getElementById('autoToggle');
+const systemName = document.getElementById('system_name');
+const orgName = document.getElementById('org_name');
+const activeToggles = document.getElementById('activeToggles');
+const lastSaved = document.getElementById('lastSaved');
+
+// Toggle function
+function toggle(el) {
+  el.classList.toggle('active');
+  updateStats();
 }
-soundToggle.onclick=()=>toggle(soundToggle);
-autoToggle.onclick=()=>toggle(autoToggle);
+
+soundToggle.onclick = () => toggle(soundToggle);
+autoToggle.onclick = () => toggle(autoToggle);
+
+// Update stats based on toggle states
+function updateStats() {
+  const active = [soundToggle, autoToggle].filter(t => t.classList.contains('active')).length;
+  activeToggles.textContent = active;
+}
+
+// Update last saved time
+function updateLastSaved() {
+  const now = new Date();
+  lastSaved.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+}
 
 /* LOAD SETTINGS */
-async function loadSettings(){
-  const { data } = await client
-    .from("settings")
-    .select("*")
-    .eq("id",1)
-    .single();
+async function loadSettings() {
+  try {
+    const { data, error } = await client
+      .from("settings")
+      .select("*")
+      .eq("id", 1)
+      .single();
 
-  if(!data) return;
+    if (error) {
+      console.log("No settings found, using defaults");
+      return;
+    }
 
-  system_name.value=data.system_name||"";
-  org_name.value=data.org_name||"";
-  if(data.scan_sound) soundToggle.classList.add("active");
-  if(data.auto_restart) autoToggle.classList.add("active");
+    if (!data) return;
+
+    systemName.value = data.system_name || "";
+    orgName.value = data.org_name || "";
+    
+    if (data.scan_sound) soundToggle.classList.add("active");
+    if (data.auto_restart) autoToggle.classList.add("active");
+    
+    if (data.last_updated) {
+      const updated = new Date(data.last_updated);
+      lastSaved.textContent = updated.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+    
+    updateStats();
+  } catch (err) {
+    console.error("Error loading settings:", err);
+  }
 }
 
 /* SAVE SETTINGS */
-async function saveSettings(){
-  await client.from("settings").upsert({
-    id:1,
-    system_name: system_name.value,
-    org_name: org_name.value,
-    scan_sound: soundToggle.classList.contains("active"),
-    auto_restart: autoToggle.classList.contains("active")
-  });
+async function saveSettings() {
+  try {
+    const settings = {
+      id: 1,
+      system_name: systemName.value,
+      org_name: orgName.value,
+      scan_sound: soundToggle.classList.contains("active"),
+      auto_restart: autoToggle.classList.contains("active"),
+      last_updated: new Date().toISOString()
+    };
 
-  alert("Settings saved");
+    const { error } = await client.from("settings").upsert(settings);
+    
+    if (error) throw error;
+    
+    updateLastSaved();
+    
+    // Show success message
+    const originalText = document.querySelector('.save-btn').innerHTML;
+    document.querySelector('.save-btn').innerHTML = '<i class="fas fa-check"></i> Saved!';
+    setTimeout(() => {
+      document.querySelector('.save-btn').innerHTML = originalText;
+    }, 2000);
+    
+    console.log("Settings saved successfully");
+  } catch (err) {
+    console.error("Error saving settings:", err);
+    alert("Failed to save settings: " + err.message);
+  }
 }
 
-/* INIT */
+/* Set active nav link */
+document.querySelectorAll("aside a").forEach(l => {
+  if (l.getAttribute("href") === "settings.html") {
+    l.classList.add("active");
+  }
+});
+
+/* Initialize */
 loadSettings();
+updateStats();
 </script>
 
 </body>
