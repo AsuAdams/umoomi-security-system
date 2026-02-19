@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Scan ID – Umoomi Security System</title>
+<title>Umoomi Security · Scan ID Card</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <!-- ICONS -->
@@ -12,80 +12,387 @@
 <script src="https://unpkg.com/html5-qrcode"></script>
 
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:"Segoe UI",sans-serif;background:#f2f2f2;padding:20px}
-.container{max-width:1200px;margin:auto}
-
-/* HEADER */
-header{
-  background:#ccdc;padding:20px;border-radius:10px;
-  display:flex;align-items:center;gap:15px;
-  box-shadow:0 4px 6px rgba(0,0,0,.1);
-  margin-bottom:20px
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
-header i{font-size:2.5rem;color:#2c3e50}
-
-/* SCAN AREA */
-.scan-box{
-  background:#fff;
-  border-radius:10px;
-  padding:20px;
-  box-shadow:0 4px 6px rgba(0,0,0,.1);
-  max-width:420px;
-  margin:auto;
-  text-align:center
+body {
+  font-family: 'Segoe UI', Roboto, sans-serif;
+  background: #f4f6f9;
+  height: 100vh;
+  overflow: hidden;
+  padding: 20px;
+}
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
-/* RESULT MODAL */
-.modal{
-  position:fixed;inset:0;
-  background:rgba(0,0,0,.8);
-  display:none;
-  align-items:center;
-  justify-content:center;
-  z-index:999
+/* HEADER - FROZEN - Umoomi design */
+header {
+  background: linear-gradient(145deg, #ffffff 0%, #f0f4f8 100%);
+  padding: 20px 28px;
+  border-radius: 28px;
+  margin-bottom: 24px;
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  box-shadow: 0 8px 18px rgba(0,20,30,0.06);
+  flex-shrink: 0;
 }
-.result-card{
-  width:380px;
-  height:240px;
-  border-radius:14px;
-  padding:15px;
-  color:#fff;
-  position:relative;
-  display:grid;
-  grid-template-columns:100px 1fr;
-  gap:12px
+header i {
+  font-size: 3rem;
+  color: #1e3c5c;
+  filter: drop-shadow(0 2px 4px rgba(0,60,120,0.2));
 }
-.result-card.valid{
-  background:linear-gradient(135deg,#1e7e34,#28a745)
+header h2 {
+  font-weight: 600;
+  color: #0b2a41;
+  letter-spacing: -0.02em;
 }
-.result-card.invalid{
-  background:linear-gradient(135deg,#6c1b1b,#c0392b)
+header small {
+  color: #3a5e7a;
+  font-size: 0.9rem;
 }
-.result-card.invalid img{
-  filter:blur(4px)
+
+/* LAYOUT - FROZEN SIDEBAR */
+.layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 24px;
+  height: calc(100vh - 140px);
+  overflow: hidden;
 }
-.result-card img{
-  width:100px;
-  height:120px;
-  border-radius:8px;
-  object-fit:cover;
-  border:2px solid #fff
+
+/* SIDEBAR - FROZEN - Umoomi design */
+aside {
+  background: #ffffff;
+  border-radius: 28px;
+  padding: 16px 10px;
+  box-shadow: 0 12px 28px rgba(0,20,40,0.06);
+  backdrop-filter: blur(2px);
+  height: fit-content;
+  max-height: calc(100vh - 140px);
+  overflow-y: auto;
+  position: sticky;
+  top: 0;
+  flex-shrink: 0;
 }
-.result-icon{
-  position:absolute;
-  top:15px;
-  right:15px;
-  font-size:3.2rem
+aside a {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-decoration: none;
+  padding: 12px 18px;
+  border-radius: 18px;
+  color: #1e3b5c;
+  font-weight: 500;
+  margin-bottom: 6px;
+  transition: all 0.15s ease;
+  cursor: pointer;
 }
-.result-icon.valid{color:#2ecc71}
-.result-icon.invalid{color:#ff6b6b}
-.result-status{
-  position:absolute;
-  bottom:15px;
-  left:15px;
-  font-size:1.3rem;
-  font-weight:bold
+aside a i { width: 22px; font-size: 1.2rem; }
+aside a:hover, aside a.active {
+  background: #1d4d7c;
+  color: #ffffff;
+  box-shadow: 0 6px 14px rgba(27,85,140,0.3);
+}
+aside a.active { background: #113753; }
+
+/* MAIN PANEL - SCROLLABLE */
+main {
+  background: #ffffff;
+  border-radius: 32px;
+  padding: 24px 28px;
+  box-shadow: 0 16px 30px rgba(0,10,30,0.04);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Quick stats cards - ABOVE content */
+.quick-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+  margin-bottom: 24px;
+  flex-shrink: 0;
+}
+.stat-card {
+  background: linear-gradient(145deg, #1e3f5f, #2c5a85);
+  color: white;
+  padding: 20px 14px;
+  border-radius: 26px;
+  text-align: center;
+  box-shadow: 0 16px 28px -8px #1d3f5e60;
+}
+.stat-card i {
+  font-size: 2rem;
+  opacity: 0.95;
+  margin-bottom: 8px;
+}
+.stat-card .stat-number {
+  font-size: 1.8rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  line-height: 1.2;
+}
+.stat-card .stat-label {
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+/* SCAN AREA - Enhanced */
+.scan-container {
+  background: linear-gradient(145deg, #f8faff, #f0f4fa);
+  border-radius: 24px;
+  padding: 30px;
+  border: 1px solid rgba(148, 184, 218, 0.2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.scan-box {
+  background: #ffffff;
+  border-radius: 32px;
+  padding: 30px;
+  box-shadow: inset 0 1px 3px #ffffff, 0 8px 18px rgba(0,20,40,0.04);
+  border: 1px solid rgba(148, 184, 218, 0.2);
+  max-width: 420px;
+  margin: 0 auto;
+  text-align: center;
+  width: 100%;
+}
+
+#reader {
+  width: 100% !important;
+  border-radius: 24px;
+  overflow: hidden;
+  margin: 0 auto;
+}
+#reader video {
+  border-radius: 24px;
+}
+#reader__scan_region {
+  border-radius: 24px;
+}
+
+.scan-hint {
+  margin-top: 20px;
+  color: #1e3f5f;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px 18px;
+  background: #e3f0fd;
+  border-radius: 40px;
+  border: 1px solid #9ac7ff;
+}
+.scan-hint i {
+  color: #1d4d7c;
+  font-size: 1.2rem;
+}
+
+/* Recent scans section */
+.recent-section {
+  margin-top: 30px;
+}
+.recent-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+.recent-header h3 {
+  color: #1e3f5f;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.recent-header h3 i {
+  color: #1d4d7c;
+}
+.recent-list {
+  background: #f8faff;
+  border-radius: 20px;
+  padding: 5px;
+  border: 1px solid rgba(148, 184, 218, 0.2);
+}
+.recent-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 18px;
+  border-bottom: 1px solid rgba(148, 184, 218, 0.2);
+  transition: all 0.15s ease;
+}
+.recent-item:last-child {
+  border-bottom: none;
+}
+.recent-item:hover {
+  background: #e3f0fd;
+  border-radius: 16px;
+}
+.recent-item .member-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.recent-item .member-info i {
+  width: 30px;
+  height: 30px;
+  background: #1d4d7c;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.recent-item .badge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+.badge.valid {
+  background: #eafaf1;
+  color: #27ae60;
+}
+.badge.invalid {
+  background: #fdecea;
+  color: #c63737;
+}
+.recent-item .time {
+  color: #7f8c8d;
+  font-size: 0.85rem;
+}
+
+/* RESULT MODAL - Enhanced */
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 25, 45, 0.5);
+  backdrop-filter: blur(3px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  padding: 20px;
+}
+.result-card {
+  width: 420px;
+  height: 260px;
+  border-radius: 32px;
+  padding: 25px;
+  color: #fff;
+  position: relative;
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: 15px;
+  box-shadow: 0 40px 60px rgba(0,15,40,0.4);
+  animation: slideUp 0.3s ease;
+}
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.result-card.valid {
+  background: linear-gradient(145deg, #1e7e34, #28a745);
+}
+.result-card.invalid {
+  background: linear-gradient(145deg, #6c1b1b, #c0392b);
+}
+.result-card img {
+  width: 110px;
+  height: 140px;
+  border-radius: 16px;
+  object-fit: cover;
+  border: 3px solid rgba(255,255,255,0.3);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+.result-card.invalid img {
+  filter: blur(4px);
+  opacity: 0.8;
+}
+.result-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.result-info h3 {
+  font-size: 1.2rem;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+.result-info p {
+  margin-bottom: 5px;
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+.result-icon {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  font-size: 3.5rem;
+}
+.result-icon.valid { color: rgba(255,255,255,0.5); }
+.result-icon.invalid { color: rgba(255,255,255,0.5); }
+.result-status {
+  position: absolute;
+  bottom: 20px;
+  left: 25px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.result-close {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  width: 36px;
+  height: 36px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.result-close:hover {
+  background: rgba(255,255,255,0.3);
+  transform: rotate(90deg);
+}
+
+/* Custom scrollbar */
+main::-webkit-scrollbar,
+aside::-webkit-scrollbar {
+  width: 6px;
+}
+main::-webkit-scrollbar-track,
+aside::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+main::-webkit-scrollbar-thumb,
+aside::-webkit-scrollbar-thumb {
+  background: #1e3f5f;
+  border-radius: 10px;
+}
+main::-webkit-scrollbar-thumb:hover,
+aside::-webkit-scrollbar-thumb:hover {
+  background: #2c5a85;
 }
 </style>
 </head>
@@ -93,19 +400,84 @@ header i{font-size:2.5rem;color:#2c3e50}
 <body>
 <div class="container">
 
+<!-- HEADER - FROZEN - Umoomi design -->
 <header>
-  <i class="fas fa-qrcode"></i>
+  <i class="fas fa-shield-halved"></i>
   <div>
-    <h2>Scan ID Card</h2>
-    <small>Umoomi Security System</small>
+    <h2>Umoomi Security · ID Scanner</h2>
+    <small>Ahmadiyya Muslim Community Uganda · member verification</small>
   </div>
 </header>
 
-<div class="scan-box">
-  <div id="reader" style="width:320px;margin:auto"></div>
-  <p style="margin-top:10px;color:#666">Align QR code inside the box</p>
-</div>
+<div class="layout">
+  <!-- SIDEBAR - FROZEN - Umoomi design -->
+  <aside>
+    <a href="index.html"><i class="fas fa-chart-pie"></i> Dashboard</a>
+    <a href="members.html"><i class="fas fa-people-group"></i> Members</a>
+    <a href="scanner.html" class="active"><i class="fas fa-qrcode"></i> Scan ID</a>
+    <a href="regions.html"><i class="fas fa-map-locations"></i> Regions</a>
+    <a href="scan-logs.html"><i class="fas fa-clock-rotate-left"></i> Activity Logs</a>
+    <a href="settings.html"><i class="fas fa-gear"></i> Settings</a>
+  </aside>
 
+  <!-- MAIN PANEL - SCROLLABLE -->
+  <main>
+    <!-- Quick stats cards - ABOVE content -->
+    <div class="quick-stats" id="quickStats">
+      <div class="stat-card">
+        <i class="fas fa-qrcode"></i>
+        <div class="stat-number" id="totalScans">0</div>
+        <div class="stat-label">Today's Scans</div>
+      </div>
+      <div class="stat-card">
+        <i class="fas fa-check-circle"></i>
+        <div class="stat-number" id="validScans">0</div>
+        <div class="stat-label">Valid</div>
+      </div>
+      <div class="stat-card">
+        <i class="fas fa-times-circle"></i>
+        <div class="stat-number" id="invalidScans">0</div>
+        <div class="stat-label">Invalid</div>
+      </div>
+      <div class="stat-card">
+        <i class="fas fa-clock"></i>
+        <div class="stat-number" id="successRate">0%</div>
+        <div class="stat-label">Success Rate</div>
+      </div>
+    </div>
+
+    <!-- Scan area -->
+    <div class="scan-container">
+      <div class="scan-box">
+        <div id="reader"></div>
+        <div class="scan-hint">
+          <i class="fas fa-camera"></i>
+          <span>Align QR code inside the frame</span>
+          <i class="fas fa-qrcode"></i>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent scans section -->
+    <div class="recent-section">
+      <div class="recent-header">
+        <h3><i class="fas fa-history"></i> Recent Scans</h3>
+        <span class="scan-hint" style="padding: 6px 12px; margin: 0;">
+          <i class="fas fa-sync-alt"></i> Last 5 scans
+        </span>
+      </div>
+      <div class="recent-list" id="recentScans">
+        <!-- Will be populated by JavaScript -->
+        <div class="recent-item">
+          <div class="member-info">
+            <i class="fas fa-user"></i>
+            <span>Waiting for scans...</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
 </div>
 
 <!-- RESULT MODAL -->
@@ -120,74 +492,209 @@ const client = window.supabase.createClient(
 );
 
 let scanner;
-startScanner();
+let recentScans = [];
+let todayScans = { total: 0, valid: 0, invalid: 0 };
 
 /* START SCANNER */
-function startScanner(){
+function startScanner() {
+  if (scanner) return;
+  
   scanner = new Html5Qrcode("reader");
   scanner.start(
-    { facingMode:"environment" },
-    { fps:10, qrbox:250 },
-    onScan
+    { facingMode: "environment" },
+    { fps: 10, qrbox: 250 },
+    onScan,
+    (error) => {
+      // Silent error handling
+    }
   );
 }
 
-/* ON SCAN */
-async function onScan(text){
-  await scanner.stop();
-  scanner=null;
+/* UPDATE STATS */
+function updateStats() {
+  document.getElementById('totalScans').textContent = todayScans.total;
+  document.getElementById('validScans').textContent = todayScans.valid;
+  document.getElementById('invalidScans').textContent = todayScans.invalid;
+  const rate = todayScans.total > 0 ? Math.round((todayScans.valid / todayScans.total) * 100) : 0;
+  document.getElementById('successRate').textContent = rate + '%';
+}
 
-  let valid=false;
-  let member=null;
-
-  /* CHECK MEMBER */
-  const { data } = await client
-    .from("umoomi_members")
-    .select("*")
-    .eq("member_id", text)
-    .single();
-
-  if(data && data.status==="Active"){
-    valid=true;
-    member=data;
+/* UPDATE RECENT SCANS */
+function updateRecentScans() {
+  const container = document.getElementById('recentScans');
+  if (recentScans.length === 0) {
+    container.innerHTML = `
+      <div class="recent-item">
+        <div class="member-info">
+          <i class="fas fa-user"></i>
+          <span>No recent scans</span>
+        </div>
+      </div>
+    `;
+    return;
   }
+  
+  container.innerHTML = recentScans.slice(0, 5).map(scan => `
+    <div class="recent-item">
+      <div class="member-info">
+        <i class="fas fa-user" style="background: ${scan.valid ? '#27ae60' : '#c63737'}"></i>
+        <div>
+          <strong>${scan.member_name || 'Unknown'}</strong>
+          <div style="font-size: 0.8rem; color: #7f8c8d;">${scan.member_id}</div>
+        </div>
+      </div>
+      <span class="badge ${scan.valid ? 'valid' : 'invalid'}">
+        ${scan.valid ? 'VALID' : 'INVALID'}
+      </span>
+      <span class="time">${new Date(scan.timestamp).toLocaleTimeString()}</span>
+    </div>
+  `).join('');
+}
 
-  /* SAVE LOG */
-  await client.from("scan_logs").insert({
-    member_id: text,
-    member_name: member ? member.full_name : null,
-    valid: valid
-  });
+/* LOAD TODAY'S STATS */
+async function loadTodayStats() {
+  const today = new Date().toISOString().split('T')[0];
+  const { data } = await client
+    .from("scan_logs")
+    .select("*")
+    .gte("created_at", today);
+  
+  if (data) {
+    todayScans.total = data.length;
+    todayScans.valid = data.filter(s => s.valid).length;
+    todayScans.invalid = data.filter(s => !s.valid).length;
+    updateStats();
+  }
+}
 
-  /* SHOW RESULT */
-  showResult(valid, member, text);
+/* LOAD RECENT SCANS */
+async function loadRecentScans() {
+  const { data } = await client
+    .from("scan_logs")
+    .select("*")
+    .order("created_at", { ascending: false })
+    .limit(5);
+  
+  if (data) {
+    recentScans = data.map(s => ({
+      ...s,
+      timestamp: s.created_at
+    }));
+    updateRecentScans();
+  }
+}
+
+/* ON SCAN */
+async function onScan(text) {
+  try {
+    await scanner.stop();
+    scanner = null;
+
+    let valid = false;
+    let member = null;
+
+    /* CHECK MEMBER */
+    const { data } = await client
+      .from("members")
+      .select("*")
+      .eq("member_id", text)
+      .maybeSingle();
+
+    if (data && data.status && data.status.toLowerCase() === "active") {
+      valid = true;
+      member = data;
+    }
+
+    /* SAVE LOG */
+    const { data: logData } = await client
+      .from("scan_logs")
+      .insert({
+        member_id: text,
+        member_name: member ? member.full_name : null,
+        valid: valid
+      })
+      .select()
+      .single();
+
+    /* UPDATE STATS */
+    todayScans.total++;
+    if (valid) todayScans.valid++;
+    else todayScans.invalid++;
+    updateStats();
+
+    /* ADD TO RECENT */
+    if (logData) {
+      recentScans.unshift({
+        ...logData,
+        timestamp: logData.created_at
+      });
+      if (recentScans.length > 5) recentScans.pop();
+      updateRecentScans();
+    }
+
+    /* SHOW RESULT */
+    showResult(valid, member, text);
+  } catch (error) {
+    console.error("Scan error:", error);
+    startScanner();
+  }
 }
 
 /* SHOW RESULT */
-function showResult(valid, member, scannedId){
-  modal.innerHTML=`
-    <div class="result-card ${valid?"valid":"invalid"}">
-      <img src="${member?.photo_url || 'https://via.placeholder.com/120'}">
-      <div>
-        <h3>${member?.full_name || "Unknown Member"}</h3>
-        <p>ID: ${scannedId}</p>
+function showResult(valid, member, scannedId) {
+  const modal = document.getElementById('modal');
+  
+  modal.innerHTML = `
+    <div class="result-card ${valid ? "valid" : "invalid"}">
+      <div class="result-close" onclick="closeModal()">
+        <i class="fas fa-times"></i>
       </div>
-      <div class="result-icon ${valid?"valid":"invalid"}">
-        <i class="fas ${valid?"fa-check-circle":"fa-times-circle"}"></i>
+      <img src="${member?.photo_url || 'https://via.placeholder.com/110x140?text=No+Photo'}" 
+           onerror="this.src='https://via.placeholder.com/110x140?text=No+Photo'">
+      <div class="result-info">
+        <h3>${member?.full_name || "Unknown Member"}</h3>
+        <p><strong>ID:</strong> ${scannedId}</p>
+        ${member?.position ? `<p><strong>Position:</strong> ${member.position}</p>` : ''}
+        ${member?.region ? `<p><strong>Region:</strong> ${member.region}</p>` : ''}
+      </div>
+      <div class="result-icon ${valid ? "valid" : "invalid"}">
+        <i class="fas ${valid ? "fa-check-circle" : "fa-times-circle"}"></i>
       </div>
       <div class="result-status">
-        ${valid?"VALID MEMBER":"INVALID ID"}
+        ${valid ? "✓ VALID MEMBER" : "✗ INVALID ID"}
       </div>
     </div>
   `;
-  modal.style.display="flex";
+  
+  modal.style.display = "flex";
 }
 
-/* CLOSE + RESTART */
-modal.onclick=()=>{
-  modal.style.display="none";
+/* CLOSE MODAL */
+window.closeModal = function() {
+  document.getElementById('modal').style.display = "none";
   startScanner();
 };
+
+/* CLICK OUTSIDE TO CLOSE */
+document.getElementById('modal').onclick = function(e) {
+  if (e.target === this) {
+    closeModal();
+  }
+};
+
+/* INIT */
+document.addEventListener("DOMContentLoaded", async () => {
+  startScanner();
+  await loadTodayStats();
+  await loadRecentScans();
+});
+
+/* SET ACTIVE NAV LINK */
+document.querySelectorAll("aside a").forEach(l => {
+  if (l.getAttribute("href") === "scanner.html") {
+    l.classList.add("active");
+  }
+});
 </script>
 
 </body>
