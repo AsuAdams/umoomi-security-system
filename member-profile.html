@@ -110,7 +110,7 @@ button:hover{opacity:.9}
 <div class="layout">
 
 <aside>
-  <a href="dashboard.html"><i class="fas fa-chart-line"></i> Dashboard</a>
+  <a href="index.html"><i class="fas fa-chart-line"></i> Dashboard</a>
   <a href="members.html" class="active"><i class="fas fa-users"></i> Members</a>
   <a href="attendance.html"><i class="fas fa-clipboard-check"></i> Attendance</a>
   <a href="reports.html"><i class="fas fa-file-alt"></i> Reports</a>
@@ -160,7 +160,7 @@ return;
 }
 
 const {data,error}=await supabase
-.from("umoomi_members")
+.from("members")
 .select("*")
 .eq("member_id",memberId)
 .single();
@@ -223,7 +223,7 @@ setTimeout(()=>new QRCode("qr",{text:m.member_id,width:90,height:90}),100);
 
 async function loadAssistants(){
 const {data}=await supabase
-.from("umoomi_assistants")
+.from("assistants")
 .select("*")
 .eq("parent_member_id",memberId);
 
@@ -277,7 +277,7 @@ alert("Name and Position required.");
 return;
 }
 
-await supabase.from("umoomi_assistants").insert([{
+await supabase.from("assistants").insert([{
   parent_member_id:memberId,
   full_name:name,
   position:position,
