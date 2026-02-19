@@ -2,217 +2,630 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<title>Umoomi Uganda Regions Map</title>
+<title>Umoomi Uganda · Regions Dashboard</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+<!-- Font Awesome, Chart.js, Leaflet -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'Segoe UI', sans-serif; background: #f2f2f2; padding: 20px; }
-.container { max-width: 1400px; margin: auto; }
+body {
+  font-family: 'Segoe UI', Roboto, sans-serif;
+  background: #f4f6f9;
+  height: 100vh;
+  overflow: hidden;
+  padding: 20px;
+}
+.container { 
+  max-width: 1400px; 
+  margin: 0 auto;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
 
-/* HEADER */
-header { background: #ccdc; padding: 20px; border-radius: 10px; display: flex; gap: 15px; align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 20px; }
-header i { font-size: 2.5rem; color: #2c3e50; }
+/* HEADER - FROZEN */
+header {
+  background: linear-gradient(145deg, #ffffff 0%, #f0f4f8 100%);
+  padding: 20px 28px;
+  border-radius: 28px;
+  margin-bottom: 24px;
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  box-shadow: 0 8px 18px rgba(0,20,30,0.06);
+  flex-shrink: 0;
+}
+header i {
+  font-size: 3rem;
+  color: #1e3c5c;
+  filter: drop-shadow(0 2px 4px rgba(0,60,120,0.2));
+}
+header h2 {
+  font-weight: 600;
+  color: #0b2a41;
+  letter-spacing: -0.02em;
+}
+header small {
+  color: #3a5e7a;
+  font-size: 0.9rem;
+}
 
-/* LAYOUT */
-.layout { display: grid; grid-template-columns: 240px 1fr; gap: 20px; }
+/* LAYOUT - FROZEN SIDEBAR */
+.layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 24px;
+  height: calc(100vh - 140px);
+  overflow: hidden;
+}
 
-/* SIDEBAR */
-aside { background: #fff; border-radius: 10px; padding: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); height: calc(100vh - 160px); }
-aside a { display: block; text-decoration: none; padding: 12px 15px; border-radius: 6px; color: #2c3e50; margin-bottom: 6px; font-size: 1rem; }
-aside a i { width: 22px; margin-right: 10px; }
-aside a:hover, aside a.active { background: #3498db; color: #fff; }
+/* SIDEBAR - FROZEN */
+aside {
+  background: #ffffff;
+  border-radius: 28px;
+  padding: 16px 10px;
+  box-shadow: 0 12px 28px rgba(0,20,40,0.06);
+  backdrop-filter: blur(2px);
+  height: fit-content;
+  max-height: calc(100vh - 140px);
+  overflow-y: auto;
+  position: sticky;
+  top: 0;
+  flex-shrink: 0;
+}
+aside a {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-decoration: none;
+  padding: 12px 18px;
+  border-radius: 18px;
+  color: #1e3b5c;
+  font-weight: 500;
+  margin-bottom: 6px;
+  transition: all 0.15s ease;
+  cursor: pointer;
+}
+aside a i { width: 22px; font-size: 1.2rem; }
+aside a:hover, aside a.active {
+  background: #1d4d7c;
+  color: #ffffff;
+  box-shadow: 0 6px 14px rgba(27,85,140,0.3);
+}
+aside a.active { background: #113753; }
 
-/* MAIN */
-main { background: #fff; border-radius: 10px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+/* MAIN PANEL - SCROLLABLE CONTENT */
+main {
+  background: #ffffff;
+  border-radius: 32px;
+  padding: 24px 28px;
+  box-shadow: 0 16px 30px rgba(0,10,30,0.04);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
 
-/* MAP */
-#map { height: 80vh; width: 100%; border-radius: 10px; }
+/* Map container */
+.map-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-shrink: 0;
+}
+.map-header h3 {
+  color: #1e3f5f;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+.region-stats-badge {
+  background: #e3f0fd;
+  padding: 8px 16px;
+  border-radius: 40px;
+  color: #1e3f5f;
+  font-weight: 500;
+  font-size: 0.95rem;
+  border: 1px solid #9ac7ff;
+}
+
+/* Quick stats cards - ABOVE MAP */
+.region-quick-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+  margin-bottom: 20px;
+  flex-shrink: 0;
+}
+.stat-card {
+  background: linear-gradient(145deg, #1e3f5f, #2c5a85);
+  color: white;
+  padding: 20px 14px;
+  border-radius: 26px;
+  text-align: center;
+  box-shadow: 0 16px 28px -8px #1d3f5e60;
+}
+.stat-card i {
+  font-size: 2rem;
+  opacity: 0.95;
+  margin-bottom: 8px;
+}
+.stat-card .stat-number {
+  font-size: 1.8rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  line-height: 1.2;
+}
+.stat-card .stat-label {
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+/* Map - now below stats */
+#map {
+  height: 400px;
+  width: 100%;
+  border-radius: 24px;
+  box-shadow: inset 0 1px 3px #ffffff, 0 8px 18px rgba(0,20,40,0.04);
+  border: 1px solid rgba(148, 184, 218, 0.2);
+  margin-bottom: 20px;
+  z-index: 1;
+  flex-shrink: 0;
+}
+
+/* Status indicator */
+#status {
+  background: #f8faff;
+  padding: 12px 18px;
+  border-radius: 20px;
+  color: #1e3f5f;
+  font-weight: 500;
+  border: 1px solid rgba(148, 184, 218, 0.2);
+  flex-shrink: 0;
+}
+#status i { margin-right: 8px; }
 
 /* MODAL */
-.modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); justify-content: center; align-items: center; z-index: 2000; }
-.modal { background: rgba(255,255,255,0.85); backdrop-filter: blur(6px); width: 85%; max-width: 1100px; height: 80vh; border-radius: 12px; padding: 30px; overflow-y: auto; position: relative; color: #2c3e50; }
-.modal h2 { margin-bottom: 10px; }
-.modal h3 { margin-top: 25px; margin-bottom: 10px; }
-.close-btn { position: absolute; top: 15px; right: 20px; font-size: 1.4rem; cursor: pointer; color: #e74c3c; }
-.board-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px,1fr)); gap: 15px; }
-.member-card { background: #f8f9fa; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display:flex; gap:10px; align-items:center; }
-.member-card img { width:50px; height:50px; border-radius:50%; object-fit:cover; border:2px solid #3498db; }
-.qaid-card { background: #eaf4ff; border-left: 5px solid #3498db; }
-.stats { margin-top: 10px; color: #555; }
-.filter-select { margin-bottom:15px; padding:6px 10px; border-radius:6px; border:1px solid #ccc; font-size:1rem; }
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 25, 45, 0.5);
+  backdrop-filter: blur(3px);
+  z-index: 998;
+  justify-content: center;
+  align-items: center;
+}
+.modal {
+  background: #ffffff;
+  padding: 26px 28px;
+  border-radius: 42px;
+  width: 85%;
+  max-width: 1100px;
+  max-height: 80vh;
+  overflow-y: auto;
+  z-index: 999;
+  box-shadow: 0 40px 60px rgba(0,15,40,0.4);
+  border: 1px solid #b9d4f0;
+  position: relative;
+}
+.close-btn {
+  position: absolute;
+  top: 20px;
+  right: 25px;
+  font-size: 1.8rem;
+  cursor: pointer;
+  color: #1e3f5f;
+  transition: 0.15s;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #f4faff;
+}
+.close-btn:hover {
+  background: #ffcdd2;
+  color: #c63737;
+}
+.modal h2 {
+  color: #113853;
+  margin-bottom: 16px;
+  font-size: 1.8rem;
+  padding-right: 40px;
+}
+.modal h3 {
+  color: #1e3f5f;
+  margin: 20px 0 12px 0;
+  font-size: 1.2rem;
+}
+
+/* Members grid in modal */
+.board-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+}
+.member-card {
+  background: linear-gradient(145deg, #f8faff, #f0f4fa);
+  border-radius: 24px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0,20,40,0.04);
+  border: 1px solid rgba(148, 184, 218, 0.2);
+  text-align: center;
+  transition: transform 0.15s ease;
+}
+.member-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 22px rgba(0,30,60,0.12);
+}
+.member-card.qaid-card {
+  background: #e3f0fd;
+  border: 2px solid #9ac7ff;
+}
+.member-photo-wrapper {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #cbd9e8;
+  margin: 0 auto 15px;
+  position: relative;
+  box-shadow: 0 4px 10px rgba(0,20,40,0.1);
+}
+.member-photo-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.member-initials {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: #1e3f5f;
+  font-size: 24px;
+  background: #e0e9f0;
+}
+.member-initials.hidden { display: none; }
+.member-card strong {
+  color: #1e3f5f;
+  font-size: 1.1rem;
+  display: block;
+  margin-bottom: 5px;
+}
+.member-card small {
+  color: #3a5e7a;
+  font-size: 0.9rem;
+}
+.stats-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  background: #1e3f5f;
+  color: white;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  margin-top: 8px;
+}
+
+/* Loading animation */
+.loading i { animation: spin 1s linear infinite; }
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+/* Custom scrollbar for main content */
+main::-webkit-scrollbar {
+  width: 8px;
+}
+main::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+main::-webkit-scrollbar-thumb {
+  background: #1e3f5f;
+  border-radius: 10px;
+}
+main::-webkit-scrollbar-thumb:hover {
+  background: #2c5a85;
+}
 </style>
 </head>
 <body>
 
 <div class="container">
+  <!-- HEADER - FROZEN -->
+  <header>
+    <i class="fas fa-shield-halved"></i>
+    <div>
+      <h2>Umoomi Security System · Regions</h2>
+      <small>Ahmadiyya Muslim Community Uganda · regional map view</small>
+    </div>
+  </header>
 
-<header>
-  <i class="fas fa-shield-alt"></i>
-  <div>
-    <h2>Regions</h2>
-    <small>Majlis Khuddamul Ahmadiyya</small>
-  </div>
-</header>
-
-<div class="layout">
-
-<aside>
-  <a href="index.html"><i class="fas fa-users"></i> Dashboard</a>
-  <a href="members.html"><i class="fas fa-chart-line"></i> Members</a>
-  <a href="scanner.html"><i class="fas fa-qrcode"></i> Scan ID</a>
-  <a href="regions.html" class="active"><i class="fas fa-map-marker-alt"></i> Regions</a>
-  <a href="scan-logs.html"><i class="fas fa-history"></i> Activity Logs</a>
-  <a href="admin.html"><i class="fas fa-user-shield"></i> Admin Panel</a>
-  <a href="settings.html"><i class="fas fa-cog"></i> Settings</a>
+  <div class="layout">
+    <!-- SIDEBAR - FROZEN -->
+    <aside>
+  <a href="index.html" id="nav-index"><i class="fas fa-chart-pie"></i> Dashboard</a>
+  <a href="members.html" id="nav-members"><i class="fas fa-people-group"></i> Members</a>
+  <a href="scanner.html" id="nav-scan"><i class="fas fa-qrcode"></i> Scan ID</a>
+  <a onclick="switchPage('regions')" class="active" id="nav-regions"><i class="fas fa-chart-pie"></i> Regions</a>
+  <a href="scan-logs.html" id="nav-logs"><i class="fas fa-clock-rotate-left"></i> Activity logs</a>
+  <a href="settings.html" id="nav-settings"><i class="fas fa-gear"></i> Settings</a>
 </aside>
-
-<main>
-  <h3>Uganda Regions Map</h3>
-  <div id="map"></div>
-</main>
-
+    <!-- MAIN PANEL - SCROLLABLE -->
+    <main>
+      <!-- Quick stats cards - ABOVE MAP -->
+      <div class="region-quick-stats" id="regionQuickStats"></div>
+      
+      <!-- Map header -->
+      <div class="map-header">
+        <h3><i class="fas fa-map-marked-alt" style="margin-right: 10px; color: #1e3f5f;"></i>Uganda Regions Map</h3>
+        <span class="region-stats-badge"><i class="fas fa-map-pin"></i> Click any marker for details</span>
+      </div>
+      
+      <!-- Map container -->
+      <div id="map"></div>
+      
+      <!-- Status indicator -->
+      <div id="status" class="loading"><i class="fas fa-spinner"></i> Loading regions...</div>
+    </main>
+  </div>
 </div>
-</div>
 
+<!-- MODAL -->
 <div class="modal-overlay" id="modalOverlay">
   <div class="modal">
-    <span class="close-btn" id="closeModal">&times;</span>
-    <select class="filter-select" id="departmentFilter">
-      <option value="All">All Departments</option>
-    </select>
+    <span class="close-btn" id="closeModal"><i class="fas fa-times"></i></span>
     <div id="modalContent"></div>
   </div>
 </div>
 
+<!-- Leaflet and Supabase scripts -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
+// Supabase configuration
 const SUPABASE_URL = "https://pqrsljahrnjgkadflbmr.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBxcnNsamFocm5qZ2thZGZsYm1yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA1NTg0NTYsImV4cCI6MjA4NjEzNDQ1Nn0.egED0C2iRp6j3Xp4ldgrdI0GBep2J7VUR52rBbzsVdo";
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-const ugandaBounds = [[-1.5, 29.5], [4.5, 35.0]];
+// Uganda bounds - lock map to Uganda only
+const ugandaBounds = [
+  [-1.5, 29.5], // Southwest corner
+  [4.5, 35.0]   // Northeast corner
+];
+
+// Initialize map with Uganda bounds
 const map = L.map("map", {
   maxBounds: ugandaBounds,
   maxBoundsViscosity: 1.0,
   minZoom: 6,
-  maxZoom: 12
+  maxZoom: 10
 }).setView([1.3733, 32.2903], 7);
 
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
   attribution: "&copy; OpenStreetMap contributors"
 }).addTo(map);
 
+// Apply bounds after tiles load
+map.on('load', function() {
+  map.setMaxBounds(ugandaBounds);
+});
+
 let markers = [];
-let currentMembers = [];
+let regionsData = [];
 
-async function loadMapData(){
-  const { data, error } = await supabaseClient
-    .from("umoomi_members")
-    .select(`
-      id,
-      full_name,
-      position,
-      department,
-      photo_url,
-      member_id,
-      region_id,
-      regions (
-        id,
-        name,
-        latitude,
-        longitude
-      )
-    `);
-
-  if(error){ console.error(error); return; }
-  clearMarkers();
-
-  const grouped = {};
-  data.forEach(member => {
-    if(!member.regions) return;
-    const r = member.regions;
-    if(!grouped[r.id]){
-      grouped[r.id] = { id:r.id, name:r.name, lat:r.latitude, lng:r.longitude, members:[] };
-    }
-    grouped[r.id].members.push(member);
-  });
-
-  Object.values(grouped).forEach(region => {
-    const marker = L.marker([region.lat, region.lng]).addTo(map);
-    marker.bindTooltip(`${region.name}<br/>Members: ${region.members.length}`, {direction:"top", offset:[0,-10]});
-    marker.on("click", () => openRegionPopup(region));
-    markers.push(marker);
-  });
+// Helper functions
+function getInitials(name) {
+  if (!name) return '?';
+  return name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 3);
 }
 
-function populateFilterOptions(members){
-  const select = document.getElementById('departmentFilter');
-  const departments = [...new Set(members.map(m => m.department).filter(Boolean))];
-  select.innerHTML = '<option value="All">All Departments</option>';
-  departments.forEach(d => select.innerHTML += `<option value="${d}">${d}</option>`);
-  select.onchange = () => displayMembers(currentMembers, select.value);
-}
-
-function displayMembers(members, filter="All"){
-  const qaid = members.filter(m => m.member_id.includes("UM-RQ"));
-  let others = members.filter(m => !m.member_id.includes("UM-RQ"));
-  if(filter !== "All") others = others.filter(m => m.department === filter);
-
-  const html = `
-    <h2>${members[0]?.regions?.name || "Region"}</h2>
-    <div class="stats">Total Members: ${members.length}</div>
-
-    <h3>Regional Qaid</h3>
-    <div class="board-grid">
-      ${qaid.length ? qaid.map(m => `
-        <div class="member-card qaid-card">
-          <img src="${m.photo_url || 'https://via.placeholder.com/50'}" alt="photo"/>
-          <div>
-            <strong>${m.full_name}</strong><br/>
-            ${m.position || 'No position'}
-          </div>
-        </div>
-      `).join("") : "No Qaid assigned"}
-    </div>
-
-    <h3>Administration Board</h3>
-    <div class="board-grid">
-      ${others.length ? others.map(m => `
-        <div class="member-card">
-          <img src="${m.photo_url || 'https://via.placeholder.com/50'}" alt="photo"/>
-          <div>
-            <strong>${m.full_name}</strong><br/>
-            ${m.position || "Member"}
-          </div>
-        </div>
-      `).join("") : "No members"}
+function renderMemberCard(member, isQaid = false) {
+  const initials = getInitials(member.full_name || member.member_id || 'Unnamed');
+  const photoUrl = member.photo_url || '';
+  const role = member.position || (isQaid ? 'Regional Qaid' : 'Member');
+  
+  return `
+    <div class="member-card ${isQaid ? 'qaid-card' : ''}">
+      <div class="member-photo-wrapper">
+        ${photoUrl ? `<img src="${photoUrl}" alt="${member.full_name}" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');">` : ''}
+        <div class="member-initials ${photoUrl ? 'hidden' : ''}">${initials}</div>
+      </div>
+      <strong>${member.full_name || 'Unnamed'}</strong>
+      <small>${role}</small>
+      ${isQaid ? '<div class="stats-badge">Regional Qaid</div>' : ''}
     </div>
   `;
+}
+
+function updateQuickStats(regions) {
+  const statsContainer = document.getElementById('regionQuickStats');
+  if (!statsContainer) return;
+  
+  const totalRegions = regions.length;
+  const totalMembers = regions.reduce((sum, r) => sum + (Array.isArray(r.members) ? r.members.length : 0), 0);
+  const regionsWithQaids = regions.filter(r => 
+    Array.isArray(r.members) && r.members.some(m => m.member_id && m.member_id.startsWith("UM-RQ"))
+  ).length;
+  const activeRegions = regions.filter(r => r.status === 'active' || !r.status).length;
+  
+  statsContainer.innerHTML = `
+    <div class="stat-card">
+      <i class="fas fa-map-locations"></i>
+      <div class="stat-number">${totalRegions}</div>
+      <div class="stat-label">Total Regions</div>
+    </div>
+    <div class="stat-card">
+      <i class="fas fa-users"></i>
+      <div class="stat-number">${totalMembers}</div>
+      <div class="stat-label">Total Members</div>
+    </div>
+    <div class="stat-card">
+      <i class="fas fa-user-tie"></i>
+      <div class="stat-number">${regionsWithQaids}</div>
+      <div class="stat-label">Regions with Qaid</div>
+    </div>
+    <div class="stat-card">
+      <i class="fas fa-check-circle"></i>
+      <div class="stat-number">${activeRegions}</div>
+      <div class="stat-label">Active Regions</div>
+    </div>
+  `;
+}
+
+function openRegionPopup(region) {
+  const members = Array.isArray(region.members) ? region.members : [];
+  const qaid = members.filter(m => m.member_id && m.member_id.startsWith("UM-RQ"));
+  const others = members.filter(m => !(m.member_id && m.member_id.startsWith("UM-RQ")));
+
+  let html = `<h2><i class="fas fa-map-pin" style="margin-right: 10px; color: #1e3f5f;"></i>${region.region_name}</h2>`;
+  html += `<div class="stats-badge" style="margin-bottom: 15px;">Total Members: ${members.length}</div>`;
+
+  if (qaid.length > 0) {
+    html += `<h3><i class="fas fa-user-tie"></i> Regional Qaid</h3>
+             <div class="board-grid">${qaid.map(m => renderMemberCard(m, true)).join('')}</div>`;
+  }
+
+  if (others.length > 0) {
+    html += `<h3><i class="fas fa-users"></i> Administration Board</h3>
+             <div class="board-grid">${others.map(m => renderMemberCard(m, false)).join('')}</div>`;
+  }
+  
+  if (members.length === 0) {
+    html += `<div class="member-card" style="grid-column: 1/-1; text-align: center; padding: 40px;">
+              <i class="fas fa-user-slash" style="font-size: 3rem; color: #aaa; margin-bottom: 15px;"></i>
+              <p>No members assigned to this region yet.</p>
+             </div>`;
+  }
+
   document.getElementById("modalContent").innerHTML = html;
-}
-
-function openRegionPopup(region){
-  currentMembers = region.members;
   document.getElementById("modalOverlay").style.display = "flex";
-  populateFilterOptions(region.members);
-  displayMembers(region.members);
 }
 
-function clearMarkers(){
-  markers.forEach(m => map.removeLayer(m));
-  markers = [];
+// Modal close handlers
+document.getElementById("closeModal").onclick = () => {
+  document.getElementById("modalOverlay").style.display = "none";
+};
+document.getElementById("modalOverlay").addEventListener("click", e => {
+  if (e.target === document.getElementById("modalOverlay")) {
+    document.getElementById("modalOverlay").style.display = "none";
+  }
+});
+
+// Load map data from Supabase
+async function loadMapData() {
+  const statusEl = document.getElementById('status');
+  statusEl.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading regions...';
+  
+  try {
+    const { data, error } = await supabaseClient
+      .from("region_with_members")
+      .select("*");
+
+    if (error) {
+      console.error("Supabase error:", error);
+      statusEl.innerHTML = `<i class="fas fa-exclamation-circle" style="color: #c63737;"></i> Error: ${error.message}`;
+      return;
+    }
+
+    if (!data || data.length === 0) {
+      statusEl.innerHTML = '<i class="fas fa-info-circle"></i> No regions found.';
+      return;
+    }
+
+    regionsData = data;
+    
+    // Clear existing markers
+    markers.forEach(m => map.removeLayer(m));
+    markers = [];
+
+    let validCount = 0;
+    data.forEach(region => {
+      const lat = parseFloat(region.latitude);
+      const lng = parseFloat(region.longitude);
+      if (isNaN(lat) || isNaN(lng)) return;
+
+      // Create custom marker icon
+      const markerIcon = L.divIcon({
+        className: 'custom-marker',
+        html: `<div style="background-color: #1d4d7c; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; border: 3px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
+                <i class="fas fa-map-pin" style="font-size: 14px;"></i>
+               </div>`,
+        iconSize: [30, 30],
+        iconAnchor: [15, 30],
+        popupAnchor: [0, -30]
+      });
+
+      const marker = L.marker([lat, lng], { icon: markerIcon }).addTo(map);
+      const memberCount = Array.isArray(region.members) ? region.members.length : 0;
+      
+      marker.bindTooltip(`
+        <div style="text-align: center; font-weight: bold; color: #1e3f5f;">
+          ${region.region_name}<br/>
+          <span style="font-size: 0.9rem;">${memberCount} members</span>
+        </div>
+      `, { permanent: false, direction: "top", offset: [0, -20] });
+      
+      marker.on("click", () => openRegionPopup(region));
+      markers.push(marker);
+      validCount++;
+    });
+
+    // Update quick stats (now above map)
+    updateQuickStats(data);
+    
+    statusEl.innerHTML = `<i class="fas fa-check-circle" style="color: #2e7d32;"></i> Loaded ${validCount} regions. Click markers for details.`;
+    
+    // Fit map bounds to show all markers within Uganda
+    if (markers.length > 0) {
+      const group = L.featureGroup(markers);
+      const bounds = group.getBounds();
+      // Ensure bounds don't exceed Uganda
+      const paddedBounds = bounds.pad(0.1);
+      const constrainedBounds = L.latLngBounds(
+        [Math.max(paddedBounds.getSouth(), ugandaBounds[0][0]), Math.max(paddedBounds.getWest(), ugandaBounds[0][1])],
+        [Math.min(paddedBounds.getNorth(), ugandaBounds[1][0]), Math.min(paddedBounds.getEast(), ugandaBounds[1][1])]
+      );
+      map.fitBounds(constrainedBounds);
+    }
+    
+  } catch (err) {
+    console.error("Unexpected error:", err);
+    statusEl.innerHTML = `<i class="fas fa-exclamation-triangle" style="color: #c63737;"></i> Unexpected error: ${err.message}`;
+  }
 }
 
-document.getElementById("closeModal").onclick = () => document.getElementById("modalOverlay").style.display = "none";
-document.getElementById("modalOverlay").addEventListener("click", function(e){ if(e.target===this)this.style.display="none"; });
+// Page switching function (for sidebar navigation)
+window.switchPage = function(pageName) {
+  // In a real implementation, this would navigate to different pages
+  alert(`Navigate to ${pageName} page - This would link to your other pages`);
+  
+  // Update active state in sidebar
+  document.querySelectorAll('aside a').forEach(link => {
+    link.classList.remove('active');
+  });
+  event.target.closest('a').classList.add('active');
+};
 
+// Initialize
 loadMapData();
+
+// Additional zoom restriction handlers
+map.on('zoomend', function() {
+  if (map.getZoom() < 6) map.setZoom(6);
+  if (map.getZoom() > 10) map.setZoom(10);
+});
+
+// Prevent panning outside Uganda
+map.on('drag', function() {
+  map.panInsideBounds(ugandaBounds, { animate: false });
+});
 </script>
 
 </body>
